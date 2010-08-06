@@ -14,6 +14,6 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces {
 		/// <param name="queries">
 		/// The query library being built (queries will be appended)
 		/// </param>
-        void GetQueries(Dictionary<string, DatabaseQuery> queries);
-    }
+		void GetQueries(Dictionary<string, DatabaseQuery> queries);
+	}
 }

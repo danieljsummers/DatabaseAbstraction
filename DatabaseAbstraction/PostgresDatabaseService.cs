@@ -8,32 +8,32 @@ using com.codeplex.dbabstraction.DatabaseAbstraction.Queries;
 using Npgsql;
 
 namespace com.codeplex.dbabstraction.DatabaseAbstraction {
-    /// <summary>
-    /// A PostgreSQL implementation of a databsae service.
-    /// </summary>
+	/// <summary>
+	/// A PostgreSQL implementation of a databsae service.
+	/// </summary>
 	public class PostgresDatabaseService : IDatabaseService {
 
 		/// <summary>
 		/// The query library. 
 		/// </summary>
-        private Dictionary<string, DatabaseQuery> Queries { get; set; }
+		private Dictionary<string, DatabaseQuery> Queries { get; set; }
 		
 		/// <summary>
 		/// The database connection for this service.
 		/// </summary>
 		private NpgsqlConnection Connection { get; set; }
 
-        /// <summary>
-        /// Constructor for the PostgreSQL database service.
-        /// </summary>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service.
-        /// </param>
-        public PostgresDatabaseService(string connectionString, params IQueryLibrary[] classes) {
+		/// <summary>
+		/// Constructor for the PostgreSQL database service.
+		/// </summary>
+		/// <param name="classes">
+		/// Classes that contain query libraries to use when initializing the service.
+		/// </param>
+		public PostgresDatabaseService(string connectionString, params IQueryLibrary[] classes) {
 			
-            // Fill the query library.
+			// Fill the query library.
 			Queries = new Dictionary<string, DatabaseQuery>();
-            foreach (IQueryLibrary library in classes) library.GetQueries(Queries);
+			foreach (IQueryLibrary library in classes) library.GetQueries(Queries);
 			
 			// Add database queries.
 			(new DatabaseQueryLibrary()).GetQueries(Queries);
@@ -43,7 +43,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 			
 			// Connect to the database.
 			Connection = new NpgsqlConnection(connectionString);
-        }
+		}
 		
 		/// <summary>
 		/// Get a set of data from the database
@@ -322,7 +322,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 					if (queryParameter.Key.StartsWith("[]")) {
 						// Do a straight string replacement on this parameter.
 						command.CommandText = command.CommandText.Replace(queryParameter.Key,
-						                                                  parameters[queryParameter.Key].ToString());
+								parameters[queryParameter.Key].ToString());
 					}
 					else {
 						// Bind the parameter.
@@ -337,5 +337,5 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 			
 			return command;
 		}
-    }
+	}
 }
