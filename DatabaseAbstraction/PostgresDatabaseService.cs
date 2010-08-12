@@ -51,6 +51,22 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 		/// <param name="queryName">
 		/// The name of the query
 		/// </param>
+		/// <returns>
+		/// A data reader with the data
+		/// </returns>
+		public IDataReader Select(string queryName) {
+			
+			using (NpgsqlCommand command = GetCommandForSelect(queryName, null)) {
+				return command.ExecuteReader();
+			}
+		}
+		
+		/// <summary>
+		/// Get a set of data from the database
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query
+		/// </param>
 		/// <param name="parameters">
 		/// Parameters to use when constructing the query
 		/// </param>
@@ -79,6 +95,22 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 		/// </returns>
 		public IDataReader Select(string queryName, IDatabaseModel model) {
 			return Select(queryName, model.DataParameters());
+		}
+		
+		/// <summary>
+		/// Get a single result from the database
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query
+		/// </param>
+		/// <returns>
+		/// A data reader with the data
+		/// </returns>
+		public IDataReader SelectOne(string queryName) {
+			
+			using (NpgsqlCommand command = GetCommandForSelect(queryName, null)) {
+				return command.ExecuteReader(CommandBehavior.SingleRow);
+			}
 		}
 		
 		/// <summary>
