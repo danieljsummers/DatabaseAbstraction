@@ -15,6 +15,18 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces {
 		/// The name of the query to execute from the 
 		/// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
 		/// </param>
+		/// <returns>
+		/// A <see cref="System.Data.IDataReader"/> with the results
+		/// </returns>
+		IDataReader Select(string queryName);
+		
+		/// <summary>
+		/// Select a result set
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query to execute from the 
+		/// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+		/// </param>
 		/// <param name="parameters">
 		/// The parameters to use in executing the query
 		/// </param>
@@ -37,6 +49,18 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces {
 		/// A <see cref="System.Data.IDataReader"/> with the results
 		/// </returns>
 		IDataReader Select(string queryName, IDatabaseModel model);
+		
+		/// <summary>
+		/// Select a single result
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query to execute from the 
+		/// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Data.IDataReader"/> with the results
+		/// </returns>
+		IDataReader SelectOne(string queryName);
 		
 		/// <summary>
 		/// Select a single result
