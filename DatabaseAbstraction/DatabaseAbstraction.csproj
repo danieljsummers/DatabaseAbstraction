@@ -36,6 +36,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Npgsql.dll</HintPath>
     </Reference>
+    <Reference Include="MySql.Data, Version=1.0.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\MySql.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -45,6 +49,9 @@
     <Compile Include="Models\DatabaseQuery.cs" />
     <Compile Include="PostgresDatabaseService.cs" />
     <Compile Include="Queries\DatabaseQueryLibrary.cs" />
+    <Compile Include="DatabaseService.cs" />
+    <Compile Include="MySqlDatabaseService.cs" />
+    <Compile Include="SqlDatabaseService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
