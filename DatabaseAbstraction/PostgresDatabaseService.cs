@@ -33,7 +33,6 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 		/// <returns>
 		/// The value of the sequence
 		/// </returns>
-		/// FIXME: this is wrong
 		public int Sequence(string sequenceName) {
 			
 			Dictionary<string, object> parameters = new Dictionary<string, object>();
