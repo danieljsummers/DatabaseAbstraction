@@ -1,33 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
 using com.codeplex.dbabstraction.DatabaseAbstraction.Models;
 using com.codeplex.dbabstraction.DatabaseAbstraction.Queries;
+using NUnit.Framework;
 
 namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 	/// <summary>
 	/// Mock implementation of a database service
 	/// </summary>
 	/// <remarks>
-	/// This is designed to be used for unit tests.  Assuming the code uses
-	/// dependency injection for the IDatabaseService interface, this
-	/// implementation can be substituted for the actual database.  Rather
-	/// than actually storing data, it accumulates the query names and
-	/// parameters passed to it, and provides a means to retrieve these for
-	/// verification.  Remember that, unless instantiated statically, each
-	/// test run will obtain a new version of this service.
+	/// This is designed to be used for NUnit-based unit tests.  Assuming the code uses dependency injection for the
+	/// IDatabaseService interface, this implementation can be substituted for the actual database.  Rather than
+	/// actually storing data, it accumulates the query names and parameters passed to it, and provides a means to
+	/// retrieve these for verification.  Remember that, unless instantiated statically, each test run will obtain a
+	/// new version of this service.
 	/// 
-	/// It will create the query library the same way that the actual
-	/// implementation do, and check for validity; a missing query will throw
-	/// a KeyNotFoundException, and a mismatch (ex. a "delete" query that
-	/// starts with "SELECT") will throw a NotSupportedException.
+	/// It will create the query library the same way that the actual implementation do, and check for validity; a
+	/// missing query will throw a KeyNotFoundException, and a mismatch (ex. a "delete" query that starts with
+	/// "SELECT") will throw a NotSupportedException.
 	/// 
-	/// (This methodology differs from the "expect" functionality of some other
-	/// mock frameworks; instead of setting up expectations and then executing
-	/// the test, the workflow is to execute the test, then check that the
-	/// right quer(y|ies) were executed and the correct parameters were passed.
-	/// See the #Assertions region for convenience methods to do this.)
+	/// (This methodology differs from the "expect" functionality of some other mock frameworks; instead of setting up
+	/// expectations and then executing the test, the workflow is to execute the test, then check that the right
+	/// quer(y|ies) were executed and the correct parameters were passed.  See the Assertions region for convenience
+	/// methods to do this.)
 	/// </remarks>
 	public class MockDatabaseService : IDatabaseService {
 		
@@ -180,8 +178,215 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 		
 		#region Assertions
 		
+		/// <summary>
+		/// Assert that the given query has been performed at least once
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
 		public void AssertPerformed(string queryName) {
-			// TODO: stopped work here...
+			if (0 == GetExecutedQueries(queryName).Count()) {
+				Assert.Fail("Query " + queryName + " was not performed");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given SELECT query has been performed at least once
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		public void AssertPerformedSelect(string queryName) {
+			if (0 == GetExecutedQueries(queryName, "select").Count()) {
+				Assert.Fail("SELECT Query " + queryName + " was not performed");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given INSERT query has been performed at least once
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		public void AssertPerformedInsert(string queryName) {
+			if (0 == GetExecutedQueries(queryName, "insert").Count()) {
+				Assert.Fail("INSERT Query " + queryName + " was not performed");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given UPDATE query has been performed at least once
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		public void AssertPerformedUpdate(string queryName) {
+			if (0 == GetExecutedQueries(queryName, "update").Count()) {
+				Assert.Fail("UPDATE Query " + queryName + " was not performed");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given DELETE query has been performed at least once
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		public void AssertPerformedDelete(string queryName) {
+			if (0 == GetExecutedQueries(queryName, "delete").Count()) {
+				Assert.Fail("DELETE Query " + queryName + " was not performed");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given sequence query has been performed at least once
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		public void AssertPerformedSequence(string queryName) {
+			if (0 == GetExecutedQueries(queryName, "sequence").Count()) {
+				Assert.Fail("Sequence Query " + queryName + " was not performed");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given query has been executed a specific number of times
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		/// <param name="times">
+		/// The number of times the query should have been executed
+		/// </param>
+		public void AssertPerformed(string queryName, int times) {
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName);
+			if (times != queries.Count()) {
+				Assert.Fail("Query " + queryName + " executed " + queries.Count() 
+						+ " times, but should have been executed " + times + " times");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given SELECT query has been executed a specific number of times
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		/// <param name="times">
+		/// The number of times the query should have been executed
+		/// </param>
+		public void AssertPerformedSelect(string queryName, int times) {
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName, "select");
+			if (times != queries.Count()) {
+				Assert.Fail("SELECT Query " + queryName + " executed " + queries.Count() 
+						+ " times, but should have been executed " + times + " times");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given INSERT query has been executed a specific number of times
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		/// <param name="times">
+		/// The number of times the query should have been executed
+		/// </param>
+		public void AssertPerformedInsert(string queryName, int times) {
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName, "insert");
+			if (times != queries.Count()) {
+				Assert.Fail("INSERT Query " + queryName + " executed " + queries.Count() 
+						+ " times, but should have been executed " + times + " times");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given UPDATE query has been executed a specific number of times
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		/// <param name="times">
+		/// The number of times the query should have been executed
+		/// </param>
+		public void AssertPerformedUpdate(string queryName, int times) {
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName, "update");
+			if (times != queries.Count()) {
+				Assert.Fail("UPDATE Query " + queryName + " executed " + queries.Count() 
+						+ " times, but should have been executed " + times + " times");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given DELETE query has been executed a specific number of times
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		/// <param name="times">
+		/// The number of times the query should have been executed
+		/// </param>
+		public void AssertPerformedDelete(string queryName, int times) {
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName, "delete");
+			if (times != queries.Count()) {
+				Assert.Fail("DELETE Query " + queryName + " executed " + queries.Count() 
+						+ " times, but should have been executed " + times + " times");
+			}
+		}
+		
+		/// <summary>
+		/// Assert that the given sequence query has been executed a specific number of times
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query that should have been executed
+		/// </param>
+		/// <param name="times">
+		/// The number of times the query should have been executed
+		/// </param>
+		public void AssertPerformedSequence(string queryName, int times) {
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName, "sequence");
+			if (times != queries.Count()) {
+				Assert.Fail("Sequence Query " + queryName + " executed " + queries.Count() 
+						+ " times, but should have been executed " + times + " times");
+			}
+		}
+		
+		public void AssertPerformed(string queryName, Dictionary<string, object> parameters) {
+			// TODO: stopped here
+		}
+		
+		/// <summary>
+		/// Retrieve the executed queries for a given query name
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query
+		/// </param>
+		/// <returns>
+		/// A set of executed queries
+		/// </returns>
+		private IEnumerable<ExecutedQuery> GetExecutedQueries(string queryName) {
+			return from query in ExecutedQueries
+				where query.QueryName == queryName
+					select query;
+		}
+		
+		/// <summary>
+		/// Retrieve the executed queries for a given query name and type
+		/// </summary>
+		/// <param name="queryName">
+		/// The name of the query
+		/// </param>
+		/// <param name="queryType">
+		/// The query type (select|insert|update|delete|sequence)
+		/// </param>
+		/// <returns>
+		/// A set of executed queries
+		/// </returns>
+		private IEnumerable<ExecutedQuery> GetExecutedQueries(string queryName, string queryType) {
+			return from query in ExecutedQueries
+				where query.QueryName == queryName && query.QueryType == queryType
+					select query;
 		}
 		
 		#endregion
