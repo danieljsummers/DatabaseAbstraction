@@ -1,0 +1,8 @@
+syntax: glob
+
+DatabaseAbstraction.userprefs
+DatabaseAbstraction/DatabaseAbstraction.pidb
+DatabaseAbstraction/bin/Debug
+DatabaseAbstraction/bin/Release/MySql.*
+DatabaseAbstraction/bin/Release/Npgsql.*
+DatabaseAbstraction/bin/Release/nunit.*
