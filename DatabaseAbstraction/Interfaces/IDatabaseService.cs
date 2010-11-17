@@ -174,19 +174,5 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces {
 		/// The sequence value
 		/// </returns>
 		int Sequence(string sequenceName);
-		
-		/// <summary>
-		/// Create a parameter dictionary for a single parameter
-		/// </summary>
-		/// <param name="key">
-		/// The name of the parameter
-		/// </param>
-		/// <param name="value">
-		/// The value which should be bound to this parameter
-		/// </param>
-		/// <returns>
-		/// A parameter dictionary for use in data commands
-		/// </returns>
-		Dictionary<string, object> SingleParameter(string key, object value);
 	}
 }
