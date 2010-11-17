@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
+using com.codeplex.dbabstraction.DatabaseAbstraction.Utils;
 using Npgsql;
 
 namespace com.codeplex.dbabstraction.DatabaseAbstraction {
@@ -35,10 +35,8 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 		/// </returns>
 		public int Sequence(string sequenceName) {
 			
-			Dictionary<string, object> parameters = new Dictionary<string, object>();
-			parameters.Add("[]sequence_name", sequenceName);
-			
-			using (IDataReader reader = SelectOne("database.sequence.postgres", parameters)) {
+			using (IDataReader reader = SelectOne("database.sequence.postgres",
+			                                      DbUtils.SingleParameter("[]sequence_name", sequenceName))) {
 				if (reader.NextResult()) {
 					reader.Read();
 					return Convert.ToInt32(reader["sequence_value"]);
