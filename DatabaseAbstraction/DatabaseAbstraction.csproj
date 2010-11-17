@@ -58,12 +58,14 @@
     <Compile Include="MySqlDatabaseService.cs" />
     <Compile Include="SqlDatabaseService.cs" />
     <Compile Include="MockDatabaseService.cs" />
+    <Compile Include="Utils\DbUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Interfaces\" />
     <Folder Include="Models\" />
     <Folder Include="Queries\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
