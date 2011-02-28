@@ -353,7 +353,33 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
 		}
 		
 		public void AssertPerformed(string queryName, Dictionary<string, object> parameters) {
-			// TODO: stopped here
+			IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName);
+			bool found = false;
+			foreach (ExecutedQuery query in queries) {
+				found = ParametersExist(parameters, query);
+				if (found) break;
+			}
+			if (!found) {
+				Assert.Fail("The passed query parameters for query " + queryName + " were not found in any of the "
+				            + queries.Count() + " execution(s) of that query.");
+			}
+		}
+		// TODO:stopped here
+		/// <summary>
+		/// Check to see that a query in the 
+		/// </summary>
+		/// <param name="queries">
+		/// A <see cref="IEnumerable<ExecutedQueries>"/>
+		/// </param>
+		/// <param name="parameters">
+		/// A <see cref="Dictionary<System.String, System.Object>"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// </returns>
+		private bool ParametersExist(Dictionary<string, object> parameters, ExecutedQuery query) {
+			// FIXME: fake
+			return true;
 		}
 		
 		/// <summary>
