@@ -14,10 +14,34 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
     /// </summary>
     public abstract class DatabaseService {
 
+        private static Dictionary<string, DatabaseQuery> _staticQueries;
+
         /// <summary>
-        /// The query library. 
+        /// Static queries
         /// </summary>
-        private Dictionary<string, DatabaseQuery> Queries { get; set; }
+        /// <remarks>
+        /// The database service opens a connection, so implementors may wish to implement this as an instance class
+        /// and not a singleton.  However, to reduce the overhead associated with creating a query library, this
+        /// query library can be created using the <see cref="FillStaticQueryLibrary"/> method (for example, in
+        /// Application_Start() of a web project).  The service will search it first, then the instance-level library.
+        /// This provides the flexibility to put at many queries in the static library as the implmentor desires,
+        /// while allowing them to add more queries to each instance of the service.
+        /// </remarks>
+        protected static Dictionary<string, DatabaseQuery> StaticQueries {
+            get {
+                if (null == _staticQueries) {
+                    _staticQueries = new Dictionary<string, DatabaseQuery>();
+                    (new DatabaseQueryLibrary()).GetQueries(_staticQueries);
+                }
+
+                return _staticQueries;
+            }
+        }
+
+        /// <summary>
+        /// The instance query library (see notes for <see cref="StaticQueries"/>)
+        /// </summary>
+        protected Dictionary<string, DatabaseQuery> Queries { get; set; }
 
         /// <summary>
         /// The database connection for this service.
@@ -31,16 +55,8 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
         /// The <see cref="IQueryLibrary[]"/> classes to use when building the query library.
         /// </param>
         public DatabaseService(params IQueryLibrary[] classes) {
-
-            // Fill the query library.
             Queries = new Dictionary<string, DatabaseQuery>();
-            foreach (IQueryLibrary library in classes) library.GetQueries(Queries);
-
-            // Add database queries.
-            (new DatabaseQueryLibrary()).GetQueries(Queries);
-
-            // Set the name property in every query.
-            foreach (KeyValuePair<string, DatabaseQuery> query in Queries) query.Value.Name = query.Key;
+            FillQueryLibrary(Queries, classes);
         }
 
         /// <summary>
@@ -298,6 +314,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
         /// </exception>
         private DatabaseQuery GetQuery(string queryName) {
 
+            if (StaticQueries.ContainsKey(queryName)) return StaticQueries[queryName];
             if (Queries.ContainsKey(queryName)) return Queries[queryName];
             throw new KeyNotFoundException("Unable to find query " + queryName);
         }
@@ -341,6 +358,36 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
             }
 
             return command;
+        }
+
+        /// <summary>
+        /// Fill the static query library
+        /// </summary>
+        /// <param name="classes">
+        /// The <see cref="IQueryLibrary"/> classes to use to populate the library
+        /// </param>
+        public static void FillStaticQueryLibrary(params IQueryLibrary[] classes) {
+            FillQueryLibrary(StaticQueries, classes);
+        }
+
+        /// <summary>
+        /// Fill a query library
+        /// </summary>
+        /// <param name="library">
+        /// The query library to fill
+        /// </param>
+        /// <param name="classes">
+        /// The query library classes to use to fill the library
+        /// </param>
+        private static void FillQueryLibrary(Dictionary<string, DatabaseQuery> library,
+                params IQueryLibrary[] classes) {
+
+            foreach (IQueryLibrary theLibrary in classes)
+                theLibrary.GetQueries(library);
+
+            // Set the name property in every query
+            foreach (KeyValuePair<string, DatabaseQuery> query in library)
+                query.Value.Name = query.Key;
         }
     }
 }
