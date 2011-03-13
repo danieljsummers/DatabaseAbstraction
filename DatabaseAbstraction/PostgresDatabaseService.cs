@@ -9,7 +9,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
     /// <summary>
     /// A PostgreSQL implementation of a database service.
     /// </summary>
-    public class PostgresDatabaseService : DatabaseService, IDatabaseService {
+    public class PostgresDatabaseService : DatabaseService, IDatabaseService, IDisposable {
 
         /// <summary>
         /// Constructor for the PostgreSQL database service.
