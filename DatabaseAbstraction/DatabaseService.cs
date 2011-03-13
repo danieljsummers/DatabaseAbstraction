@@ -12,7 +12,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
     /// implementations only need to call the constructor with the list of classes, then fill the connection property
     /// with a concrete database connection.
     /// </summary>
-    public abstract class DatabaseService {
+    public abstract class DatabaseService : IDisposable {
 
         private static Dictionary<string, DatabaseQuery> _staticQueries;
 
@@ -388,6 +388,14 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
             // Set the name property in every query
             foreach (KeyValuePair<string, DatabaseQuery> query in library)
                 query.Value.Name = query.Key;
+        }
+
+        /// <summary>
+        /// Clean up resources for this service
+        /// </summary>
+        public void Dispose() {
+            if (ConnectionState.Closed != Connection.State) Connection.Close();
+            Connection.Dispose();
         }
     }
 }
