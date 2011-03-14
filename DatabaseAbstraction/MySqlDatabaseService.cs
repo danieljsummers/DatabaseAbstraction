@@ -7,7 +7,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
     /// <summary>
     /// A MySQL implementation of a database service.
     /// </summary>
-    public class MySqlDatabaseService : DatabaseService, IDatabaseService, IDisposable {
+    public class MySqlDatabaseService : DatabaseService, IDatabaseService {
 
         /// <summary>
         /// Constructor for the MySQL database service.
