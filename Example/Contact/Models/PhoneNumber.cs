@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data;
     using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
+    using com.codeplex.dbabstraction.DatabaseAbstraction.Utils;
 
     /// <summary>
     /// This represents a single phone number.
@@ -72,14 +73,14 @@
         /// An open data reader, pointing to the row to use.
         /// </param>
         public PhoneNumber(IDataReader reader) {
-            ID = reader.GetInt32(reader.GetOrdinal("id"));
+            ID = reader.GetInt32(reader.GetOrdinal("phone_id"));
             ContactID = reader.GetInt32(reader.GetOrdinal("contact_id"));
             ContactType = (ContactType?) reader.GetInt32(reader.GetOrdinal("contact_type_id"));
             AreaCode = reader.GetString(reader.GetOrdinal("area_code"));
             Exchange = reader.GetString(reader.GetOrdinal("exchange"));
             Number = reader.GetString(reader.GetOrdinal("number"));
-            Extension = reader.GetString(reader.GetOrdinal("extension"));
-            Comments = reader.GetString(reader.GetOrdinal("comments"));
+            Extension = DbUtils.NullableString(reader, "extension");
+            Comments = DbUtils.NullableString(reader, "comments");
         }
 
         /// <summary>
@@ -92,7 +93,7 @@
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
-            parameters.Add("id", ID);
+            parameters.Add("phone_id", ID);
             parameters.Add("contact_id", ContactID);
             parameters.Add("contact_type_id", ContactType.Value);
             parameters.Add("area_code", AreaCode);

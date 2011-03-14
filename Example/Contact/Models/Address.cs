@@ -75,7 +75,7 @@
             State = new State {
                 ID = reader.GetInt32(reader.GetOrdinal("state_id")),
                 Code = reader.GetString(reader.GetOrdinal("state_code")),
-                Name = reader.GetString(reader.GetOrdinal("state_name"))
+                Name = reader.GetString(reader.GetOrdinal("state"))
             };
         }
 
