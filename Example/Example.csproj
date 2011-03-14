@@ -8,7 +8,7 @@
     <ProjectGuid>{2AADCD50-21D0-479A-B43B-E306337DE3C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DatabaseAbstraction</RootNamespace>
+    <RootNamespace>com.codeplex.dbabstraction</RootNamespace>
     <AssemblyName>DatabaseAbstractionContact</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

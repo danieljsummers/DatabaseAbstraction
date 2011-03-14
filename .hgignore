@@ -6,3 +6,10 @@ DatabaseAbstraction/bin/Debug
 DatabaseAbstraction/bin/Release/MySql.*
 DatabaseAbstraction/bin/Release/Npgsql.*
 DatabaseAbstraction/bin/Release/nunit.*
+DatabaseAbstraction/obj
+Example/obj
+Example/bin/Debug
+Example/bin/Release/DatabaseAbstraction.dll
+Example/bin/Release/MySql.*
+Example/bin/Release/Npgsql.*
+Example/bin/Release/nunit.*

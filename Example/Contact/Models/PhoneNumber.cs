@@ -1,16 +1,15 @@
-﻿namespace DatabaseAbstraction.Contact.Models
-{
+﻿namespace com.codeplex.dbabstraction.Contact.Models {
+
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using DatabaseAbstraction.Interfaces;
-    using DatabaseAbstraction.Utils;
+    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
 
     /// <summary>
     /// This represents a single phone number.
     /// </summary>
-    public sealed class PhoneNumber : IDatabaseModel
-    {
+    public sealed class PhoneNumber : IDatabaseModel {
+
         /// <summary>
         /// The ID for this phone number.
         /// </summary>
@@ -54,10 +53,8 @@
         /// <summary>
         /// Retrieve the full phone number in display format.
         /// </summary>
-        public string DisplayFormat
-        {
-            get
-            {
+        public string DisplayFormat {
+            get {
                 return String.Format("({0}) {1}-{2}", AreaCode, Exchange, Number)
                     + ((!String.IsNullOrEmpty(Extension)) ? " x" + Extension : "");
             }
@@ -74,16 +71,15 @@
         /// <param name="reader">
         /// An open data reader, pointing to the row to use.
         /// </param>
-        public PhoneNumber(IDataReader reader)
-        {
-            ID = reader.GetInt32(reader.GetOrdinal("phone_id"));
+        public PhoneNumber(IDataReader reader) {
+            ID = reader.GetInt32(reader.GetOrdinal("id"));
             ContactID = reader.GetInt32(reader.GetOrdinal("contact_id"));
-            ContactType = (ContactType?)reader.GetInt32(reader.GetOrdinal("contact_type_id"));
+            ContactType = (ContactType?) reader.GetInt32(reader.GetOrdinal("contact_type_id"));
             AreaCode = reader.GetString(reader.GetOrdinal("area_code"));
             Exchange = reader.GetString(reader.GetOrdinal("exchange"));
             Number = reader.GetString(reader.GetOrdinal("number"));
-            Extension = NullUtils.GetStringOrNull(reader, "extension");
-            Comments = NullUtils.GetStringOrNull(reader, "comments");
+            Extension = reader.GetString(reader.GetOrdinal("extension"));
+            Comments = reader.GetString(reader.GetOrdinal("comments"));
         }
 
         /// <summary>
@@ -92,11 +88,11 @@
         /// <returns>
         /// The key/value pairs representing the properties of this object.
         /// </returns>
-        public Dictionary<string, object> DataParameters()
-        {
+        public Dictionary<string, object> DataParameters() {
+
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
-            parameters.Add("phone_id", ID);
+            parameters.Add("id", ID);
             parameters.Add("contact_id", ContactID);
             parameters.Add("contact_type_id", ContactType.Value);
             parameters.Add("area_code", AreaCode);
