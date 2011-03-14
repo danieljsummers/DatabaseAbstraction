@@ -178,6 +178,11 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
             throw new KeyNotFoundException("Unable to find query " + queryName);
         }
 
+        /// <summary>
+        /// Implementation of the dispose method; nothing to dispose since there is no real connection
+        /// </summary>
+        public void Dispose() { }
+
         #endregion
 
         #region Assertions

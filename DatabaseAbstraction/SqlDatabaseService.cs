@@ -7,7 +7,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction {
     /// <summary>
     /// A SQL Server implementation of a database service.
     /// </summary>
-    public class SqlDatabaseService : DatabaseService, IDatabaseService, IDisposable {
+    public class SqlDatabaseService : DatabaseService, IDatabaseService {
 
         /// <summary>
         /// Constructor for the SQL Server database service.

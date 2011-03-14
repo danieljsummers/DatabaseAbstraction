@@ -7,7 +7,7 @@ namespace com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces {
     /// <summary>
     /// This interface describes the functions that must exist in a DatabaseService implementation.
     /// </summary>
-    public interface IDatabaseService {
+    public interface IDatabaseService : IDisposable {
 
         /// <summary>
         /// Select a result set
