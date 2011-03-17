@@ -1,12 +1,12 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction {
+namespace DatabaseAbstraction {
 
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Models;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Queries;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Queries;
     using NUnit.Framework;
 
     /// <summary>

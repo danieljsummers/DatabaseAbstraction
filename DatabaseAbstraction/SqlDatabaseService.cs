@@ -1,8 +1,8 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction {
+namespace DatabaseAbstraction {
 
     using System;
     using System.Data.SqlClient;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Interfaces;
 
     /// <summary>
     /// A SQL Server implementation of a database service.

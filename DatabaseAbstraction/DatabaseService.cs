@@ -1,11 +1,11 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction {
+namespace DatabaseAbstraction {
 
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Models;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Queries;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Queries;
 
     /// <summary>
     /// This abstract class contains the majority of the implementation of the database abstraction.  The specific

@@ -1,4 +1,4 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction.Utils {
+namespace DatabaseAbstraction.Utils {
 
     using System;
     using System.Collections.Generic;

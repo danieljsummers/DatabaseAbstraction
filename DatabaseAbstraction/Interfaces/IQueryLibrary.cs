@@ -1,8 +1,8 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces {
+namespace DatabaseAbstraction.Interfaces {
 
     using System;
     using System.Collections.Generic;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Models;
 
     /// <summary>
     /// Defines the required methods for a query library

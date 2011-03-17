@@ -1,11 +1,11 @@
-﻿namespace com.codeplex.dbabstraction.Contact.Services {
+﻿namespace DatabaseAbstraction.Contact.Services {
 
     using System.Collections.Generic;
     using System.Data;
     using System.Text;
-    using com.codeplex.dbabstraction.Contact.Models;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Utils;
+    using DatabaseAbstraction.Contact.Models;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Utils;
 
     /// <summary>
     /// This service manipulates the common contact information objects
