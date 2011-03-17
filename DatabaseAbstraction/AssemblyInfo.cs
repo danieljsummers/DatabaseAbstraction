@@ -5,11 +5,11 @@ using System.Runtime.CompilerServices;
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle("DatabaseAbstraction")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Vendor-Independent Data Persistence Provider")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Developed by DJS Consulting")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Licensed under MSRL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,10 +1,10 @@
-﻿namespace com.codeplex.dbabstraction.Contact.Models {
+﻿namespace DatabaseAbstraction.Contact.Models {
 
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Utils;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Utils;
 
     /// <summary>
     /// This represents a single phone number.

@@ -1,9 +1,9 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction.Queries {
+namespace DatabaseAbstraction.Queries {
 
     using System.Collections.Generic;
     using System.Data;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Models;
 
     /// <summary>
     /// This contains queries to support the database.

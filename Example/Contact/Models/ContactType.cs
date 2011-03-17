@@ -1,4 +1,4 @@
-﻿namespace com.codeplex.dbabstraction.Contact.Models {
+﻿namespace DatabaseAbstraction.Contact.Models {
 
     /// <summary>
     /// These correspond to the values in the R_CONTACT_TYPE table, and list the

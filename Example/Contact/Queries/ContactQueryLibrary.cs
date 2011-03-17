@@ -1,9 +1,9 @@
-﻿namespace com.codeplex.dbabstraction.Contact.Queries {
+﻿namespace DatabaseAbstraction.Contact.Queries {
 
     using System.Collections.Generic;
     using System.Data;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Models;
 
     /// <summary>
     /// This contains queries necessary for the contact information models.

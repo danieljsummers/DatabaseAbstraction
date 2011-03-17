@@ -1,7 +1,7 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction {
+namespace DatabaseAbstraction {
 
     using System;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Interfaces;
     using MySql.Data.MySqlClient;
 
     /// <summary>

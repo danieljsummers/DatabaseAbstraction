@@ -1,8 +1,8 @@
-﻿namespace com.codeplex.dbabstraction.Contact.Models {
+﻿namespace DatabaseAbstraction.Contact.Models {
 
     using System.Collections.Generic;
     using System.Data;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Interfaces;
 
     /// <summary>
     /// This represents a single physical or mailing address.

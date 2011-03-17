@@ -1,9 +1,9 @@
-namespace com.codeplex.dbabstraction.DatabaseAbstraction {
+namespace DatabaseAbstraction {
 
     using System;
     using System.Data;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces;
-    using com.codeplex.dbabstraction.DatabaseAbstraction.Utils;
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Utils;
     using Npgsql;
 
     /// <summary>

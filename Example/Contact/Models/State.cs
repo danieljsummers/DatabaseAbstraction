@@ -1,4 +1,4 @@
-﻿namespace com.codeplex.dbabstraction.Contact.Models {
+﻿namespace DatabaseAbstraction.Contact.Models {
 
     /// <summary>
     /// This represents a state
