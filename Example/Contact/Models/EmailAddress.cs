@@ -44,7 +44,7 @@
             ContactID = reader.GetInt32(reader.GetOrdinal("contact_id"));
             ContactType = (ContactType?) reader.GetInt32(reader.GetOrdinal("contact_type_id"));
             Address = reader.GetString(reader.GetOrdinal("address"));
-            Comments = NullUtils.GetString(reader, "comments");
+            Comments = NullUtils.GetStringOrNull(reader, "comments");
         }
 
         /// <summary>
