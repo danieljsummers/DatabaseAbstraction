@@ -79,8 +79,8 @@
             AreaCode = reader.GetString(reader.GetOrdinal("area_code"));
             Exchange = reader.GetString(reader.GetOrdinal("exchange"));
             Number = reader.GetString(reader.GetOrdinal("number"));
-            Extension = DbUtils.NullableString(reader, "extension");
-            Comments = DbUtils.NullableString(reader, "comments");
+            Extension = NullUtils.GetString(reader, "extension");
+            Comments = NullUtils.GetString(reader, "comments");
         }
 
         /// <summary>

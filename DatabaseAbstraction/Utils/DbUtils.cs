@@ -5,7 +5,7 @@ namespace DatabaseAbstraction.Utils {
     using System.Data;
 
     /// <summary>
-    /// Utility methods for use by services and models that utilize Database Abstraction.
+    /// Utility methods for use by services and models that utilize Database Abstraction
     /// </summary>
     public static class DbUtils {
 
@@ -25,23 +25,6 @@ namespace DatabaseAbstraction.Utils {
             Dictionary<string, object> list = new Dictionary<string, object>();
             list.Add(name, parameter);
             return list;
-        }
-
-        /// <summary>
-        /// Handle null values from the database
-        /// </summary>
-        /// <param name="reader">
-        /// The data reader with the data
-        /// </param>
-        /// <param name="columnName">
-        /// The name of the column
-        /// </param>
-        /// <returns>
-        /// null if the column is null, the column if not
-        /// </returns>
-        public static string NullableString(IDataReader reader, string columnName) {
-            if (reader.IsDBNull(reader.GetOrdinal(columnName))) return null;
-            return reader.GetString(reader.GetOrdinal(columnName));
         }
     }
 }

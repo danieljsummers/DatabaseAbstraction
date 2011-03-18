@@ -63,6 +63,7 @@
     <Compile Include="SqlDatabaseService.cs" />
     <Compile Include="MockDatabaseService.cs" />
     <Compile Include="Utils\DbUtils.cs" />
+    <Compile Include="Utils\NullUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
