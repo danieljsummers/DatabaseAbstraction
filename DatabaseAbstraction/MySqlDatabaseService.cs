@@ -36,6 +36,7 @@ namespace DatabaseAbstraction {
         /// <exception cref="System.InvalidOperationException">
         /// MySQL does not support sequences
         /// </exception>
+        // FIME: wrap mysql_last_insert_id
         public int Sequence(string sequenceName) {
             throw new InvalidOperationException("MySQL does not support sequences");
         }

@@ -35,6 +35,7 @@ namespace DatabaseAbstraction {
         /// <exception cref="System.InvalidOperationException">
         /// SQL Server does not support sequences
         /// </exception>
+        // FIXME: need to figure out how to get identity values
         public int Sequence(string sequenceName) {
             throw new InvalidOperationException("SQL Server does not support sequences");
         }
