@@ -2,27 +2,26 @@ namespace DatabaseAbstraction {
 
     using System;
     using DatabaseAbstraction.Interfaces;
-    using MySql.Data.MySqlClient;
+    using System.Data.SQLite;
 
     /// <summary>
-    /// A MySQL implementation of a database service.
+    /// A SQL Server implementation of a database service.
     /// </summary>
-    public class MySqlDatabaseService : DatabaseService, IDatabaseService {
+    public class SQLiteDatabaseService : DatabaseService, IDatabaseService {
 
         /// <summary>
-        /// Constructor for the MySQL database service.
+        /// Constructor for the SQL Server database service.
         /// </summary>
         /// <param name="classes">
         /// Classes that contain query libraries to use when initializing the service.
         /// </param>
-        public MySqlDatabaseService(string connectionString, params IQueryLibrary[] classes)
+        public SQLiteDatabaseService(string connectionString, params IQueryLibrary[] classes)
             : base(classes) {
 
             // Connect to the database.
-            Connection = new MySqlConnection(connectionString);
+            Connection = new SQLiteConnection(connectionString);
             Connection.Open();
         }
-
 
         /// <summary>
         /// Get the next value in a database sequence 
@@ -31,14 +30,14 @@ namespace DatabaseAbstraction {
         /// The name of the sequence
         /// </param>
         /// <returns>
-        /// An exception; MySQL does not support sequences
+        /// An exception; SQL Server does not support sequences
         /// </returns>
         /// <exception cref="System.InvalidOperationException">
-        /// MySQL does not support sequences
+        /// SQL Server does not support sequences
         /// </exception>
-        // FIME: wrap mysql_last_insert_id
+        // FIXME: wrap sqlite_insert_id()
         public int Sequence(string sequenceName) {
-            throw new InvalidOperationException("MySQL does not support sequences");
+            throw new InvalidOperationException("SQLite does not support sequences");
         }
     }
 }
