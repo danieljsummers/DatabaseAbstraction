@@ -1,5 +1,5 @@
-﻿namespace DatabaseAbstraction.Contact.Queries {
-
+﻿namespace DatabaseAbstraction.Contact.Queries
+{
     using System.Collections.Generic;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
@@ -9,8 +9,8 @@
     /// This contains queries necessary for the contact information models.
     /// It uses the "contact." query name space.
     /// </summary>
-    public sealed class ContactQueryLibrary : IQueryLibrary {
-
+    public sealed class ContactQueryLibrary : IQueryLibrary
+    {
         private static string PREFIX = "contact.";
 
         /// <summary>
@@ -19,8 +19,8 @@
         /// <returns>
         /// Queries needed for the common contact information module.
         /// </returns>
-        public void GetQueries(Dictionary<string, DatabaseQuery> queries) {
-
+        public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+        {
             // Insert.
             addInsert(queries);
             addInsertAddress(queries);
@@ -59,8 +59,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addInsert(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addInsert(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "insert";
 
             queries.Add(name, new DatabaseQuery());
@@ -75,8 +75,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addInsertAddress(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addInsertAddress(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "insert.address";
 
             queries.Add(name, new DatabaseQuery());
@@ -102,8 +102,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addInsertPhone(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addInsertPhone(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "insert.phone";
 
             queries.Add(name, new DatabaseQuery());
@@ -130,8 +130,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addInsertEmail(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addInsertEmail(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "insert.email";
 
             queries.Add(name, new DatabaseQuery());
@@ -154,8 +154,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addGet(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addGet(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "get";
 
             queries.Add(name, new DatabaseQuery());
@@ -174,8 +174,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addGetAddress(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addGetAddress(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "get.address";
 
             queries.Add(name, new DatabaseQuery());
@@ -198,8 +198,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addGetPhone(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addGetPhone(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "get.phone";
 
             queries.Add(name, new DatabaseQuery());
@@ -221,8 +221,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addGetEmail(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addGetEmail(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "get.email";
 
             queries.Add(name, new DatabaseQuery());
@@ -244,8 +244,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addUpdateAddress(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addUpdateAddress(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "update.address";
 
             queries.Add(name, new DatabaseQuery());
@@ -275,8 +275,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addUpdateAddressDeleteOld(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addUpdateAddressDeleteOld(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "update.address.delete_old";
 
             queries.Add(name, new DatabaseQuery());
@@ -296,8 +296,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addUpdatePhone(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addUpdatePhone(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "update.phone";
 
             queries.Add(name, new DatabaseQuery());
@@ -327,8 +327,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addUpdatePhoneDeleteOld(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addUpdatePhoneDeleteOld(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "update.phone.delete_old";
 
             queries.Add(name, new DatabaseQuery());
@@ -348,8 +348,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addUpdateEmail(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addUpdateEmail(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "update.email";
 
             queries.Add(name, new DatabaseQuery());
@@ -372,8 +372,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addUpdateEmailDeleteOld(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addUpdateEmailDeleteOld(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "update.email.delete_old";
 
             queries.Add(name, new DatabaseQuery());
@@ -393,8 +393,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addDelete(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addDelete(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "delete";
 
             queries.Add(name, new DatabaseQuery());
@@ -412,8 +412,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addDeleteAddress(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addDeleteAddress(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "delete.address";
 
             queries.Add(name, new DatabaseQuery());
@@ -431,8 +431,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addDeletePhone(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addDeletePhone(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "delete.phone";
 
             queries.Add(name, new DatabaseQuery());
@@ -450,8 +450,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addDeleteEmail(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addDeleteEmail(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "delete.email";
 
             queries.Add(name, new DatabaseQuery());
@@ -469,8 +469,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addListStates(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addListStates(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "list.states";
 
             queries.Add(name, new DatabaseQuery());
@@ -492,8 +492,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addListContactTypesPhone(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addListContactTypesPhone(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "list.contact_types.phone";
 
             queries.Add(name, new DatabaseQuery());
@@ -511,8 +511,8 @@
         /// <param name="queries">
         /// The query library being built.
         /// </param>
-        private void addListContactTypesEmail(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addListContactTypesEmail(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "list.contact_types.email";
 
             queries.Add(name, new DatabaseQuery());

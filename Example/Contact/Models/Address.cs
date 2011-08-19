@@ -1,5 +1,5 @@
-﻿namespace DatabaseAbstraction.Contact.Models {
-
+﻿namespace DatabaseAbstraction.Contact.Models
+{
     using System.Collections.Generic;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
@@ -7,8 +7,8 @@
     /// <summary>
     /// This represents a single physical or mailing address.
     /// </summary>
-    public sealed class Address : IDatabaseModel {
-
+    public sealed class Address : IDatabaseModel
+    {
         /// <summary>
         /// The ID of this address
         /// </summary>
@@ -52,7 +52,8 @@
         /// <summary>
         /// Constructor for an empty address entry
         /// </summary>
-        public Address() {
+        public Address()
+        {
             State = new State();
         }
 
@@ -62,8 +63,8 @@
         /// <param name="reader">
         /// An open data reader, pointing to the row to use
         /// </param>
-        public Address(IDataReader reader) {
-
+        public Address(IDataReader reader)
+        {
             ID = reader.GetInt32(reader.GetOrdinal("address_id"));
             ContactID = reader.GetInt32(reader.GetOrdinal("contact_id"));
             StreetAddress = reader.GetString(reader.GetOrdinal("address"));
@@ -72,7 +73,8 @@
             IsPhysical = reader.GetBoolean(reader.GetOrdinal("physical_flag"));
             IsMailing = reader.GetBoolean(reader.GetOrdinal("mailing_flag"));
 
-            State = new State {
+            State = new State
+            {
                 ID = reader.GetInt32(reader.GetOrdinal("state_id")),
                 Code = reader.GetString(reader.GetOrdinal("state_code")),
                 Name = reader.GetString(reader.GetOrdinal("state"))
@@ -85,8 +87,8 @@
         /// <returns>
         /// The key/value pairs representing the properties of this object
         /// </returns>
-        public Dictionary<string, object> DataParameters() {
-
+        public Dictionary<string, object> DataParameters()
+        {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             parameters.Add("address_id", ID);

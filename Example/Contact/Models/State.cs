@@ -1,10 +1,10 @@
-﻿namespace DatabaseAbstraction.Contact.Models {
-
+﻿namespace DatabaseAbstraction.Contact.Models
+{
     /// <summary>
     /// This represents a state
     /// </summary>
-    public struct State {
-
+    public struct State
+    {
         /// <summary>
         /// The ID for this state
         /// </summary>
