@@ -49,8 +49,6 @@
 
             // Lists.
             addListStates(queries);
-            addListContactTypesPhone(queries);
-            addListContactTypesEmail(queries);
         }
 
         /// <summary>
@@ -477,51 +475,13 @@
 
             queries[name].SQL =
                 @"SELECT
-                    r_state_id                        AS id,
-                    description || '(' || code || ')' AS description
+                    r_state_id                         AS id,
+                    description || ' (' || code || ')' AS description
                 FROM r_state
                 WHERE country_id = @country_id
                 ORDER BY description";
 
             queries[name].Parameters.Add("country_id", DbType.Int32);
-        }
-
-        /// <summary>
-        /// contact.list.contact_types.phone
-        /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addListContactTypesPhone(Dictionary<string, DatabaseQuery> queries)
-        {
-            string name = PREFIX + "list.contact_types.phone";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT r_contact_type_id AS id, description
-                FROM r_contact_type
-                WHERE phone_flag = TRUE
-                ORDER BY sort_order";
-        }
-
-        /// <summary>
-        /// contact.list.contact_types.email
-        /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addListContactTypesEmail(Dictionary<string, DatabaseQuery> queries)
-        {
-            string name = PREFIX + "list.contact_types.email";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT r_contact_type_id AS id, description
-                FROM r_contact_type
-                WHERE email_flag = TRUE
-                ORDER BY sort_order";
         }
     }
 }
