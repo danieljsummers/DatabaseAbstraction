@@ -1,5 +1,6 @@
 ﻿namespace DatabaseAbstraction.Contact.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Text;
@@ -43,21 +44,15 @@
 
             // Insert the addresses.
             foreach (Address address in contact.Addresses)
-            {
                 InsertAddress(address, contact.ID);
-            }
 
             // Insert the phone numbers.
             foreach (PhoneNumber phone in contact.PhoneNumbers)
-            {
                 InsertPhone(phone, contact.ID);
-            }
 
             // Insert the e-mail address.
             foreach (EmailAddress email in contact.EmailAddresses)
-            {
                 InsertEmail(email, contact.ID);
-            }
         }
 
         /// <summary>
@@ -146,12 +141,8 @@
         private void GetAddress(ContactInformation contact, Dictionary<string, object> parameters)
         {
             using (IDataReader data = Data.Select("contact.get.address", parameters))
-            {
                 while (data.Read())
-                {
                     contact.Addresses.Add(new Address(data));
-                }
-            }
         }
 
         /// <summary>
@@ -166,12 +157,8 @@
         private void GetPhones(ContactInformation contact, Dictionary<string, object> parameters)
         {
             using (IDataReader data = Data.Select("contact.get.phone", parameters))
-            {
                 while (data.Read())
-                {
                     contact.PhoneNumbers.Add(new PhoneNumber(data));
-                }
-            }
         }
 
         /// <summary>
@@ -186,12 +173,8 @@
         private void GetEmails(ContactInformation contact, Dictionary<string, object> parameters)
         {
             using (IDataReader data = Data.Select("contact.get.email", parameters))
-            {
                 while (data.Read())
-                {
                     contact.EmailAddresses.Add(new EmailAddress(data));
-                }
-            }
         }
 
         /// <summary>
@@ -220,13 +203,10 @@
             foreach (Address address in contact.Addresses)
             {
                 if (0 == address.ID)
-                {
                     InsertAddress(address, contact.ID);
-                }
                 else
-                {
                     Data.Update("contact.update.address", address);
-                }
+
                 addressIDs.Append(",");
                 addressIDs.Append(address.ID);
             }
@@ -249,13 +229,10 @@
             foreach (PhoneNumber phone in contact.PhoneNumbers)
             {
                 if (0 == phone.ID)
-                {
                     InsertPhone(phone, contact.ID);
-                }
                 else
-                {
                     Data.Update("contact.update.phone", phone);
-                }
+
                 phoneIDs.Append(",");
                 phoneIDs.Append(phone.ID);
             }
@@ -278,13 +255,10 @@
             foreach (EmailAddress email in contact.EmailAddresses)
             {
                 if (0 == email.ID)
-                {
                     InsertEmail(email, contact.ID);
-                }
                 else
-                {
                     Data.Update("contact.update.email", email);
-                }
+
                 emailIDs.Append(",");
                 emailIDs.Append(email.ID);
             }
@@ -322,13 +296,9 @@
 
             // FIXME: hard-coded USA
             using (IDataReader data = Data.Select("contact.list.states", DbUtils.SingleParameter("country_id", 1)))
-            {
                 while (data.Read())
-                {
                     list.Add(new KeyValuePair<int, string>(data.GetInt32(data.GetOrdinal("id")),
                             data.GetString(data.GetOrdinal("description"))));
-                }
-            }
 
             return list;
         }
@@ -339,18 +309,15 @@
         /// <returns>
         /// A list of key/value pairs of phone contact types
         /// </returns>
-        public List<KeyValuePair<int, string>> GetPhoneContactTypeList()
+        public Dictionary<string, string> GetPhoneContactTypeList()
         {
-            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            Dictionary<string, string> list = new Dictionary<string, string>();
 
-            using (IDataReader data = Data.Select("contact.list.contact_types.phone"))
-            {
-                while (data.Read())
-                {
-                    list.Add(new KeyValuePair<int, string>(data.GetInt32(data.GetOrdinal("id")),
-                            data.GetString(data.GetOrdinal("description"))));
-                }
-            }
+            string[] names = Enum.GetNames(typeof(ContactType));
+            int[] values = (int[])Enum.GetValues(typeof(ContactType));
+
+            for (int index = 0; index < names.Length; index++)
+                list.Add(values[index].ToString(), names[index]);
 
             return list;
         }
@@ -361,17 +328,17 @@
         /// <returns>
         /// A list of key/value pairs of e-mail addresses
         /// </returns>
-        public List<KeyValuePair<int, string>> GetEmailContactTypeList()
+        public Dictionary<string, string> GetEmailContactTypeList()
         {
-            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            Dictionary<string, string> list = new Dictionary<string, string>();
 
-            using (IDataReader data = Data.Select("contact.list.contact_types.email"))
+            string[] names = Enum.GetNames(typeof(ContactType));
+            int[] values = (int[])Enum.GetValues(typeof(ContactType));
+
+            for (int index = 0; index < names.Length; index++)
             {
-                while (data.Read())
-                {
-                    list.Add(new KeyValuePair<int, string>(data.GetInt32(data.GetOrdinal("id")),
-                            data.GetString(data.GetOrdinal("description"))));
-                }
+                if (("Cell".Equals(names[index])) || ("Fax".Equals(names[index]))) continue;
+                list.Add(values[index].ToString(), names[index]);
             }
 
             return list;
