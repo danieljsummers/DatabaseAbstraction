@@ -13,4 +13,4 @@ Example/bin/Debug
 Example/bin/Release/DatabaseAbstraction.dll
 Example/bin/Release/MySql.*
 Example/bin/Release/Npgsql.*
-Example/bin/Release/nunit.* 
+Example/bin/Release/nunit.*
