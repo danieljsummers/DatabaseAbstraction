@@ -9,6 +9,7 @@ namespace DatabaseAbstraction
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
+    using DatabaseAbstraction.Utils.UnitTest;
     using NUnit.Framework;
 
     #endregion
@@ -23,14 +24,21 @@ namespace DatabaseAbstraction
     /// retrieve these for verification.  Remember that, unless instantiated statically, each test run will obtain a
     /// new version of this service.
     /// 
-    /// It will create the query library the same way that the actual implementation do, and check for validity; a
+    /// It will create the query library the same way that the actual implementations do, and check for validity; a
     /// missing query will throw a KeyNotFoundException, and a mismatch (ex. a "delete" query that starts with
     /// "SELECT") will throw a NotSupportedException.
+    /// 
+    /// Thanks to Phil Haack and the Subtext project, this now has the ability to return data.  Set up a StubDataReader
+    /// with one or more StubResultSet objects; each call to either Select() or SelectOne() will advance this to the
+    /// next result set.  Keep in mind that there is only one instance per class, so once the reader is advanced to the
+    /// next result set, the data in the previous ones is gone.
     /// 
     /// (This methodology differs from the "expect" functionality of some other mock frameworks; instead of setting up
     /// expectations and then executing the test, the workflow is to execute the test, then check that the right
     /// quer(y|ies) were executed and the correct parameters were passed.  See the Assertions region for convenience
     /// methods to do this.)
+    /// 
+    /// See the Documentation wiki at http://dbabstraction.codeplex.com for full documentation on unit testing. (soon)
     /// </remarks>
     public class MockDatabaseService : IDatabaseService
     {
@@ -46,6 +54,11 @@ namespace DatabaseAbstraction
         /// </summary>
         private List<ExecutedQuery> ExecutedQueries { get; set; }
 
+        /// <summary>
+        /// The data returned by this instance
+        /// </summary>
+        private StubDataReader Data { get; set; }
+
         #endregion
 
         #region Constructor
@@ -54,18 +67,20 @@ namespace DatabaseAbstraction
         /// Construct the database service
         /// </summary>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary[]"/> classes to use when building the query library
+        /// The <see cref="IQueryLibrary"/> classes to use when building the query library
         /// </param>
-        public MockDatabaseService(params IQueryLibrary[] classes)
+        public MockDatabaseService(StubDataReader data, params IQueryLibrary[] classes)
         {
-            // Fill the query library.
+            Data = data;
+
+            // Fill the query library
             Queries = new Dictionary<string, DatabaseQuery>();
             foreach (IQueryLibrary library in classes) library.GetQueries(Queries);
 
-            // Add database queries.
+            // Add database queries
             (new DatabaseQueryLibrary()).GetQueries(Queries);
 
-            // Set the name property in every query.
+            // Set the name property in every query
             foreach (KeyValuePair<string, DatabaseQuery> query in Queries) query.Value.Name = query.Key;
 
             // Initialize the executed query list
@@ -89,6 +104,9 @@ namespace DatabaseAbstraction
                 throw new NotSupportedException(String.Format("Query {0} is not a select statement", queryName));
 
             RecordQuery(queryName, "select", parameters);
+
+            if (Data.NextResult())
+                return Data;
 
             return null;
         }

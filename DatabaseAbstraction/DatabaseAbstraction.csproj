@@ -55,6 +55,7 @@
       <HintPath>bin\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -71,6 +72,9 @@
     <Compile Include="SQLiteDatabaseService.cs" />
     <Compile Include="Utils\DbUtils.cs" />
     <Compile Include="Utils\NullUtils.cs" />
+    <Compile Include="Utils\Test\StubDataReader.cs" />
+    <Compile Include="Utils\Test\StubDataRow.cs" />
+    <Compile Include="Utils\Test\StubResultSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
