@@ -27,7 +27,7 @@ namespace DatabaseAbstraction
         /// This provides the flexibility to put at many queries in the static library as the implmentor desires,
         /// while allowing them to add more queries to each instance of the service.
         /// </remarks>
-        protected static Dictionary<string, DatabaseQuery> StaticQueries
+        public static Dictionary<string, DatabaseQuery> StaticQueries
         {
             get
             {

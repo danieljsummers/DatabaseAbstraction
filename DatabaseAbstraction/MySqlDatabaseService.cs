@@ -5,7 +5,7 @@ namespace DatabaseAbstraction
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    /// A MySQL implementation of a database service.
+    /// A MySQL implementation of a database service
     /// </summary>
     public class MySqlDatabaseService : DatabaseService, IDatabaseService
     {

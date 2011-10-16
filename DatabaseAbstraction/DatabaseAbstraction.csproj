@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="Npgsql, Version=2.0.9.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7">
       <SpecificVersion>False</SpecificVersion>
@@ -55,29 +56,38 @@
       <HintPath>bin\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="OdbcDatabaseService.cs" />
+    <Compile Include="Providers\DatabaseAbstractionMembershipProvider.cs" />
     <Compile Include="Interfaces\IDatabaseModel.cs" />
     <Compile Include="Interfaces\IDatabaseService.cs" />
     <Compile Include="Interfaces\IQueryLibrary.cs" />
     <Compile Include="Models\DatabaseQuery.cs" />
     <Compile Include="PostgresDatabaseService.cs" />
+    <Compile Include="Providers\DatabaseAbstractionRoleProvider.cs" />
     <Compile Include="Queries\DatabaseQueryLibrary.cs" />
     <Compile Include="DatabaseService.cs" />
     <Compile Include="MySqlDatabaseService.cs" />
+    <Compile Include="Queries\ProviderQueryLibrary.cs" />
     <Compile Include="SqlDatabaseService.cs" />
     <Compile Include="MockDatabaseService.cs" />
     <Compile Include="SQLiteDatabaseService.cs" />
     <Compile Include="Utils\DbUtils.cs" />
     <Compile Include="Utils\NullUtils.cs" />
+    <Compile Include="Utils\ProviderUtils.cs" />
     <Compile Include="Utils\Test\StubDataReader.cs" />
     <Compile Include="Utils\Test\StubDataRow.cs" />
     <Compile Include="Utils\Test\StubResultSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Scripts\PostgresMembershipTables.sql" />
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

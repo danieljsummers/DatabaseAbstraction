@@ -1,13 +1,15 @@
-namespace DatabaseAbstraction.Utils {
-
+namespace DatabaseAbstraction.Utils
+{
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using DatabaseAbstraction.Interfaces;
 
     /// <summary>
     /// Utility methods for use by services and models that utilize Database Abstraction
     /// </summary>
-    public static class DbUtils {
+    public static class DbUtils
+    {
 
         /// <summary>
         /// Create a single parameter for a database abstraction query
@@ -21,10 +23,35 @@ namespace DatabaseAbstraction.Utils {
         /// <returns>
         /// A parameter list suitable for use with the Database Abstraction methods
         /// </returns>
-        public static Dictionary<string, object> SingleParameter(string name, object parameter) {
+        public static Dictionary<string, object> SingleParameter(string name, object parameter)
+        {
             Dictionary<string, object> list = new Dictionary<string, object>();
             list.Add(name, parameter);
             return list;
+        }
+
+        /// <summary>
+        /// Get a database connection
+        /// </summary>
+        /// <returns>
+        /// A database connection (type derived from connection string)
+        /// </returns>
+        public static IDatabaseService CreateDatabaseService(string connectionString, params IQueryLibrary[] queries)
+        {
+            IDatabaseService service = null;
+
+            if (connectionString.ToLower().Contains("pgsql"))
+                service = new PostgresDatabaseService(connectionString, queries);
+            else if (connectionString.ToLower().Contains("mysql"))
+                service = new MySqlDatabaseService(connectionString, queries);
+            else if (connectionString.ToLower().Contains("sqlserver"))
+                service = new SqlDatabaseService(connectionString, queries);
+            else if (connectionString.ToLower().Contains("dsn="))
+                service = new OdbcDatabaseService(connectionString, queries);
+            else if (connectionString.ToLower().Contains("data="))
+                service = new SQLiteDatabaseService(connectionString, queries);
+
+            return service;
         }
     }
 }
