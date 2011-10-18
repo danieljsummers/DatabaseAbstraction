@@ -1,14 +1,13 @@
-namespace DatabaseAbstraction.Models {
-
-    using System;
+namespace DatabaseAbstraction.Models
+{
     using System.Collections.Generic;
     using System.Data;
 
     /// <summary>
     /// A database query.
     /// </summary>
-    public class DatabaseQuery {
-
+    public class DatabaseQuery
+    {
         /// <summary>
         /// The name by which the query is known.
         /// </summary>
@@ -27,7 +26,8 @@ namespace DatabaseAbstraction.Models {
         /// <summary>
         /// Constructor for the query object.
         /// </summary>
-        public DatabaseQuery() {
+        public DatabaseQuery()
+        {
             Parameters = new Dictionary<string, DbType>();
         }
     }

@@ -10,7 +10,6 @@ namespace DatabaseAbstraction.Utils
     /// </summary>
     public static class DbUtils
     {
-
         /// <summary>
         /// Create a single parameter for a database abstraction query
         /// </summary>

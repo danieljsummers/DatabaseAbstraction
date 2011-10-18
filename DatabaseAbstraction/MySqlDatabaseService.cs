@@ -1,7 +1,8 @@
 namespace DatabaseAbstraction
 {
-    using System;
+    using System.Data;
     using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Utils;
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -10,10 +11,10 @@ namespace DatabaseAbstraction
     public class MySqlDatabaseService : DatabaseService, IDatabaseService
     {
         /// <summary>
-        /// Constructor for the MySQL database service.
+        /// Constructor for the MySQL database service
         /// </summary>
         /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service.
+        /// Classes that contain query libraries to use when initializing the service
         /// </param>
         public MySqlDatabaseService(string connectionString, params IQueryLibrary[] classes)
             : base(classes)
@@ -26,19 +27,21 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Get the next value in a database sequence 
         /// </summary>
+        /// <remarks>
+        /// This uses the SHOW TABLE STATUS command in MySQL.  MySQL does not support traditional sequences like
+        /// PostgreSQL or Oracle; this will return the next value that will be assigned, but does not reserve it.
+        /// </remarks>
         /// <param name="sequenceName">
         /// The name of the sequence
         /// </param>
         /// <returns>
-        /// An exception; MySQL does not support sequences
+        /// The next AUTO_INCREMENT value for the table specified
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// MySQL does not support sequences
-        /// </exception>
-        // FIME: wrap mysql_last_insert_id
-        public int Sequence(string sequenceName)
+        public override int Sequence(string sequenceName)
         {
-            throw new InvalidOperationException("MySQL does not support sequences");
+            using (IDataReader reader = SelectOne("database.sequence.mysql",
+                                                  DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("auto_increment")) : 0;
         }
     }
 }

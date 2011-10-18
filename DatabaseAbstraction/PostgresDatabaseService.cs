@@ -1,21 +1,20 @@
 namespace DatabaseAbstraction
 {
-    using System;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
     using Npgsql;
 
     /// <summary>
-    /// A PostgreSQL implementation of a database service.
+    /// A PostgreSQL implementation of a database service
     /// </summary>
     public class PostgresDatabaseService : DatabaseService, IDatabaseService
     {
         /// <summary>
-        /// Constructor for the PostgreSQL database service.
+        /// Constructor for the PostgreSQL database service
         /// </summary>
         /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service.
+        /// Classes that contain query libraries to use when initializing the service
         /// </param>
         public PostgresDatabaseService(string connectionString, params IQueryLibrary[] classes)
             : base(classes)
@@ -34,21 +33,11 @@ namespace DatabaseAbstraction
         /// <returns>
         /// The value of the sequence
         /// </returns>
-        public int Sequence(string sequenceName)
+        public override int Sequence(string sequenceName)
         {
             using (IDataReader reader = SelectOne("database.sequence.postgres",
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
-            {
-                if (reader.NextResult())
-                {
-                    reader.Read();
-                    return Convert.ToInt32(reader["sequence_value"]);
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) : 0;
         }
     }
 }

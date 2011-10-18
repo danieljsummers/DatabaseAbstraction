@@ -1,5 +1,5 @@
-namespace DatabaseAbstraction.Queries {
-
+namespace DatabaseAbstraction.Queries
+{
     using System.Collections.Generic;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
@@ -9,16 +9,25 @@ namespace DatabaseAbstraction.Queries {
     /// This contains queries to support the database.
     /// It uses the "database" query namespace.
     /// </summary>
-    public sealed class DatabaseQueryLibrary : IQueryLibrary {
-
+    public sealed class DatabaseQueryLibrary : IQueryLibrary
+    {
         private static string PREFIX = "database.";
 
         #region Main
 
-        public void GetQueries(Dictionary<string, DatabaseQuery> queries) {
-
-            // Select.
+        /// <summary>
+        /// Fill the query library with queries from this class
+        /// </summary>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
+        public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+        {
+            // Select
             addSequencePostgres(queries);
+            addSequenceSqlServer(queries);
+            addSequenceMySql(queries);
+            addSequenceGeneric(queries);
         }
 
         #endregion
@@ -31,8 +40,8 @@ namespace DatabaseAbstraction.Queries {
         /// <param name="queries">
         /// The query library being built
         /// </param>
-        private void addSequencePostgres(Dictionary<string, DatabaseQuery> queries) {
-
+        private void addSequencePostgres(Dictionary<string, DatabaseQuery> queries)
+        {
             string name = PREFIX + "sequence.postgres";
 
             queries.Add(name, new DatabaseQuery());
@@ -42,19 +51,53 @@ namespace DatabaseAbstraction.Queries {
         }
 
         /// <summary>
-        /// database.sequence.oracle
+        /// database.sequence.sqlserver
         /// </summary>
         /// <param name="queries">
         /// The query library being built
         /// </param>
-        private void addSequenceOracle(Dictionary<string, DatabaseQuery> queries) {
-
-            string name = PREFIX + "sequence.oracle";
+        private void addSequenceSqlServer(Dictionary<string, DatabaseQuery> queries)
+        {
+            string name = PREFIX + "sequence.sqlserver";
 
             queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SELECT []sequence_name.NEXTVAL AS sequence_value FROM DUAL";
+            queries[name].SQL = "SELECT IDENT_CURRENT('[]sequence_name') AS sequence_value";
 
             queries[name].Parameters.Add("[]sequence_name", DbType.String);
+        }
+
+        /// <summary>
+        /// database.sequence.mysql
+        /// </summary>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
+        private void addSequenceMySql(Dictionary<string, DatabaseQuery> queries)
+        {
+            string name = PREFIX + "sequence.mysql";
+
+            queries.Add(name, new DatabaseQuery());
+            queries[name].SQL = "SHOW TABLE STATUS LIKE '[]sequence_name'";
+
+            queries[name].Parameters.Add("[]sequence_name", DbType.String);
+        }
+
+        /// <summary>
+        /// database.sequence.generic
+        /// </summary>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
+        private void addSequenceGeneric(Dictionary<string, DatabaseQuery> queries)
+        {
+            string name = PREFIX + "sequence.generic";
+
+            queries.Add(name, new DatabaseQuery());
+            queries[name].SQL = @"SELECT MAX([]primary_key_name) AS max_pk
+                FROM []table_name";
+
+            queries[name].Parameters.Add("[]primary_key_name", DbType.String);
+            queries[name].Parameters.Add("[]table_name", DbType.String);
         }
 
         #endregion

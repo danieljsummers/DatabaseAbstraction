@@ -1,8 +1,9 @@
 namespace DatabaseAbstraction
 {
-    using System;
+    using System.Data;
     using System.Data.SqlClient;
     using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Utils;
 
     /// <summary>
     /// A SQL Server implementation of a database service.
@@ -10,10 +11,10 @@ namespace DatabaseAbstraction
     public class SqlDatabaseService : DatabaseService, IDatabaseService
     {
         /// <summary>
-        /// Constructor for the SQL Server database service.
+        /// Constructor for the SQL Server database service
         /// </summary>
         /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service.
+        /// Classes that contain query libraries to use when initializing the service
         /// </param>
         public SqlDatabaseService(string connectionString, params IQueryLibrary[] classes)
             : base(classes)
@@ -26,19 +27,23 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Get the next value in a database sequence 
         /// </summary>
+        /// <remarks>
+        /// Technically, an IDENTITY column in SQL Server has its values assigned by the database.  This implementation
+        /// retrieves the current IDENTITY value and increments it by 1.  Note that SQL Server IDENTITY values can have
+        /// a different increment; however, this will mimic the traditional implementation of sequences in other
+        /// databases.
+        /// </remarks>
         /// <param name="sequenceName">
         /// The name of the sequence
         /// </param>
         /// <returns>
-        /// An exception; SQL Server does not support sequences
+        /// The current identity value plus one; zero if nothing found
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// SQL Server does not support sequences
-        /// </exception>
-        // FIXME: need to figure out how to get identity values
-        public int Sequence(string sequenceName)
+        public override int Sequence(string sequenceName)
         {
-            throw new InvalidOperationException("SQL Server does not support sequences");
+            using (IDataReader reader = SelectOne("database.sequence.sqlserver",
+                                                  DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) + 1 : 0;
         }
     }
 }

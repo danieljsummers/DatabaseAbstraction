@@ -1,5 +1,5 @@
-namespace DatabaseAbstraction.Interfaces {
-
+namespace DatabaseAbstraction.Interfaces
+{
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -7,14 +7,13 @@ namespace DatabaseAbstraction.Interfaces {
     /// <summary>
     /// This interface describes the functions that must exist in a DatabaseService implementation.
     /// </summary>
-    public interface IDatabaseService : IDisposable {
-
+    public interface IDatabaseService : IDisposable
+    {
         /// <summary>
         /// Select a result set
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <returns>
         /// A <see cref="System.Data.IDataReader"/> with the results
@@ -25,8 +24,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Select a result set
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="parameters">
         /// The parameters to use in executing the query
@@ -40,8 +38,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Select a result set
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="model">
         /// The model from which parameters may be obtained
@@ -55,8 +52,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Select a single result
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <returns>
         /// A <see cref="System.Data.IDataReader"/> with the results
@@ -67,8 +63,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Select a single result
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="parameters">
         /// The parameters to use in executing the query
@@ -82,8 +77,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Select a single result
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="model">
         /// The model from which parameters may be obtained
@@ -97,8 +91,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Insert data
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="parameters">
         /// The parameters to use in executing the query
@@ -109,8 +102,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Insert data
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="model">
         /// The <see cref=""/> model from which parameters may be obtained
@@ -121,8 +113,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Update data
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="parameters">
         /// The parameters to use in executing the query
@@ -133,8 +124,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Update data
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="model">
         /// The model from which parameters may be obtained
@@ -145,8 +135,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Delete data
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the 
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="parameters">
         /// The parameters to use in executing the query
@@ -157,8 +146,7 @@ namespace DatabaseAbstraction.Interfaces {
         /// Delete data
         /// </summary>
         /// <param name="queryName">
-        /// The name of the query to execute from the
-        /// <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.IQueryLibrary"/>
+        /// The name of the query to execute as defined in a <see cref="IQueryLibrary"/> instance
         /// </param>
         /// <param name="model">
         /// The model from which parameters may be obtained

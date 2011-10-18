@@ -303,6 +303,36 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
+        /// Get a sequence
+        /// </summary>
+        /// <remarks>
+        /// This method is very dumb; it simply returns a value of MAX(PK) + 1.  However, for SQLite, and for ODBC
+        /// connections (source unknown), this is the best we can do.
+        /// </remarks>
+        /// <param name="sequenceName">
+        /// The primary key name and table name, separated by a pipe (ex. "table_id|table_name")
+        /// </param>
+        /// <returns>
+        /// The next value in sequence for the given primary key
+        /// </returns>
+        public virtual int Sequence(string sequenceName)
+        {
+            string[] inputParameters = sequenceName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (2 != inputParameters.Length)
+                throw new ArgumentException(String.Format(
+                    "Invalid generic sequence \"{0}\" received (must be of the format \"table_id|table_name\"",
+                    sequenceName));
+
+            Dictionary<string, object> parameters = new Dictionary<string,object>();
+            parameters.Add("[]primary_key_name", inputParameters[0]);
+            parameters.Add("[]table_name", inputParameters[1]);
+
+            using (IDataReader reader = SelectOne("database.sequence.generic", parameters))
+                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("max_pk")) + 1 : 0;
+        }
+
+        /// <summary>
         /// Get a query from the library 
         /// </summary>
         /// <param name="queryName">

@@ -1,5 +1,5 @@
-namespace DatabaseAbstraction.Interfaces {
-
+namespace DatabaseAbstraction.Interfaces
+{
     using System;
     using System.Collections.Generic;
     using DatabaseAbstraction.Models;
@@ -7,8 +7,8 @@ namespace DatabaseAbstraction.Interfaces {
     /// <summary>
     /// Defines the required methods for a query library
     /// </summary>
-    public interface IQueryLibrary {
-
+    public interface IQueryLibrary
+    {
         /// <summary>
         /// Get the queries associated with the query library
         /// </summary>
