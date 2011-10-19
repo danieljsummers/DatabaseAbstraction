@@ -182,6 +182,12 @@ namespace DatabaseAbstraction
             return -1;
         }
 
+        public int LastIdentity()
+        {
+            RecordQuery("", "identity", null);
+            return -1;
+        }
+
         private void RecordQuery(string queryName, string queryType, Dictionary<string, object> parameters)
         {
             ExecutedQueries.Add(new ExecutedQuery
@@ -287,6 +293,14 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
+        /// Assert that an identity query has been performed at least once
+        /// </summary>
+        public void AssertPerformedIdentity()
+        {
+            AssertPerformedType("", "identity");
+        }
+
+        /// <summary>
         /// Assert that the given query of the given type has been performed at least once
         /// </summary>
         /// <param name="queryName">
@@ -386,6 +400,17 @@ namespace DatabaseAbstraction
         public void AssertPerformedSequence(string queryName, int times)
         {
             AssertPerformedType(queryName, "sequence", times);
+        }
+
+        /// <summary>
+        /// Assert that an identity query has been executed a specific number of times
+        /// </summary>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        public void AssertPerformedIdentity(int times)
+        {
+            AssertPerformedType("", "identity", times);
         }
 
         /// <summary>
@@ -604,7 +629,7 @@ namespace DatabaseAbstraction
             public string QueryName { get; set; }
 
             /// <summary>
-            /// The type of the executed query (select|insert|update|delete|sequence)
+            /// The type of the executed query (select|insert|update|delete|sequence|identity)
             /// </summary>
             public string QueryType { get; set; }
 
