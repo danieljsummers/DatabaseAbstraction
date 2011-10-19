@@ -45,5 +45,17 @@ namespace DatabaseAbstraction
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) + 1 : 0;
         }
+
+        /// <summary>
+        /// Get the current SCOPE_IDENTITY value
+        /// </summary>
+        /// <returns>
+        /// The last value, or 0 if not found
+        /// </returns>
+        public int LastIdentity()
+        {
+            using (IDataReader reader = SelectOne("database.identity.sqlserver"))
+                return (reader.Read()) ? reader.GetInt32(0) : 0;
+        }
     }
 }

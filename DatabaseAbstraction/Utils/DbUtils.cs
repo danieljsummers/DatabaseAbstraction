@@ -32,23 +32,45 @@ namespace DatabaseAbstraction.Utils
         /// <summary>
         /// Get a database connection
         /// </summary>
+        /// <param name="connectionString">
+        /// The connection string to use when creating the connection
+        /// </param>
+        /// <param name="providerName">
+        /// The provider name (used to derive concrete class)
+        /// </param>
+        /// <param name="queries">
+        /// The <see cref="IQueryLibrary"/> classes with instance-level queries
+        /// </param>
         /// <returns>
-        /// A database connection (type derived from connection string)
+        /// A database connection of the applicable type
         /// </returns>
-        public static IDatabaseService CreateDatabaseService(string connectionString, params IQueryLibrary[] queries)
+        public static IDatabaseService CreateDatabaseService(string connectionString, string providerName,
+            params IQueryLibrary[] queries)
         {
             IDatabaseService service = null;
 
-            if (connectionString.ToLower().Contains("pgsql"))
-                service = new PostgresDatabaseService(connectionString, queries);
-            else if (connectionString.ToLower().Contains("mysql"))
-                service = new MySqlDatabaseService(connectionString, queries);
-            else if (connectionString.ToLower().Contains("sqlserver"))
-                service = new SqlDatabaseService(connectionString, queries);
-            else if (connectionString.ToLower().Contains("dsn="))
-                service = new OdbcDatabaseService(connectionString, queries);
-            else if (connectionString.ToLower().Contains("data="))
-                service = new SQLiteDatabaseService(connectionString, queries);
+            switch (providerName)
+            {
+                case "Npgsql":
+                    service = new PostgresDatabaseService(connectionString, queries);
+                    break;
+
+                case "MySql.Data.MySqlClient":
+                    service = new MySqlDatabaseService(connectionString, queries);
+                    break;
+
+                case "System.Data.SqlClient":
+                    service = new SqlDatabaseService(connectionString, queries);
+                    break;
+
+                case "System.Data.SQLite":
+                    service = new SQLiteDatabaseService(connectionString, queries);
+                    break;
+
+                case "System.Data.Odbc":
+                    service = new OdbcDatabaseService(connectionString, queries);
+                    break;
+            }
 
             return service;
         }

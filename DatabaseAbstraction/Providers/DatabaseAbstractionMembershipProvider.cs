@@ -44,6 +44,11 @@
         private string ConnectionString { get; set; }
 
         /// <summary>
+        /// The provider name for the connection
+        /// </summary>
+        private string ProviderName { get; set; }
+
+        /// <summary>
         /// The machine key, used to determine encryption keys
         /// </summary>
         private MachineKeySection machineKey;
@@ -481,7 +486,7 @@
             {
                 using (IDatabaseService database = Database())
                 {
-                    using (IDataReader reader = database.Select("provider.count.users",
+                    using (IDataReader reader = database.SelectOne("provider.count.users",
                         DbUtils.SingleParameter("application_name", ApplicationName)))
                     {
                         reader.Read();
@@ -525,7 +530,7 @@
             try
             {
                 using (IDatabaseService database = Database())
-                using (IDataReader reader = database.Select("provider.count.user.online", parameters))
+                using (IDataReader reader = database.SelectOne("provider.count.user.online", parameters))
                     if (reader.Read())
                         numOnline = reader.GetInt32(reader.GetOrdinal("user_count"));
             }
@@ -566,7 +571,7 @@
             {
                 using (IDatabaseService database = Database())
                 {
-                    using (IDataReader reader = database.Select("provider.retrieve_password",
+                    using (IDataReader reader = database.SelectOne("provider.retrieve_password",
                         GetDefaultParameters(username)))
                     {
                         if (!reader.Read())
@@ -641,7 +646,7 @@
                 parameters.Add("username", username);
                 parameters.Add("application_name", ApplicationName);
 
-                using (IDataReader reader = database.Select("provider.get.user", parameters))
+                using (IDataReader reader = database.SelectOne("provider.get.user", parameters))
                 {
                     if (!reader.Read())
                         return null;
@@ -678,7 +683,7 @@
             {
                 using (IDatabaseService database = Database())
                 {
-                    using (IDataReader reader = database.Select("provider.get.user.by_id",
+                    using (IDataReader reader = database.SelectOne("provider.get.user.by_id",
                         DbUtils.SingleParameter("user_id", providerUserKey)))
                     {
                         if (!reader.Read())
@@ -759,7 +764,7 @@
                     parameters.Add("email", email);
                     parameters.Add("application_name", ApplicationName);
 
-                    using (IDataReader reader = database.Select("provider.get.username_by_email", parameters))
+                    using (IDataReader reader = database.SelectOne("provider.get.username_by_email", parameters))
                     {
                         if (!reader.Read()) return String.Empty;
                         return NullUtils.GetString(reader, "username");
@@ -815,7 +820,7 @@
             {
                 using (IDatabaseService database = Database())
                 {
-                    using (IDataReader reader = database.Select("provider.retrieve_password",
+                    using (IDataReader reader = database.SelectOne("provider.retrieve_password",
                         GetDefaultParameters(username)))
                     {
                         if (!reader.Read())
@@ -835,7 +840,7 @@
                     // Set the password
                     Dictionary<string, object> parameters = GetDefaultParameters(username);
 
-                    parameters.Add("password", newPassword);
+                    parameters.Add("password", EncodePassword(newPassword));
                     parameters.Add("last_password_changed_date", DateTime.Now);
 
                     database.Update("provider.change_password", parameters);
@@ -927,7 +932,7 @@
 
             try
             {
-                using (IDataReader reader = database.Select("provider.validate_user", parameters))
+                using (IDataReader reader = database.SelectOne("provider.validate_user", parameters))
                 {
                     if (reader.Read())
                     {
@@ -989,7 +994,7 @@
             {
                 using (IDatabaseService database = Database())
                 {
-                    using (IDataReader reader = database.Select("provider.count.user.by_username",
+                    using (IDataReader reader = database.SelectOne("provider.count.user.by_username",
                         GetDefaultParameters(usernameToMatch)))
                     {
                         if (reader.Read())
@@ -1046,7 +1051,7 @@
             {
                 using (IDatabaseService database = Database())
                 {
-                    using (IDataReader reader = database.Select("provider.count.user.by_email", parameters))
+                    using (IDataReader reader = database.SelectOne("provider.count.user.by_email", parameters))
                     {
                         if (reader.Read())
                             totalRecords = reader.GetInt32(reader.GetOrdinal("user_count"));
@@ -1170,7 +1175,7 @@
 
             try
             {
-                using (IDataReader reader = database.Select("provider.failure_counts", GetDefaultParameters(username)))
+                using (IDataReader reader = database.SelectOne("provider.failure_counts", GetDefaultParameters(username)))
                 {
                     if (reader.Read())
                     {
@@ -1394,8 +1399,8 @@
             // caller has already populated it, and we don't need to pass it.  If it does not, we'll be using an
             // instance query library instead.
             return (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
-                ? DbUtils.CreateDatabaseService(ConnectionString)
-                : DbUtils.CreateDatabaseService(ConnectionString, new ProviderQueryLibrary());
+                ? DbUtils.CreateDatabaseService(ConnectionString, ProviderName)
+                : DbUtils.CreateDatabaseService(ConnectionString, ProviderName, new ProviderQueryLibrary());
         }
 
         #endregion

@@ -1,5 +1,6 @@
 namespace DatabaseAbstraction
 {
+    using System;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
@@ -38,6 +39,21 @@ namespace DatabaseAbstraction
             using (IDataReader reader = SelectOne("database.sequence.postgres",
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) : 0;
+        }
+
+        /// <summary>
+        /// Get the last inserted identity value (N/A for PostgreSQL)
+        /// </summary>
+        /// <returns>
+        /// Nothing but an exception
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// PostgreSQL does not support last identity; use Sequence() with the sequence name instead
+        /// </exception>
+        public int LastIdentity()
+        {
+            throw new InvalidOperationException(
+                "PostgreSQL does not support last identity; use Sequence() with the sequence name instead");
         }
     }
 }

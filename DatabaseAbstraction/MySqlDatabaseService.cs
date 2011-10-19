@@ -43,5 +43,17 @@ namespace DatabaseAbstraction
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("auto_increment")) : 0;
         }
+
+        /// <summary>
+        /// Get the last AUTO_INCREMENT inserted value
+        /// </summary>
+        /// <returns>
+        /// The last value, or 0 if not found
+        /// </returns>
+        public int LastIdentity()
+        {
+            using (IDataReader reader = SelectOne("database.identity.mysql"))
+                return (reader.Read()) ? reader.GetInt32(0) : 0;
+        }
     }
 }

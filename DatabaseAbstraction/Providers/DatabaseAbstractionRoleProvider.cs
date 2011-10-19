@@ -36,6 +36,11 @@
         private string ConnectionString { get; set; }
 
         /// <summary>
+        /// The name of the provider of the database connection
+        /// </summary>
+        private string ProviderName { get; set; }
+
+        /// <summary>
         /// Whether to write exceptions to the event log, or throw them to the caller
         /// </summary>
         public bool WriteExceptionsToEventLog { get; set; }
@@ -371,7 +376,7 @@
 
             try
             {
-                using (IDataReader reader = database.Select("provider.count.user_role", parameters))
+                using (IDataReader reader = database.SelectOne("provider.count.user_role", parameters))
                     return ((reader.Read()) && (0 < reader.GetInt32(reader.GetOrdinal("role_count"))));
             }
             catch (DataException exception)
@@ -457,7 +462,7 @@
         {
             try
             {
-                using (IDataReader reader = database.Select("provider.role_exists", GetDefaultParameters(rolename)))
+                using (IDataReader reader = database.SelectOne("provider.role_exists", GetDefaultParameters(rolename)))
                     return ((reader.Read()) && (0 < reader.GetInt32(reader.GetOrdinal("role_count"))));
             }
             catch (DataException exception)
@@ -539,8 +544,8 @@
             // caller has already populated it, and we don't need to pass it.  If it does not, we'll be using an
             // instance query library instead.
             return (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
-                ? DbUtils.CreateDatabaseService(ConnectionString)
-                : DbUtils.CreateDatabaseService(ConnectionString, new ProviderQueryLibrary());
+                ? DbUtils.CreateDatabaseService(ConnectionString, ProviderName)
+                : DbUtils.CreateDatabaseService(ConnectionString, ProviderName, new ProviderQueryLibrary());
         }
 
         #endregion

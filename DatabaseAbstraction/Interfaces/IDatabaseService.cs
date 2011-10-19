@@ -163,5 +163,13 @@ namespace DatabaseAbstraction.Interfaces
         /// The sequence value
         /// </returns>
         int Sequence(string sequenceName);
+
+        /// <summary>
+        /// Get the last auto-incremented / auto-numbered / identity value
+        /// </summary>
+        /// <returns>
+        /// The last identity value
+        /// </returns>
+        int LastIdentity();
     }
 }

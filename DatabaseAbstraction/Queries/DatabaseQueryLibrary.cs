@@ -28,6 +28,9 @@ namespace DatabaseAbstraction.Queries
             addSequenceSqlServer(queries);
             addSequenceMySql(queries);
             addSequenceGeneric(queries);
+            addIdentitySqlServer(queries);
+            addIdentityMySql(queries);
+            addIdentitySQLite(queries);
         }
 
         #endregion
@@ -98,6 +101,48 @@ namespace DatabaseAbstraction.Queries
 
             queries[name].Parameters.Add("[]primary_key_name", DbType.String);
             queries[name].Parameters.Add("[]table_name", DbType.String);
+        }
+
+        /// <summary>
+        /// database.identity.sqlserver
+        /// </summary>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
+        private void addIdentitySqlServer(Dictionary<string, DatabaseQuery> queries)
+        {
+            string name = PREFIX + "identity.sqlserver";
+
+            queries.Add(name, new DatabaseQuery());
+            queries[name].SQL = "SELECT SCOPE_IDENTITY()";
+        }
+
+        /// <summary>
+        /// database.identity.mysql
+        /// </summary>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
+        private void addIdentityMySql(Dictionary<string, DatabaseQuery> queries)
+        {
+            string name = PREFIX + "identity.mysql";
+
+            queries.Add(name, new DatabaseQuery());
+            queries[name].SQL = "SELECT LAST_INSERT_ID()";
+        }
+
+        /// <summary>
+        /// database.identity.sqlite
+        /// </summary>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
+        private void addIdentitySQLite(Dictionary<string, DatabaseQuery> queries)
+        {
+            string name = PREFIX + "identity.sqlite";
+
+            queries.Add(name, new DatabaseQuery());
+            queries[name].SQL = "SELECT last_insert_rowid()";
         }
 
         #endregion

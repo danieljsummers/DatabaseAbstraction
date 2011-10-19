@@ -1,5 +1,6 @@
 namespace DatabaseAbstraction
 {
+    using System.Data;
     using System.Data.SQLite;
     using DatabaseAbstraction.Interfaces;
 
@@ -20,6 +21,18 @@ namespace DatabaseAbstraction
             // Connect to the database.
             Connection = new SQLiteConnection(connectionString);
             Connection.Open();
+        }
+
+        /// <summary>
+        /// Get the last INTEGER PRIMARY KEY auto-incrementing inserted value
+        /// </summary>
+        /// <returns>
+        /// The last value, or 0 if not found
+        /// </returns>
+        public int LastIdentity()
+        {
+            using (IDataReader reader = SelectOne("database.identity.sqlite"))
+                return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }
 }

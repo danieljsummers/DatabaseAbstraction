@@ -55,7 +55,7 @@ namespace DatabaseAbstraction
         /// Constructor for this class.
         /// </summary>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary[]"/> classes to use when building the query library.
+        /// The <see cref="IQueryLibrary"/> classes to use when building the query library.
         /// </param>
         public DatabaseService(params IQueryLibrary[] classes)
         {
@@ -72,7 +72,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public IDataReader Select(string queryName)
+        public virtual IDataReader Select(string queryName)
         {
             return Select(queryName, new Dictionary<string, object>());
         }
@@ -89,7 +89,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public IDataReader Select(string queryName, Dictionary<string, object> parameters)
+        public virtual IDataReader Select(string queryName, Dictionary<string, object> parameters)
         {
             using (IDbCommand command = GetCommandForSelect(queryName, parameters))
                 return command.ExecuteReader();
@@ -102,13 +102,13 @@ namespace DatabaseAbstraction
         /// The name of the query
         /// </param>
         /// <param name="model">
-        /// The <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object
+        /// The <see cref="IDatabaseModel"/> model object
         /// to use for the query.
         /// </param>
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public IDataReader Select(string queryName, IDatabaseModel model)
+        public virtual IDataReader Select(string queryName, IDatabaseModel model)
         {
             return Select(queryName, model.DataParameters());
         }
@@ -122,7 +122,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public IDataReader SelectOne(string queryName)
+        public virtual IDataReader SelectOne(string queryName)
         {
             return SelectOne(queryName, new Dictionary<string, object>());
         }
@@ -139,7 +139,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public IDataReader SelectOne(string queryName, Dictionary<string, object> parameters)
+        public virtual IDataReader SelectOne(string queryName, Dictionary<string, object> parameters)
         {
             using (IDbCommand command = GetCommandForSelect(queryName, parameters))
                 return command.ExecuteReader(CommandBehavior.SingleRow);
@@ -152,13 +152,13 @@ namespace DatabaseAbstraction
         /// The name of the query
         /// </param>
         /// <param name="model">
-        /// The <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object
+        /// The <see cref="IDatabaseModel"/> model object
         /// to use for the query.
         /// </param>
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public IDataReader SelectOne(string queryName, IDatabaseModel model)
+        public virtual IDataReader SelectOne(string queryName, IDatabaseModel model)
         {
             return SelectOne(queryName, model.DataParameters());
         }
@@ -175,7 +175,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A command ready to execute
         /// </returns>
-        /// <exception cref="System.NotSupportedException">
+        /// <exception cref="NotSupportedException">
         /// If the query is not a SELECT statement
         /// </exception>
         private IDbCommand GetCommandForSelect(string queryName, Dictionary<string, object> parameters)
@@ -197,10 +197,10 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters to use for the command
         /// </param>
-        /// <exception cref="System.NotSupportedException">
+        /// <exception cref="NotSupportedException">
         /// If the query is not an INSERT statement
         /// </exception>
-        public void Insert(string queryName, Dictionary<string, object> parameters)
+        public virtual void Insert(string queryName, Dictionary<string, object> parameters)
         {
             DatabaseQuery query = GetQuery(queryName);
 
@@ -218,10 +218,10 @@ namespace DatabaseAbstraction
         /// The name of the query to execute
         /// </param>
         /// <param name="model">
-        /// The <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object
+        /// The <see cref="IDatabaseModel"/> model object
         /// to use for the query.
         /// </param>
-        public void Insert(string queryName, IDatabaseModel model)
+        public virtual void Insert(string queryName, IDatabaseModel model)
         {
             Insert(queryName, model.DataParameters());
         }
@@ -235,10 +235,10 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters to use for the command
         /// </param>
-        /// <exception cref="System.NotSupportedException">
+        /// <exception cref="NotSupportedException">
         /// If the query is not an UPDATE statement
         /// </exception>
-        public void Update(string queryName, Dictionary<string, object> parameters)
+        public virtual void Update(string queryName, Dictionary<string, object> parameters)
         {
             DatabaseQuery query = GetQuery(queryName);
 
@@ -256,10 +256,10 @@ namespace DatabaseAbstraction
         /// The name of the query to execute
         /// </param>
         /// <param name="model">
-        /// The <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object
+        /// The <see cref="IDatabaseModel"/> model object
         /// to use for the query.
         /// </param>
-        public void Update(string queryName, IDatabaseModel model)
+        public virtual void Update(string queryName, IDatabaseModel model)
         {
             Update(queryName, model.DataParameters());
         }
@@ -273,10 +273,10 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters to use for the command
         /// </param>
-        /// <exception cref="System.NotSupportedException">
+        /// <exception cref="NotSupportedException">
         /// If the query is not an DELETE statement
         /// </exception>
-        public void Delete(string queryName, Dictionary<string, object> parameters)
+        public virtual void Delete(string queryName, Dictionary<string, object> parameters)
         {
             DatabaseQuery query = GetQuery(queryName);
 
@@ -294,10 +294,10 @@ namespace DatabaseAbstraction
         /// The name of the query to execute
         /// </param>
         /// <param name="model">
-        /// The <see cref="com.codeplex.dbabstraction.DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object
+        /// The <see cref="IDatabaseModel"/> model object
         /// to use for the query.
         /// </param>
-        public void Delete(string queryName, IDatabaseModel model)
+        public virtual void Delete(string queryName, IDatabaseModel model)
         {
             Delete(queryName, model.DataParameters());
         }
