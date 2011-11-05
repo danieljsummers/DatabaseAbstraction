@@ -7,11 +7,19 @@ namespace DatabaseAbstraction.Queries
 
     /// <summary>
     /// This contains queries to support the database.
-    /// It uses the "database" query namespace.
+    /// It uses the "database" query namespace by default.
     /// </summary>
     public sealed class DatabaseQueryLibrary : IQueryLibrary
     {
-        private static string PREFIX = "database.";
+        /// <summary>
+        /// The prefix to use for the queries in this file
+        /// </summary>
+        public string Prefix
+        {
+            get { return _prefix; }
+            set { _prefix = value; }
+        }
+        private string _prefix = "database.";
 
         #region Main
 
@@ -24,13 +32,13 @@ namespace DatabaseAbstraction.Queries
         public void GetQueries(Dictionary<string, DatabaseQuery> queries)
         {
             // Select
-            queries.Add(PREFIX + "sequence.postgres", SequencePostgres());
-            queries.Add(PREFIX + "sequence.sqlserver", SequenceSqlServer());
-            queries.Add(PREFIX + "sequence.mysql", SequenceMySql());
-            queries.Add(PREFIX + "sequence.generic", SequenceGeneric());
-            queries.Add(PREFIX + "identity.sqlserver", IdentitySqlServer());
-            queries.Add(PREFIX + "identity.mysql", IdentityMySql());
-            queries.Add(PREFIX + "identity.sqlite", IdentitySQLite());
+            queries.Add(Prefix + "sequence.postgres", SequencePostgres());
+            queries.Add(Prefix + "sequence.sqlserver", SequenceSqlServer());
+            queries.Add(Prefix + "sequence.mysql", SequenceMySql());
+            queries.Add(Prefix + "sequence.generic", SequenceGeneric());
+            queries.Add(Prefix + "identity.sqlserver", IdentitySqlServer());
+            queries.Add(Prefix + "identity.mysql", IdentityMySql());
+            queries.Add(Prefix + "identity.sqlite", IdentitySQLite());
         }
 
         #endregion

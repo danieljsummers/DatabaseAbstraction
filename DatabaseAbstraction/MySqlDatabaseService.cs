@@ -59,7 +59,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public override int Sequence(string sequenceName)
         {
-            using (IDataReader reader = SelectOne("database.sequence.mysql",
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.mysql",
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("auto_increment")) : 0;
         }
@@ -72,7 +72,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public int LastIdentity()
         {
-            using (IDataReader reader = SelectOne("database.identity.mysql"))
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.mysql"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

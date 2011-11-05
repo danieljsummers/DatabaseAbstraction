@@ -7,11 +7,19 @@
 
     /// <summary>
     /// This contains queries necessary for the contact information models.
-    /// It uses the "contact." query name space.
+    /// It uses the "contact." query name space by default.
     /// </summary>
     public sealed class ContactQueryLibrary : IQueryLibrary
     {
-        private static string PREFIX = "contact.";
+        /// <summary>
+        /// The prefix to use for queries in this library
+        /// </summary>
+        public string Prefix
+        {
+            get { return _prefix; }
+            set { _prefix = value; }
+        }
+        private string _prefix = "contact.";
 
         /// <summary>
         /// Get the queries for this library
@@ -22,33 +30,33 @@
         public void GetQueries(Dictionary<string, DatabaseQuery> queries)
         {
             // Select
-            queries.Add(PREFIX + "get", Get());
-            queries.Add(PREFIX + "get.address", GetAddress());
-            queries.Add(PREFIX + "get.phone", GetPhone());
-            queries.Add(PREFIX + "get.email", GetEmail());
+            queries.Add(Prefix + "get", Get());
+            queries.Add(Prefix + "get.address", GetAddress());
+            queries.Add(Prefix + "get.phone", GetPhone());
+            queries.Add(Prefix + "get.email", GetEmail());
 
             // Insert
-            queries.Add(PREFIX + "insert", Insert());
-            queries.Add(PREFIX + "insert.address", InsertAddress());
-            queries.Add(PREFIX + "insert.phone", InsertPhone());
-            queries.Add(PREFIX + "insert.email", InsertEmail());
+            queries.Add(Prefix + "insert", Insert());
+            queries.Add(Prefix + "insert.address", InsertAddress());
+            queries.Add(Prefix + "insert.phone", InsertPhone());
+            queries.Add(Prefix + "insert.email", InsertEmail());
 
             // Update
-            queries.Add(PREFIX + "update.address", UpdateAddress());
-            queries.Add(PREFIX + "update.address.delete_old", UpdateAddressDeleteOld());
-            queries.Add(PREFIX + "update.phone", UpdatePhone());
-            queries.Add(PREFIX + "update.phone.delete_old", UpdatePhoneDeleteOld());
-            queries.Add(PREFIX + "update.email", UpdateEmail());
-            queries.Add(PREFIX + "update.email.delete_old", UpdateEmailDeleteOld());
+            queries.Add(Prefix + "update.address", UpdateAddress());
+            queries.Add(Prefix + "update.address.delete_old", UpdateAddressDeleteOld());
+            queries.Add(Prefix + "update.phone", UpdatePhone());
+            queries.Add(Prefix + "update.phone.delete_old", UpdatePhoneDeleteOld());
+            queries.Add(Prefix + "update.email", UpdateEmail());
+            queries.Add(Prefix + "update.email.delete_old", UpdateEmailDeleteOld());
 
             // Delete
-            queries.Add(PREFIX + "delete", Delete());
-            queries.Add(PREFIX + "delete.address", DeleteAddress());
-            queries.Add(PREFIX + "delete.phone", DeletePhone());
-            queries.Add(PREFIX + "delete.email", DeleteEmail());
+            queries.Add(Prefix + "delete", Delete());
+            queries.Add(Prefix + "delete.address", DeleteAddress());
+            queries.Add(Prefix + "delete.phone", DeletePhone());
+            queries.Add(Prefix + "delete.email", DeleteEmail());
 
             // Lists
-            queries.Add(PREFIX + "list.states", ListStates());
+            queries.Add(Prefix + "list.states", ListStates());
         }
 
         #region Select

@@ -51,7 +51,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public int LastIdentity()
         {
-            using (IDataReader reader = SelectOne("database.identity.sqlite"))
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.sqlite"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

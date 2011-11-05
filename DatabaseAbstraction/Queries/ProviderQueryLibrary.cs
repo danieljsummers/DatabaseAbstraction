@@ -11,53 +11,61 @@
     /// </summary>
     public class ProviderQueryLibrary : IQueryLibrary, IQueryFragmentProvider
     {
-        private static string PREFIX = "provider.";
+        /// <summary>
+        /// The prefix to use for queries in this library
+        /// </summary>
+        public string Prefix
+        {
+            get { return _prefix; }
+            set { _prefix = value; }
+        }
+        private string _prefix = "provider.";
 
         #region Main
 
         public void GetQueries(Dictionary<string, DatabaseQuery> queries)
         {
             // Select
-            queries.Add(PREFIX + "validate_user", ValidateUser());
-            queries.Add(PREFIX + "get.user", GetUser());
-            queries.Add(PREFIX + "get.user.by_application", GetUserByApplication());
-            queries.Add(PREFIX + "get.user.by_id", GetUserByID());
-            queries.Add(PREFIX + "get.username_by_email", GetUsernameByEmail());
-            queries.Add(PREFIX + "find.user.by_username", FindUserByUsername());
-            queries.Add(PREFIX + "find.user.by_email", FindUserByEmail());
-            queries.Add(PREFIX + "count.user", CountUser());
-            queries.Add(PREFIX + "count.user.online", CountUserOnline());
-            queries.Add(PREFIX + "count.user.by_username", CountUserByUsername());
-            queries.Add(PREFIX + "count.user.by_email", CountUserByEmail());
-            queries.Add(PREFIX + "retrieve_password", RetrievePassword());
-            queries.Add(PREFIX + "failure_counts", FailureCounts());
-            queries.Add(PREFIX + "role_exists", RoleExists());
-            queries.Add(PREFIX + "count.user_role", CountUserRole());
-            queries.Add(PREFIX + "get.role.by_application", GetRoleByApplication());
-            queries.Add(PREFIX + "get.user_role.by_role", GetUserRoleByRole());
-            queries.Add(PREFIX + "get.user_role.by_user", GetUserRoleByUser());
-            queries.Add(PREFIX + "find.user_role", FindUserRole());
+            queries.Add(Prefix + "validate_user", ValidateUser());
+            queries.Add(Prefix + "get.user", GetUser());
+            queries.Add(Prefix + "get.user.by_application", GetUserByApplication());
+            queries.Add(Prefix + "get.user.by_id", GetUserByID());
+            queries.Add(Prefix + "get.username_by_email", GetUsernameByEmail());
+            queries.Add(Prefix + "find.user.by_username", FindUserByUsername());
+            queries.Add(Prefix + "find.user.by_email", FindUserByEmail());
+            queries.Add(Prefix + "count.user", CountUser());
+            queries.Add(Prefix + "count.user.online", CountUserOnline());
+            queries.Add(Prefix + "count.user.by_username", CountUserByUsername());
+            queries.Add(Prefix + "count.user.by_email", CountUserByEmail());
+            queries.Add(Prefix + "retrieve_password", RetrievePassword());
+            queries.Add(Prefix + "failure_counts", FailureCounts());
+            queries.Add(Prefix + "role_exists", RoleExists());
+            queries.Add(Prefix + "count.user_role", CountUserRole());
+            queries.Add(Prefix + "get.role.by_application", GetRoleByApplication());
+            queries.Add(Prefix + "get.user_role.by_role", GetUserRoleByRole());
+            queries.Add(Prefix + "get.user_role.by_user", GetUserRoleByUser());
+            queries.Add(Prefix + "find.user_role", FindUserRole());
 
             // Insert
-            queries.Add(PREFIX + "insert.user", InsertUser());
-            queries.Add(PREFIX + "insert.role", InsertRole());
-            queries.Add(PREFIX + "insert.user_role", InsertUserRole());
+            queries.Add(Prefix + "insert.user", InsertUser());
+            queries.Add(Prefix + "insert.role", InsertRole());
+            queries.Add(Prefix + "insert.user_role", InsertUserRole());
 
             // Update
-            queries.Add(PREFIX + "update.login_date", UpdateLoginDate());
-            queries.Add(PREFIX + "change_password", ChangePassword());
-            queries.Add(PREFIX + "update.password_question", UpdatePasswordQuestion());
-            queries.Add(PREFIX + "update.activity_date", UpdateActivityDate());
-            queries.Add(PREFIX + "update.failure.password", UpdateFailurePassword());
-            queries.Add(PREFIX + "update.failure.answer", UpdateFailureAnswer());
-            queries.Add(PREFIX + "update.set_locked", UpdateSetLocked());
-            queries.Add(PREFIX + "update.user", UpdateUser());
+            queries.Add(Prefix + "update.login_date", UpdateLoginDate());
+            queries.Add(Prefix + "change_password", ChangePassword());
+            queries.Add(Prefix + "update.password_question", UpdatePasswordQuestion());
+            queries.Add(Prefix + "update.activity_date", UpdateActivityDate());
+            queries.Add(Prefix + "update.failure.password", UpdateFailurePassword());
+            queries.Add(Prefix + "update.failure.answer", UpdateFailureAnswer());
+            queries.Add(Prefix + "update.set_locked", UpdateSetLocked());
+            queries.Add(Prefix + "update.user", UpdateUser());
 
             // Delete
-            queries.Add(PREFIX + "delete.user", DeleteUser());
-            queries.Add(PREFIX + "delete.role", DeleteRole());
-            queries.Add(PREFIX + "delete.user_role", DeleteUserRole());
-            queries.Add(PREFIX + "delete.user_role.by_role", DeleteUserRoleByRole());
+            queries.Add(Prefix + "delete.user", DeleteUser());
+            queries.Add(Prefix + "delete.role", DeleteRole());
+            queries.Add(Prefix + "delete.user_role", DeleteUserRole());
+            queries.Add(Prefix + "delete.user_role.by_role", DeleteUserRoleByRole());
         }
 
         #endregion

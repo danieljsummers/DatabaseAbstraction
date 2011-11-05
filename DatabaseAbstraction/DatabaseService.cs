@@ -57,6 +57,16 @@ namespace DatabaseAbstraction
         /// </summary>
         protected IDbConnection Connection { get; set; }
 
+        /// <summary>
+        /// The database query prefix (only change if the query library was changed also)
+        /// </summary>
+        public string DatabaseQueryPrefix
+        {
+            get { return _prefix; }
+            set { _prefix = value; }
+        }
+        private string _prefix = "database.";
+
         #endregion
 
         #region Constructors
@@ -82,6 +92,11 @@ namespace DatabaseAbstraction
         {
             Queries = new Dictionary<string, DatabaseQuery>();
             FillQueryLibrary(Queries, fragments, classes);
+
+            // Make sure we've loaded the database queries
+            if ((!StaticQueries.ContainsKey(DatabaseQueryPrefix + "sequence.generic"))
+                && (!Queries.ContainsKey(DatabaseQueryPrefix + "sequence.generic")))
+                FillQueryLibrary(Queries, fragments, new DatabaseQueryLibrary());
         }
 
         #endregion
@@ -353,7 +368,7 @@ namespace DatabaseAbstraction
             parameters.Add("[]primary_key_name", inputParameters[0]);
             parameters.Add("[]table_name", inputParameters[1]);
 
-            using (IDataReader reader = SelectOne("database.sequence.generic", parameters))
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("max_pk")) + 1 : 0;
         }
 

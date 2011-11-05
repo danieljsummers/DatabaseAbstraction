@@ -56,7 +56,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public override int Sequence(string sequenceName)
         {
-            using (IDataReader reader = SelectOne("database.sequence.postgres",
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.postgres",
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) : 0;
         }

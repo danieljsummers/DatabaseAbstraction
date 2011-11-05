@@ -8,9 +8,12 @@ DatabaseAbstraction/bin/Release/Npgsql.*
 DatabaseAbstraction/bin/Release/nunit.*
 DatabaseAbstraction/bin/Release/System.Data.SQLite.*
 DatabaseAbstraction/obj
+DatabaseAbstraction.Tests/bin
+DatabaseAbstraction.Tests/obj
 Example/obj
 Example/bin/Debug
 Example/bin/Release/DatabaseAbstraction.dll
 Example/bin/Release/MySql.*
 Example/bin/Release/Npgsql.*
 Example/bin/Release/nunit.*
+Example/bin/Release/System.Data.SQLite.*

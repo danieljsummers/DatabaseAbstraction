@@ -55,14 +55,14 @@
         /// </exception>
         public int LastIdentity()
         {
-            if (!StaticQueries.ContainsKey("database.identity.odbc"))
-                if (!Queries.ContainsKey("database.identity.odbc"))
-                    throw new InvalidOperationException(
+            if (!StaticQueries.ContainsKey(DatabaseQueryPrefix + "identity.odbc"))
+                if (!Queries.ContainsKey(DatabaseQueryPrefix + "identity.odbc"))
+                    throw new InvalidOperationException(String.Format(
                         "There is no way for Database Abstraction to determine proper identity SQL syntax for ODBC "
-                        + "connections.  If your data store supports it, define a \"database.identity.odbc\" query and "
-                        + "provide it to the database service, and it will be used.");
+                        + "connections.  If your data store supports it, define a \"{0}identity.odbc\" query and "
+                        + "provide it to the database service, and it will be used.", DatabaseQueryPrefix));
 
-            using (IDataReader reader = SelectOne("database.identity.odbc"))
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.odbc"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

@@ -61,7 +61,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public override int Sequence(string sequenceName)
         {
-            using (IDataReader reader = SelectOne("database.sequence.sqlserver",
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.sqlserver",
                                                   DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) + 1 : 0;
         }
@@ -74,7 +74,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public int LastIdentity()
         {
-            using (IDataReader reader = SelectOne("database.identity.sqlserver"))
+            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.sqlserver"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

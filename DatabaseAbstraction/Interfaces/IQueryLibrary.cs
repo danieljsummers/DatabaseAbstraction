@@ -10,6 +10,11 @@ namespace DatabaseAbstraction.Interfaces
     public interface IQueryLibrary
     {
         /// <summary>
+        /// The prefix to use for the queries in this library
+        /// </summary>
+        string Prefix { get; set; }
+
+        /// <summary>
         /// Get the queries associated with the query library
         /// </summary>
         /// <param name="queries">

@@ -24,6 +24,16 @@
         private IDatabaseService Data { get; set; }
 
         /// <summary>
+        /// The query prefix (only change this if the queries were also changed)
+        /// </summary>
+        public string QueryPrefix
+        {
+            get { return _prefix; }
+            set { _prefix = value; }
+        }
+        private string _prefix = "contact.";
+
+        /// <summary>
         /// Constructor for this service.
         /// </summary>
         /// <param name="data">
@@ -45,7 +55,7 @@
         {
             // Insert the contact record.
             contact.ID = Data.Sequence("contact_contact_id");
-            Data.Insert("contact.insert", contact);
+            Data.Insert(QueryPrefix + "insert", contact);
 
             // Insert the addresses.
             foreach (Address address in contact.Addresses)
@@ -71,7 +81,7 @@
         /// </param>
         private void InsertAddress(Address address, int contactID)
         {
-            Data.Insert("contact.insert.address", address);
+            Data.Insert(QueryPrefix + "insert.address", address);
             address.ID = Data.Sequence("address_addr_id");
         }
 
@@ -86,7 +96,7 @@
         /// </param>
         private void InsertPhone(PhoneNumber phone, int contactID)
         {
-            Data.Insert("contact.insert.phone", phone);
+            Data.Insert(QueryPrefix + "insert.phone", phone);
             phone.ID = Data.Sequence("phone_phn_id");
         }
 
@@ -101,7 +111,7 @@
         /// </param>
         private void InsertEmail(EmailAddress email, int contactID)
         {
-            Data.Insert("contact.insert.email", email);
+            Data.Insert(QueryPrefix + "insert.email", email);
             email.ID = Data.Sequence("email_em_id");
         }
 
@@ -121,7 +131,7 @@
 
             ContactInformation contact;
 
-            using (IDataReader data = Data.SelectOne("contact.get", parameters))
+            using (IDataReader data = Data.SelectOne(QueryPrefix + "get", parameters))
             {
                 if (!data.Read()) return null;
                 contact = new ContactInformation(data);
@@ -138,14 +148,14 @@
         /// Get the address for a contact information set
         /// </summary>
         /// <param name="contact">
-        /// The <see cref="com.codeplex.dbabstraction.Contact.Models.ContactInformation"/> set being retrieved
+        /// The <see cref="ContactInformation"/> set being retrieved
         /// </param>
         /// <param name="parameters">
         /// The contact ID in parameter form
         /// </param>
         private void GetAddress(ContactInformation contact, Dictionary<string, object> parameters)
         {
-            using (IDataReader data = Data.Select("contact.get.address", parameters))
+            using (IDataReader data = Data.Select(QueryPrefix + "get.address", parameters))
                 while (data.Read())
                     contact.Addresses.Add(new Address(data));
         }
@@ -154,14 +164,14 @@
         /// Get the phone numbers for a contact information set
         /// </summary>
         /// <param name="contact">
-        /// The <see cref="com.codeplex.dbabstraction.Contact.Models.ContactInformation"/> set being retrieved
+        /// The <see cref="ContactInformation"/> set being retrieved
         /// </param>
         /// <param name="parameters">
         /// The contact ID in parameter form
         /// </param>
         private void GetPhones(ContactInformation contact, Dictionary<string, object> parameters)
         {
-            using (IDataReader data = Data.Select("contact.get.phone", parameters))
+            using (IDataReader data = Data.Select(QueryPrefix + "get.phone", parameters))
                 while (data.Read())
                     contact.PhoneNumbers.Add(new PhoneNumber(data));
         }
@@ -170,14 +180,14 @@
         /// Get the e-mail addresses for a contact information set
         /// </summary>
         /// <param name="contact">
-        /// The <see cref="com.codeplex.dbabstraction.Contact.Models.ContactInformation"/> set being retrieved
+        /// The <see cref="ContactInformation"/> set being retrieved
         /// </param>
         /// <param name="parameters">
         /// The contact ID in parameter form
         /// </param>
         private void GetEmails(ContactInformation contact, Dictionary<string, object> parameters)
         {
-            using (IDataReader data = Data.Select("contact.get.email", parameters))
+            using (IDataReader data = Data.Select(QueryPrefix + "get.email", parameters))
                 while (data.Read())
                     contact.EmailAddresses.Add(new EmailAddress(data));
         }
@@ -186,7 +196,7 @@
         /// Update a contact information set
         /// </summary>
         /// <param name="contact">
-        /// The <see cref="com.codeplex.dbabstraction.Contact.Models.ContactInformation"/> set to update
+        /// The <see cref="ContactInformation"/> set to update
         /// </param>
         public void UpdateContact(ContactInformation contact)
         {
@@ -210,14 +220,14 @@
                 if (0 == address.ID)
                     InsertAddress(address, contact.ID);
                 else
-                    Data.Update("contact.update.address", address);
+                    Data.Update(QueryPrefix + "update.address", address);
 
                 addressIDs.Append(",");
                 addressIDs.Append(address.ID);
             }
 
             // Delete addresses that were removed.
-            Data.Delete("contact.update.address.delete_old",
+            Data.Delete(QueryPrefix + "update.address.delete_old",
                 DbUtils.SingleParameter("[]address_id", addressIDs.ToString()));
         }
 
@@ -225,7 +235,7 @@
         /// Update the phone numbers for the contact information set
         /// </summary>
         /// <param name="contact">
-        /// The <see cref="com.codeplex.dbabstraction.Contact.Models.ContactInformation"/> set being updated
+        /// The <see cref="ContactInformation"/> set being updated
         /// </param>
         private void UpdatePhones(ContactInformation contact)
         {
@@ -236,14 +246,14 @@
                 if (0 == phone.ID)
                     InsertPhone(phone, contact.ID);
                 else
-                    Data.Update("contact.update.phone", phone);
+                    Data.Update(QueryPrefix + "update.phone", phone);
 
                 phoneIDs.Append(",");
                 phoneIDs.Append(phone.ID);
             }
 
             // Delete phone numbers that were removed.
-            Data.Delete("contact.update.phone.delete_old",
+            Data.Delete(QueryPrefix + "update.phone.delete_old",
                 DbUtils.SingleParameter("[]phone_id", phoneIDs.ToString()));
         }
 
@@ -251,7 +261,7 @@
         /// Update the e-mail addresses for the contact information set
         /// </summary>
         /// <param name="contact">
-        /// The <see cref="com.codeplex.dbabstraction.Contact.Models.ContactInformation"/> set being updated
+        /// The <see cref="ContactInformation"/> set being updated
         /// </param>
         private void UpdateEmails(ContactInformation contact)
         {
@@ -262,14 +272,14 @@
                 if (0 == email.ID)
                     InsertEmail(email, contact.ID);
                 else
-                    Data.Update("contact.update.email", email);
+                    Data.Update(QueryPrefix + "update.email", email);
 
                 emailIDs.Append(",");
                 emailIDs.Append(email.ID);
             }
 
             // Delete e-mail addresses that were removed.
-            Data.Delete("contact.update.email.delete_old",
+            Data.Delete(QueryPrefix + "update.email.delete_old",
                 DbUtils.SingleParameter("[]email_id", emailIDs.ToString()));
         }
 
@@ -283,10 +293,10 @@
         {
             Dictionary<string, object> parameters = DbUtils.SingleParameter("contact_id", contactID);
 
-            Data.Delete("contact.delete.address", parameters);
-            Data.Delete("contact.delete.phone", parameters);
-            Data.Delete("contact.delete.email", parameters);
-            Data.Delete("contact.delete", parameters);
+            Data.Delete(QueryPrefix + "delete.address", parameters);
+            Data.Delete(QueryPrefix + "delete.phone", parameters);
+            Data.Delete(QueryPrefix + "delete.email", parameters);
+            Data.Delete(QueryPrefix + "delete", parameters);
         }
 
         /// <summary>
@@ -300,7 +310,7 @@
             List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
 
             // FIXME: hard-coded USA
-            using (IDataReader data = Data.Select("contact.list.states", DbUtils.SingleParameter("country_id", 1)))
+            using (IDataReader data = Data.Select(QueryPrefix + "list.states", DbUtils.SingleParameter("country_id", 1)))
                 while (data.Read())
                     list.Add(new KeyValuePair<int, string>(data.GetInt32(data.GetOrdinal("id")),
                             data.GetString(data.GetOrdinal("description"))));
