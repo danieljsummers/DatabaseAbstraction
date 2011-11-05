@@ -14,474 +14,467 @@
         private static string PREFIX = "contact.";
 
         /// <summary>
-        /// Get the queries for this library.
+        /// Get the queries for this library
         /// </summary>
-        /// <returns>
-        /// Queries needed for the common contact information module.
-        /// </returns>
+        /// <param name="queries">
+        /// The query library being built
+        /// </param>
         public void GetQueries(Dictionary<string, DatabaseQuery> queries)
         {
-            // Insert.
-            addInsert(queries);
-            addInsertAddress(queries);
-            addInsertPhone(queries);
-            addInsertEmail(queries);
+            // Select
+            queries.Add(PREFIX + "get", Get());
+            queries.Add(PREFIX + "get.address", GetAddress());
+            queries.Add(PREFIX + "get.phone", GetPhone());
+            queries.Add(PREFIX + "get.email", GetEmail());
 
-            // Select.
-            addGet(queries);
-            addGetAddress(queries);
-            addGetPhone(queries);
-            addGetEmail(queries);
+            // Insert
+            queries.Add(PREFIX + "insert", Insert());
+            queries.Add(PREFIX + "insert.address", InsertAddress());
+            queries.Add(PREFIX + "insert.phone", InsertPhone());
+            queries.Add(PREFIX + "insert.email", InsertEmail());
 
-            // Update.
-            addUpdateAddress(queries);
-            addUpdateAddressDeleteOld(queries);
-            addUpdatePhone(queries);
-            addUpdatePhoneDeleteOld(queries);
-            addUpdateEmail(queries);
-            addUpdateEmailDeleteOld(queries);
+            // Update
+            queries.Add(PREFIX + "update.address", UpdateAddress());
+            queries.Add(PREFIX + "update.address.delete_old", UpdateAddressDeleteOld());
+            queries.Add(PREFIX + "update.phone", UpdatePhone());
+            queries.Add(PREFIX + "update.phone.delete_old", UpdatePhoneDeleteOld());
+            queries.Add(PREFIX + "update.email", UpdateEmail());
+            queries.Add(PREFIX + "update.email.delete_old", UpdateEmailDeleteOld());
 
-            // Delete.
-            addDelete(queries);
-            addDeleteAddress(queries);
-            addDeletePhone(queries);
-            addDeleteEmail(queries);
+            // Delete
+            queries.Add(PREFIX + "delete", Delete());
+            queries.Add(PREFIX + "delete.address", DeleteAddress());
+            queries.Add(PREFIX + "delete.phone", DeletePhone());
+            queries.Add(PREFIX + "delete.email", DeleteEmail());
 
-            // Lists.
-            addListStates(queries);
+            // Lists
+            queries.Add(PREFIX + "list.states", ListStates());
         }
 
-        /// <summary>
-        /// contact.insert
-        /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addInsert(Dictionary<string, DatabaseQuery> queries)
-        {
-            string name = PREFIX + "insert";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"INSERT INTO contact VALUES (nextval('contact_contact_id_seq'::regclass))";
-        }
-
-        /// <summary>
-        /// contact.insert.address
-        /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addInsertAddress(Dictionary<string, DatabaseQuery> queries)
-        {
-            string name = PREFIX + "insert.address";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"INSERT INTO address
-                    (contact_id, state_id, address, city, zip_code, physical_flag, mailing_flag)
-                VALUES
-                    (@contact_id, @state_id, @address, @city, @zip_code, @physical_flag, @mailing_flag)";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
-            queries[name].Parameters.Add("state_id", DbType.Int32);
-            queries[name].Parameters.Add("address", DbType.String);
-            queries[name].Parameters.Add("city", DbType.String);
-            queries[name].Parameters.Add("zip_code", DbType.String);
-            queries[name].Parameters.Add("physical_flag", DbType.Boolean);
-            queries[name].Parameters.Add("mailing_flag", DbType.Boolean);
-        }
-
-        /// <summary>
-        /// contact.insert.phone
-        /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addInsertPhone(Dictionary<string, DatabaseQuery> queries)
-        {
-            string name = PREFIX + "insert.phone";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"INSERT INTO phone 
-                    (contact_id, contact_type_id, area_code, exchange, number, extension, comments)
-                VALUES
-                    (@contact_id, @contact_type_id, @area_code, @exchange, @number, NULLIF(@extension, ''),
-                    NULLIF(@comments, ''))";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
-            queries[name].Parameters.Add("contact_type_id", DbType.Int32);
-            queries[name].Parameters.Add("area_code", DbType.String);
-            queries[name].Parameters.Add("exchange", DbType.String);
-            queries[name].Parameters.Add("number", DbType.String);
-            queries[name].Parameters.Add("extension", DbType.String);
-            queries[name].Parameters.Add("comments", DbType.String);
-        }
-
-        /// <summary>
-        /// contact.insert.email
-        /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addInsertEmail(Dictionary<string, DatabaseQuery> queries)
-        {
-            string name = PREFIX + "insert.email";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"INSERT INTO email
-                    (contact_id, contact_type_id, address, comments)
-                VALUES
-                    (@contact_id, @contact_type_id, @address, NULLIF(@comments, ''))";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
-            queries[name].Parameters.Add("contact_type_id", DbType.Int32);
-            queries[name].Parameters.Add("address", DbType.String);
-            queries[name].Parameters.Add("comments", DbType.String);
-        }
+        #region Select
 
         /// <summary>
         /// contact.get
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addGet(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery Get()
         {
-            string name = PREFIX + "get";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = @"SELECT contact_id AS id
+                    FROM contact"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT contact_id AS id
-                FROM contact
-                WHERE contact_id = @contact_id";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.get.address
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addGetAddress(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery GetAddress()
         {
-            string name = PREFIX + "get.address";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = @"SELECT
                     address_id, contact_id, state_id, address, city, zip_code, physical_flag, mailing_flag,
                     code        AS state_code,
                     description AS state
                 FROM address
-                    INNER JOIN r_state ON state_id = r_state_id
-                WHERE contact_id = @contact_id";
+                    INNER JOIN r_state ON state_id = r_state_id"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.get.phone
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addGetPhone(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery GetPhone()
         {
-            string name = PREFIX + "get.phone";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = @"SELECT
                     phone_id, contact_id, contact_type_id, area_code, exchange, number, extension, comments,
                     description AS contact_type
-                FROM phone
-                    INNER JOIN r_contact_type ON contact_type_id = r_contact_type_id
-                WHERE contact_id = @contact_id";
+                FROM phone"
+            };
+            query.Fragments.Add(QueryFragmentType.From, "contact.from.join_contact_type");
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.get.email
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addGetEmail(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery GetEmail()
         {
-            string name = PREFIX + "get.email";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = @"SELECT
                     email_id, contact_id, contact_type_id, address, comments,
                     description AS contact_type
-                FROM email
-                    INNER JOIN r_contact_type ON contact_type_id = r_contact_type_id
-                WHERE contact_id = @contact_id";
+                FROM email"
+            };
+            query.Fragments.Add(QueryFragmentType.From, "contact.from.join_contact_type");
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
+
+        #endregion
+
+        #region Insert
+
+        /// <summary>
+        /// contact.insert
+        /// </summary>
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery Insert()
+        {
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = "INSERT INTO contact VALUES (@contact_id)"
+            };
+            query.Parameters.Add("contact_id", DbType.Int32);
+
+            return query;
+        }
+
+        /// <summary>
+        /// contact.insert.address
+        /// </summary>
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery InsertAddress()
+        {
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"INSERT INTO address
+                    (contact_id, state_id, address, city, zip_code, physical_flag, mailing_flag)
+                VALUES
+                    (@contact_id, @state_id, @address, @city, @zip_code, @physical_flag, @mailing_flag)"
+            };
+            query.Parameters.Add("contact_id", DbType.Int32);
+            query.Parameters.Add("state_id", DbType.Int32);
+            query.Parameters.Add("address", DbType.String);
+            query.Parameters.Add("city", DbType.String);
+            query.Parameters.Add("zip_code", DbType.String);
+            query.Parameters.Add("physical_flag", DbType.Boolean);
+            query.Parameters.Add("mailing_flag", DbType.Boolean);
+
+            return query;
+        }
+
+        /// <summary>
+        /// contact.insert.phone
+        /// </summary>
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery InsertPhone()
+        {
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"INSERT INTO phone 
+                    (contact_id, contact_type_id, area_code, exchange, number, extension, comments)
+                VALUES
+                    (@contact_id, @contact_type_id, @area_code, @exchange, @number, NULLIF(@extension, ''),
+                    NULLIF(@comments, ''))"
+            };
+            query.Parameters.Add("contact_id", DbType.Int32);
+            query.Parameters.Add("contact_type_id", DbType.Int32);
+            query.Parameters.Add("area_code", DbType.String);
+            query.Parameters.Add("exchange", DbType.String);
+            query.Parameters.Add("number", DbType.String);
+            query.Parameters.Add("extension", DbType.String);
+            query.Parameters.Add("comments", DbType.String);
+
+            return query;
+        }
+
+        /// <summary>
+        /// contact.insert.email
+        /// </summary>
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery InsertEmail()
+        {
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"INSERT INTO email
+                    (contact_id, contact_type_id, address, comments)
+                VALUES
+                    (@contact_id, @contact_type_id, @address, NULLIF(@comments, ''))"
+            };
+            query.Parameters.Add("contact_id", DbType.Int32);
+            query.Parameters.Add("contact_type_id", DbType.Int32);
+            query.Parameters.Add("address", DbType.String);
+            query.Parameters.Add("comments", DbType.String);
+
+            return query;
+        }
+
+        #endregion
+
+        #region Update
 
         /// <summary>
         /// contact.update.address
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addUpdateAddress(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery UpdateAddress()
         {
-            string name = PREFIX + "update.address";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"UPDATE address
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"UPDATE address
                 SET state_id      = @state_id,
                     address       = @address,
                     city          = @city,
                     zip_code      = @zip_code,
                     physical_flag = @physical_flag,
                     mailing_flag  = @mailing_flag
-                WHERE address_id = @address_id";
+                WHERE address_id = @address_id"
+            };
+            query.Parameters.Add("state_id", DbType.Int32);
+            query.Parameters.Add("address", DbType.String);
+            query.Parameters.Add("city", DbType.String);
+            query.Parameters.Add("zip_code", DbType.String);
+            query.Parameters.Add("physical_flag", DbType.Boolean);
+            query.Parameters.Add("mailing_flag", DbType.Boolean);
+            query.Parameters.Add("address_id", DbType.Int32);
 
-            queries[name].Parameters.Add("state_id", DbType.Int32);
-            queries[name].Parameters.Add("address", DbType.String);
-            queries[name].Parameters.Add("city", DbType.String);
-            queries[name].Parameters.Add("zip_code", DbType.String);
-            queries[name].Parameters.Add("physical_flag", DbType.Boolean);
-            queries[name].Parameters.Add("mailing_flag", DbType.Boolean);
-            queries[name].Parameters.Add("address_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.update.address.delete_old
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addUpdateAddressDeleteOld(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery UpdateAddressDeleteOld()
         {
-            string name = PREFIX + "update.address.delete_old";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM address"
+            };
 
-            queries.Add(name, new DatabaseQuery());
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
+            query.AfterFragment.Add(QueryFragmentType.Where, "AND address_id NOT IN ([]address_id)");
+            query.Parameters.Add("[]address_id", DbType.String);
 
-            queries[name].SQL =
-                @"DELETE FROM address
-                WHERE   contact_id = @contact_id
-                    AND address_id NOT IN ([]address_id)";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
-            queries[name].Parameters.Add("[]address_id", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// contact.update.phone
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addUpdatePhone(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery UpdatePhone()
         {
-            string name = PREFIX + "update.phone";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"UPDATE phone
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"UPDATE phone
                 SET contact_type_id = @contact_type_id,
                     area_code       = @area_code,
                     exchange        = @exchange,
                     number          = @number,
                     extension       = NULLIF(@extension, ''),
                     comments        = NULLIF(@comments, '')
-                WHERE phone_id = @phone_id";
+                WHERE phone_id = @phone_id"
+            };
+            query.Parameters.Add("contact_type_id", DbType.Int32);
+            query.Parameters.Add("area_code", DbType.String);
+            query.Parameters.Add("exchange", DbType.String);
+            query.Parameters.Add("number", DbType.String);
+            query.Parameters.Add("extension", DbType.String);
+            query.Parameters.Add("comments", DbType.String);
+            query.Parameters.Add("phone_id", DbType.Int32);
 
-            queries[name].Parameters.Add("contact_type_id", DbType.Int32);
-            queries[name].Parameters.Add("area_code", DbType.String);
-            queries[name].Parameters.Add("exchange", DbType.String);
-            queries[name].Parameters.Add("number", DbType.String);
-            queries[name].Parameters.Add("extension", DbType.String);
-            queries[name].Parameters.Add("comments", DbType.String);
-            queries[name].Parameters.Add("phone_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.update.phone.delete_old
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addUpdatePhoneDeleteOld(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery UpdatePhoneDeleteOld()
         {
-            string name = PREFIX + "update.phone.delete_old";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM phone"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
+            query.AfterFragment.Add(QueryFragmentType.Where, "AND phone_id NOT IN ([]phone_id)");
+            query.Parameters.Add("[]phone_id", DbType.String);
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"DELETE FROM phone
-                WHERE   contact_id = @contact_id
-                    AND phone_id NOT IN ([]phone_id)";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
-            queries[name].Parameters.Add("[]phone_id", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// contact.update.email
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addUpdateEmail(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery UpdateEmail()
         {
-            string name = PREFIX + "update.email";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"UPDATE email
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"UPDATE email
                 SET contact_type_id = @contact_type_id,
                     address         = @address,
                     comments        = NULLIF(@comments, '')
-                WHERE email_id = @email_id";
+                WHERE email_id = @email_id"
+            };
+            query.Parameters.Add("contact_type_id", DbType.Int32);
+            query.Parameters.Add("address", DbType.String);
+            query.Parameters.Add("comments", DbType.String);
 
-            queries[name].Parameters.Add("contact_type_id", DbType.Int32);
-            queries[name].Parameters.Add("address", DbType.String);
-            queries[name].Parameters.Add("comments", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// contact.update.email.delete_old
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addUpdateEmailDeleteOld(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery UpdateEmailDeleteOld()
         {
-            string name = PREFIX + "update.email.delete_old";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM email"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
+            query.AfterFragment.Add(QueryFragmentType.Where, "AND email_id NOT IN ([]email_id)");
+            query.Parameters.Add("[]email_id", DbType.String);
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"DELETE FROM email
-                WHERE   contact_id = @contact_id
-                    AND email_id NOT IN ([]email_id)";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
-            queries[name].Parameters.Add("[]email_id", DbType.String);
+            return query;
         }
+
+        #endregion
+
+        #region Delete
 
         /// <summary>
         /// contact.delete
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addDelete(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery Delete()
         {
-            string name = PREFIX + "delete";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM contact"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"DELETE FROM contact
-                WHERE contact_id = @contact_id";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.delete.address
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addDeleteAddress(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery DeleteAddress()
         {
-            string name = PREFIX + "delete.address";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM address"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"DELETE FROM address
-                WHERE contact_id = @contact_id";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.delete.phone
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addDeletePhone(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery DeletePhone()
         {
-            string name = PREFIX + "delete.phone";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM phone"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"DELETE FROM phone
-                WHERE contact_id = @contact_id";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
 
         /// <summary>
         /// contact.delete.email
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addDeleteEmail(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private FragmentedQuery DeleteEmail()
         {
-            string name = PREFIX + "delete.email";
+            FragmentedQuery query = new FragmentedQuery
+            {
+                SQL = "DELETE FROM email"
+            };
+            query.Fragments.Add(QueryFragmentType.Where, "contact.where.contact_id");
 
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"DELETE FROM email
-                WHERE contact_id = @contact_id";
-
-            queries[name].Parameters.Add("contact_id", DbType.Int32);
+            return query;
         }
+
+        #endregion
+
+        #region Lists
 
         /// <summary>
         /// contact.list.states
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built.
-        /// </param>
-        private void addListStates(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery ListStates()
         {
-            string name = PREFIX + "list.states";
-
-            queries.Add(name, new DatabaseQuery());
-
-            queries[name].SQL =
-                @"SELECT
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"SELECT
                     r_state_id                         AS id,
                     description || ' (' || code || ')' AS description
                 FROM r_state
                 WHERE country_id = @country_id
-                ORDER BY description";
+                ORDER BY description"
+            };
+            query.Parameters.Add("country_id", DbType.Int32);
 
-            queries[name].Parameters.Add("country_id", DbType.Int32);
+            return query;
         }
+
+        #endregion
     }
 }

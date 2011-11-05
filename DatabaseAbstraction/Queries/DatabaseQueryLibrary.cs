@@ -24,13 +24,13 @@ namespace DatabaseAbstraction.Queries
         public void GetQueries(Dictionary<string, DatabaseQuery> queries)
         {
             // Select
-            addSequencePostgres(queries);
-            addSequenceSqlServer(queries);
-            addSequenceMySql(queries);
-            addSequenceGeneric(queries);
-            addIdentitySqlServer(queries);
-            addIdentityMySql(queries);
-            addIdentitySQLite(queries);
+            queries.Add(PREFIX + "sequence.postgres", SequencePostgres());
+            queries.Add(PREFIX + "sequence.sqlserver", SequenceSqlServer());
+            queries.Add(PREFIX + "sequence.mysql", SequenceMySql());
+            queries.Add(PREFIX + "sequence.generic", SequenceGeneric());
+            queries.Add(PREFIX + "identity.sqlserver", IdentitySqlServer());
+            queries.Add(PREFIX + "identity.mysql", IdentityMySql());
+            queries.Add(PREFIX + "identity.sqlite", IdentitySQLite());
         }
 
         #endregion
@@ -40,109 +40,113 @@ namespace DatabaseAbstraction.Queries
         /// <summary>
         /// database.sequence.postgres
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addSequencePostgres(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery SequencePostgres()
         {
-            string name = PREFIX + "sequence.postgres";
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = "SELECT currval('[]sequence_name_seq') AS sequence_value"
+            };
+            query.Parameters.Add("[]sequence_name", DbType.String);
 
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SELECT currval('[]sequence_name_seq') AS sequence_value";
-
-            queries[name].Parameters.Add("[]sequence_name", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// database.sequence.sqlserver
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addSequenceSqlServer(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery SequenceSqlServer()
         {
-            string name = PREFIX + "sequence.sqlserver";
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = "SELECT IDENT_CURRENT('[]sequence_name') AS sequence_value"
+            };
+            query.Parameters.Add("[]sequence_name", DbType.String);
 
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SELECT IDENT_CURRENT('[]sequence_name') AS sequence_value";
-
-            queries[name].Parameters.Add("[]sequence_name", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// database.sequence.mysql
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addSequenceMySql(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery SequenceMySql()
         {
-            string name = PREFIX + "sequence.mysql";
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = "SHOW TABLE STATUS LIKE '[]sequence_name'"
+            };
+            query.Parameters.Add("[]sequence_name", DbType.String);
 
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SHOW TABLE STATUS LIKE '[]sequence_name'";
-
-            queries[name].Parameters.Add("[]sequence_name", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// database.sequence.generic
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addSequenceGeneric(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery SequenceGeneric()
         {
-            string name = PREFIX + "sequence.generic";
+            DatabaseQuery query = new DatabaseQuery
+            {
+                SQL = @"SELECT MAX([]primary_key_name) AS max_pk
+                FROM []table_name"
+            };
+            query.Parameters.Add("[]primary_key_name", DbType.String);
+            query.Parameters.Add("[]table_name", DbType.String);
 
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = @"SELECT MAX([]primary_key_name) AS max_pk
-                FROM []table_name";
-
-            queries[name].Parameters.Add("[]primary_key_name", DbType.String);
-            queries[name].Parameters.Add("[]table_name", DbType.String);
+            return query;
         }
 
         /// <summary>
         /// database.identity.sqlserver
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addIdentitySqlServer(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery IdentitySqlServer()
         {
-            string name = PREFIX + "identity.sqlserver";
-
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SELECT SCOPE_IDENTITY()";
+            return new DatabaseQuery
+            {
+                SQL = "SELECT SCOPE_IDENTITY()"
+            };
         }
 
         /// <summary>
         /// database.identity.mysql
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addIdentityMySql(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery IdentityMySql()
         {
-            string name = PREFIX + "identity.mysql";
-
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SELECT LAST_INSERT_ID()";
+            return new DatabaseQuery
+            {
+                SQL = "SELECT LAST_INSERT_ID()"
+            };
         }
 
         /// <summary>
         /// database.identity.sqlite
         /// </summary>
-        /// <param name="queries">
-        /// The query library being built
-        /// </param>
-        private void addIdentitySQLite(Dictionary<string, DatabaseQuery> queries)
+        /// <returns>
+        /// The populated query
+        /// </returns>
+        private DatabaseQuery IdentitySQLite()
         {
-            string name = PREFIX + "identity.sqlite";
-
-            queries.Add(name, new DatabaseQuery());
-            queries[name].SQL = "SELECT last_insert_rowid()";
+            return new DatabaseQuery
+            {
+                SQL = "SELECT last_insert_rowid()"
+            };
         }
 
         #endregion

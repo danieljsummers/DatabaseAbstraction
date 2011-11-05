@@ -62,6 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Interfaces\IQueryFragmentProvider.cs" />
+    <Compile Include="Models\FragmentedQuery.cs" />
+    <Compile Include="Models\QueryFragment.cs" />
+    <Compile Include="Models\QueryFragmentType.cs" />
     <Compile Include="OdbcDatabaseService.cs" />
     <Compile Include="Providers\DatabaseAbstractionMembershipProvider.cs" />
     <Compile Include="Interfaces\IDatabaseModel.cs" />

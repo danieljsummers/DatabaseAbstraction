@@ -47,28 +47,52 @@ namespace DatabaseAbstraction.Utils
         public static IDatabaseService CreateDatabaseService(string connectionString, string providerName,
             params IQueryLibrary[] queries)
         {
+            return CreateDatabaseService(connectionString, providerName, null, queries);
+        }
+
+        /// <summary>
+        /// Get a database connection
+        /// </summary>
+        /// <param name="connectionString">
+        /// The connection string to use when creating the connection
+        /// </param>
+        /// <param name="providerName">
+        /// The provider name (used to derive concrete class)
+        /// </param>
+        /// <param name="fragments">
+        /// The <see cref="IQueryFragmentProvider"/> classes to use in building instance-level queries
+        /// </param>
+        /// <param name="queries">
+        /// The <see cref="IQueryLibrary"/> classes with instance-level queries
+        /// </param>
+        /// <returns>
+        /// A database connection of the applicable type
+        /// </returns>
+        public static IDatabaseService CreateDatabaseService(string connectionString, string providerName,
+            List<IQueryFragmentProvider> fragments, params IQueryLibrary[] queries)
+        {
             IDatabaseService service = null;
 
             switch (providerName)
             {
                 case "Npgsql":
-                    service = new PostgresDatabaseService(connectionString, queries);
+                    service = new PostgresDatabaseService(connectionString, fragments, queries);
                     break;
 
                 case "MySql.Data.MySqlClient":
-                    service = new MySqlDatabaseService(connectionString, queries);
+                    service = new MySqlDatabaseService(connectionString, fragments, queries);
                     break;
 
                 case "System.Data.SqlClient":
-                    service = new SqlDatabaseService(connectionString, queries);
+                    service = new SqlDatabaseService(connectionString, fragments, queries);
                     break;
 
                 case "System.Data.SQLite":
-                    service = new SQLiteDatabaseService(connectionString, queries);
+                    service = new SQLiteDatabaseService(connectionString, fragments, queries);
                     break;
 
                 case "System.Data.Odbc":
-                    service = new OdbcDatabaseService(connectionString, queries);
+                    service = new OdbcDatabaseService(connectionString, fragments, queries);
                     break;
             }
 

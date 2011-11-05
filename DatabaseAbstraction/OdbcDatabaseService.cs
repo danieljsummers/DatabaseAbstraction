@@ -1,6 +1,7 @@
 ﻿namespace DatabaseAbstraction
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Odbc;
     using DatabaseAbstraction.Interfaces;
@@ -20,7 +21,23 @@
         /// Zero or more <see cref="IQueryLibrary"/> classes with queries for this instance
         /// </param>
         public OdbcDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : base(classes)
+            : this(connectionString, null, classes) { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="connectionString">
+        /// The string to use when creating the connection
+        /// </param>
+        /// <param name="fragments">
+        /// The classes providing query fragments for instance-level queries
+        /// </param>
+        /// <param name="classes">
+        /// Zero or more <see cref="IQueryLibrary"/> classes with queries for this instance
+        /// </param>
+        public OdbcDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
+            params IQueryLibrary[] classes)
+            : base(fragments, classes)
         {
             // Connect to the database
             Connection = new OdbcConnection(connectionString);

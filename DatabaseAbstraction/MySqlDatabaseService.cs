@@ -1,5 +1,6 @@
 namespace DatabaseAbstraction
 {
+    using System.Collections.Generic;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
@@ -13,11 +14,30 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Constructor for the MySQL database service
         /// </summary>
+        /// <param name="connectionString">
+        /// The string to use when creating the database connection
+        /// </param>
         /// <param name="classes">
         /// Classes that contain query libraries to use when initializing the service
         /// </param>
         public MySqlDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : base(classes)
+            : this(connectionString, null, classes) { }
+
+        /// <summary>
+        /// Constructor for the MySQL database service
+        /// </summary>
+        /// <param name="connectionString">
+        /// The string to use when creating the database connection
+        /// </param>
+        /// <param name="fragments">
+        /// The classes providing query fragments for instance-level queries
+        /// </param>
+        /// <param name="classes">
+        /// Classes that contain query libraries to use when initializing the service
+        /// </param>
+        public MySqlDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
+            params IQueryLibrary[] classes)
+            : base(fragments, classes)
         {
             // Connect to the database.
             Connection = new MySqlConnection(connectionString);

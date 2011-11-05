@@ -1229,7 +1229,6 @@
             }
         }
 
-
         /// <summary>
         /// Check the user's password against the one provided
         /// </summary>
@@ -1293,7 +1292,6 @@
 
             return encodedPassword;
         }
-
 
         /// <summary>
         /// Decrypt or leave the password clear based on the PasswordFormat
@@ -1391,16 +1389,20 @@
         /// Get a database connection
         /// </summary>
         /// <returns>
-        /// A database connection (type derived from connection string)
+        /// A database connection (type derived from provider name)
         /// </returns>
         private IDatabaseService Database()
         {
             // Determine if the "provider.validate_user" query exists in the static query library.  If it does, the
             // caller has already populated it, and we don't need to pass it.  If it does not, we'll be using an
             // instance query library instead.
-            return (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
-                ? DbUtils.CreateDatabaseService(ConnectionString, ProviderName)
-                : DbUtils.CreateDatabaseService(ConnectionString, ProviderName, new ProviderQueryLibrary());
+            if (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
+                return DbUtils.CreateDatabaseService(ConnectionString, ProviderName);
+
+            List<IQueryFragmentProvider> fragmentProviders = new List<IQueryFragmentProvider>();
+            fragmentProviders.Add(new ProviderQueryLibrary());
+
+            return DbUtils.CreateDatabaseService(ConnectionString, ProviderName, fragmentProviders, new ProviderQueryLibrary());
         }
 
         #endregion

@@ -11,6 +11,11 @@
     /// <summary>
     /// This service manipulates the common contact information objects
     /// </summary>
+    /// <remarks>
+    /// To utilize this service, you must load the information from the <see cref="ContactQueryLibrary"/> and the query
+    /// fragments from the <see cref="ContactInformation"/> class into the database instance used to construct the
+    /// instance of this service.
+    /// </remarks>
     public sealed class ContactService
     {
         /// <summary>
@@ -39,8 +44,8 @@
         public void InsertContact(ContactInformation contact)
         {
             // Insert the contact record.
-            Data.Insert("contact.insert", contact);
             contact.ID = Data.Sequence("contact_contact_id");
+            Data.Insert("contact.insert", contact);
 
             // Insert the addresses.
             foreach (Address address in contact.Addresses)

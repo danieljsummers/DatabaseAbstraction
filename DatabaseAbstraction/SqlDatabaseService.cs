@@ -1,5 +1,6 @@
 namespace DatabaseAbstraction
 {
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
     using DatabaseAbstraction.Interfaces;
@@ -13,11 +14,30 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Constructor for the SQL Server database service
         /// </summary>
+        /// <param name="connectionString">
+        /// The string to use when creating the database connection
+        /// </param>
         /// <param name="classes">
         /// Classes that contain query libraries to use when initializing the service
         /// </param>
         public SqlDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : base(classes)
+            : this(connectionString, null, classes) { }
+
+        /// <summary>
+        /// Constructor for the SQL Server database service
+        /// </summary>
+        /// <param name="connectionString">
+        /// The string to use when creating the database connection
+        /// </param>
+        /// <param name="fragments">
+        /// The classes providing query fragments for instance-level queries
+        /// </param>
+        /// <param name="classes">
+        /// Classes that contain query libraries to use when initializing the service
+        /// </param>
+        public SqlDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
+            params IQueryLibrary[] classes)
+            : base(fragments, classes)
         {
             // Connect to the database.
             Connection = new SqlConnection(connectionString);

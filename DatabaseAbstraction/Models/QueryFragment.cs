@@ -1,25 +1,20 @@
-namespace DatabaseAbstraction.Models
+﻿namespace DatabaseAbstraction.Models
 {
     using System.Collections.Generic;
     using System.Data;
 
     /// <summary>
-    /// A database query.
+    /// This is a query fragment, used to construct a query from reusable parts
     /// </summary>
-    public class DatabaseQuery
+    public class QueryFragment
     {
         /// <summary>
-        /// The name by which the query is known
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The SQL for the query
+        /// The SQL for this query fragment
         /// </summary>
         public string SQL { get; set; }
 
         /// <summary>
-        /// The parameters for the query
+        /// Parameters associated with this fragment
         /// </summary>
         public Dictionary<string, DbType> Parameters
         {
@@ -27,10 +22,6 @@ namespace DatabaseAbstraction.Models
             {
                 if (null == _parameters) _parameters = new Dictionary<string, DbType>();
                 return _parameters;
-            }
-            set
-            {
-                _parameters = value;
             }
         }
         private Dictionary<string, DbType> _parameters;

@@ -1,11 +1,17 @@
 namespace DatabaseAbstraction
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
+    using System.Text;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
+
+    #endregion
 
     /// <summary>
     /// This abstract class contains the majority of the implementation of the database abstraction.  The specific
@@ -14,6 +20,8 @@ namespace DatabaseAbstraction
     /// </summary>
     public abstract class DatabaseService : IDisposable
     {
+        #region Properties
+
         private static Dictionary<string, DatabaseQuery> _staticQueries;
 
         /// <summary>
@@ -47,21 +55,40 @@ namespace DatabaseAbstraction
         protected Dictionary<string, DatabaseQuery> Queries { get; set; }
 
         /// <summary>
-        /// The database connection for this service.
+        /// The database connection for this service
         /// </summary>
         protected IDbConnection Connection { get; set; }
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
-        /// Constructor for this class.
+        /// Constructor for this class
         /// </summary>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary"/> classes to use when building the query library.
+        /// The <see cref="IQueryLibrary"/> classes to use when building the query library
         /// </param>
-        public DatabaseService(params IQueryLibrary[] classes)
+        public DatabaseService(params IQueryLibrary[] classes) : this(null, classes) { }
+
+        /// <summary>
+        /// Constructor for this class
+        /// </summary>
+        /// <param name="fragments">
+        /// The <see cref="IQueryFragmentProvider"/> objects which provide query fragments
+        /// </param>
+        /// <param name="classes">
+        /// The <see cref="IQueryLibrary"/> classes to use when building the query library
+        /// </param>
+        public DatabaseService(List<IQueryFragmentProvider> fragments, params IQueryLibrary[] classes)
         {
             Queries = new Dictionary<string, DatabaseQuery>();
-            FillQueryLibrary(Queries, classes);
+            FillQueryLibrary(Queries, fragments, classes);
         }
+
+        #endregion
+
+        #region IDatabaseService Implementation (most methods)
 
         /// <summary>
         /// Get a set of data from the database
@@ -396,6 +423,10 @@ namespace DatabaseAbstraction
             return command;
         }
 
+        #endregion
+
+        #region Library Maintenance
+
         /// <summary>
         /// Fill the static query library
         /// </summary>
@@ -404,7 +435,12 @@ namespace DatabaseAbstraction
         /// </param>
         public static void FillStaticQueryLibrary(params IQueryLibrary[] classes)
         {
-            FillQueryLibrary(StaticQueries, classes);
+            FillStaticQueryLibrary(null, classes);
+        }
+
+        public static void FillStaticQueryLibrary(List<IQueryFragmentProvider> fragments, params IQueryLibrary[] classes)
+        {
+            FillQueryLibrary(StaticQueries, fragments, classes);
         }
 
         /// <summary>
@@ -417,15 +453,110 @@ namespace DatabaseAbstraction
         /// The query library classes to use to fill the library
         /// </param>
         private static void FillQueryLibrary(Dictionary<string, DatabaseQuery> library,
-                params IQueryLibrary[] classes)
+            List<IQueryFragmentProvider> fragmentProviders, params IQueryLibrary[] classes)
         {
+            Dictionary<string, QueryFragment> fragments = new Dictionary<string, QueryFragment>();
+            
+            if (null != fragmentProviders)
+                foreach (IQueryFragmentProvider provider in fragmentProviders)
+                    provider.Fragments(fragments);
+
             foreach (IQueryLibrary theLibrary in classes)
                 theLibrary.GetQueries(library);
 
             // Set the name property in every query
             foreach (KeyValuePair<string, DatabaseQuery> query in library)
                 query.Value.Name = query.Key;
+
+            foreach (string name in library.Keys)
+                if (library[name].GetType().Equals(typeof(FragmentedQuery)))
+                    library[name] = AssembleFragmentedQuery((FragmentedQuery)library[name], fragments);
+            
         }
+
+        /// <summary>
+        /// Put the fragmented query together
+        /// </summary>
+        /// <param name="query">
+        /// The query being assembled
+        /// </param>
+        /// <param name="fragments">
+        /// The fragments to use in the assembly
+        /// </param>
+        /// <returns>
+        /// A database query
+        /// </returns>
+        private static DatabaseQuery AssembleFragmentedQuery(FragmentedQuery query, 
+            Dictionary<string, QueryFragment> fragments)
+        {
+            DatabaseQuery newQuery = new DatabaseQuery();
+
+            newQuery.Name = query.Name;
+            newQuery.Parameters = query.Parameters;
+
+            StringBuilder sql = new StringBuilder(query.SQL);
+
+            foreach (QueryFragmentType type in Enum.GetValues(typeof(QueryFragmentType)))
+                AppendFragment(type, query, newQuery, sql, fragments);
+
+            newQuery.SQL = sql.ToString();
+
+            return newQuery;
+        }
+
+        /// <summary>
+        /// Append a query fragment to the new query
+        /// </summary>
+        /// <param name="type">
+        /// The <see cref="QueryFragmentType"/> being appended
+        /// </param>
+        /// <param name="query">
+        /// The original fragmented query
+        /// </param>
+        /// <param name="newQuery">
+        /// The new assembled query
+        /// </param>
+        /// <param name="sql">
+        /// The SQL string being built
+        /// </param>
+        /// <param name="fragments">
+        /// The fragments available for selection
+        /// </param>
+        private static void AppendFragment(QueryFragmentType type, FragmentedQuery query, DatabaseQuery newQuery,
+            StringBuilder sql, Dictionary<string, QueryFragment> fragments)
+        {
+            // Does the query have a fragment of this type?
+            var fragment = from frag in query.Fragments
+                           where type == frag.Key
+                           select frag;
+
+            if (0 == fragment.Count()) return;
+
+            // Is there a fragment that matches the name of this fragment?
+            if (!fragments.ContainsKey(fragment.ElementAt(0).Value))
+                throw new KeyNotFoundException(String.Format("Unable to find {0} query fragment {1} defined in query {2}",
+                    Enum.GetName(typeof(QueryFragmentType), type), fragment.ElementAt(0).Value, query.Name));
+
+            // Append the SQL from this fragment
+            sql.Append(" ").Append(fragments[fragment.ElementAt(0).Value].SQL);
+
+            // Append the parameter for this fragment
+            foreach (KeyValuePair<string, DbType> parameter in fragments[fragment.ElementAt(0).Value].Parameters)
+                newQuery.Parameters.Add(parameter.Key, parameter.Value);
+
+            // Append after-the-fragment SQL if it exists
+            fragment = from frag in query.AfterFragment
+                       where type == frag.Key
+                       select frag;
+
+            if (0 == fragment.Count()) return;
+
+            sql.Append(" ").Append(fragment.ElementAt(0).Value);
+        }
+
+        #endregion
+
+        #region IDisposable Implementation
 
         /// <summary>
         /// Clean up resources for this service
@@ -435,5 +566,7 @@ namespace DatabaseAbstraction
             if (ConnectionState.Closed != Connection.State) Connection.Close();
             Connection.Dispose();
         }
+
+        #endregion
     }
 }

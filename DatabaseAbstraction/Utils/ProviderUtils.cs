@@ -1,13 +1,8 @@
 ﻿namespace DatabaseAbstraction.Utils
 {
     using System;
-    using System.Collections.Generic;
     using System.Configuration.Provider;
     using System.Diagnostics;
-    using System.Linq;
-    using System.Text;
-    using DatabaseAbstraction.Interfaces;
-    using DatabaseAbstraction.Queries;
 
     /// <summary>
     /// Utility methods for the membership and role provider classes
@@ -83,6 +78,5 @@
 
             return null;
         }
-
     }
 }
