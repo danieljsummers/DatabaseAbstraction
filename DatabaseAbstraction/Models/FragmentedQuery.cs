@@ -1,6 +1,10 @@
 ﻿namespace DatabaseAbstraction.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// This defines a query that must be put together with one or more fragments
@@ -32,5 +36,74 @@
             }
         }
         private Dictionary<QueryFragmentType, string> _afterFragment;
+
+        /// <summary>
+        /// Put the fragmented query together
+        /// </summary>
+        /// <param name="query">
+        /// The query being assembled
+        /// </param>
+        /// <param name="fragments">
+        /// The fragments to use in the assembly
+        /// </param>
+        /// <returns>
+        /// A database query
+        /// </returns>
+        public void Assemble(Dictionary<string, QueryFragment> fragments)
+        {
+            StringBuilder sql = new StringBuilder(SQL);
+
+            foreach (QueryFragmentType type in Enum.GetValues(typeof(QueryFragmentType)))
+                AppendFragment(type, sql, fragments);
+
+            SQL = sql.ToString();
+
+            // Clear out the fragment definitions
+            _fragments = null;
+            _afterFragment = null;
+        }
+
+        /// <summary>
+        /// Append a query fragment to the new query
+        /// </summary>
+        /// <param name="type">
+        /// The <see cref="QueryFragmentType"/> being appended
+        /// </param>
+        /// <param name="sql">
+        /// The SQL string being built
+        /// </param>
+        /// <param name="fragments">
+        /// The fragments available for selection
+        /// </param>
+        public void AppendFragment(QueryFragmentType type, StringBuilder sql, Dictionary<string, QueryFragment> fragments)
+        {
+            // Does the query have a fragment of this type?
+            var fragment = from frag in Fragments
+                           where type == frag.Key
+                           select frag;
+
+            if (0 == fragment.Count()) return;
+
+            // Is there a fragment that matches the name of this fragment?
+            if (!fragments.ContainsKey(fragment.ElementAt(0).Value))
+                throw new KeyNotFoundException(String.Format("Unable to find {0} query fragment {1} defined in query {2}",
+                    Enum.GetName(typeof(QueryFragmentType), type), fragment.ElementAt(0).Value, Name));
+
+            // Append the SQL from this fragment
+            sql.Append(" ").Append(fragments[fragment.ElementAt(0).Value].SQL);
+
+            // Append the parameter for this fragment
+            foreach (KeyValuePair<string, DbType> parameter in fragments[fragment.ElementAt(0).Value].Parameters)
+                Parameters.Add(parameter.Key, parameter.Value);
+
+            // Append after-the-fragment SQL if it exists
+            fragment = from frag in AfterFragment
+                       where type == frag.Key
+                       select frag;
+
+            if (0 == fragment.Count()) return;
+
+            sql.Append(" ").Append(fragment.ElementAt(0).Value);
+        }
     }
 }

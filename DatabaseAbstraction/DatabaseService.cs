@@ -5,8 +5,6 @@ namespace DatabaseAbstraction
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Linq;
-    using System.Text;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
@@ -468,90 +466,10 @@ namespace DatabaseAbstraction
             foreach (KeyValuePair<string, DatabaseQuery> query in library)
                 query.Value.Name = query.Key;
 
+            // Assemble fragmented queries
             foreach (string name in library.Keys)
                 if (library[name].GetType().Equals(typeof(FragmentedQuery)))
-                    library[name] = AssembleFragmentedQuery((FragmentedQuery)library[name], fragments);
-            
-        }
-
-        /// <summary>
-        /// Put the fragmented query together
-        /// </summary>
-        /// <param name="query">
-        /// The query being assembled
-        /// </param>
-        /// <param name="fragments">
-        /// The fragments to use in the assembly
-        /// </param>
-        /// <returns>
-        /// A database query
-        /// </returns>
-        private static DatabaseQuery AssembleFragmentedQuery(FragmentedQuery query, 
-            Dictionary<string, QueryFragment> fragments)
-        {
-            DatabaseQuery newQuery = new DatabaseQuery();
-
-            newQuery.Name = query.Name;
-            newQuery.Parameters = query.Parameters;
-
-            StringBuilder sql = new StringBuilder(query.SQL);
-
-            foreach (QueryFragmentType type in Enum.GetValues(typeof(QueryFragmentType)))
-                AppendFragment(type, query, newQuery, sql, fragments);
-
-            newQuery.SQL = sql.ToString();
-
-            return newQuery;
-        }
-
-        /// <summary>
-        /// Append a query fragment to the new query
-        /// </summary>
-        /// <param name="type">
-        /// The <see cref="QueryFragmentType"/> being appended
-        /// </param>
-        /// <param name="query">
-        /// The original fragmented query
-        /// </param>
-        /// <param name="newQuery">
-        /// The new assembled query
-        /// </param>
-        /// <param name="sql">
-        /// The SQL string being built
-        /// </param>
-        /// <param name="fragments">
-        /// The fragments available for selection
-        /// </param>
-        private static void AppendFragment(QueryFragmentType type, FragmentedQuery query, DatabaseQuery newQuery,
-            StringBuilder sql, Dictionary<string, QueryFragment> fragments)
-        {
-            // Does the query have a fragment of this type?
-            var fragment = from frag in query.Fragments
-                           where type == frag.Key
-                           select frag;
-
-            if (0 == fragment.Count()) return;
-
-            // Is there a fragment that matches the name of this fragment?
-            if (!fragments.ContainsKey(fragment.ElementAt(0).Value))
-                throw new KeyNotFoundException(String.Format("Unable to find {0} query fragment {1} defined in query {2}",
-                    Enum.GetName(typeof(QueryFragmentType), type), fragment.ElementAt(0).Value, query.Name));
-
-            // Append the SQL from this fragment
-            sql.Append(" ").Append(fragments[fragment.ElementAt(0).Value].SQL);
-
-            // Append the parameter for this fragment
-            foreach (KeyValuePair<string, DbType> parameter in fragments[fragment.ElementAt(0).Value].Parameters)
-                newQuery.Parameters.Add(parameter.Key, parameter.Value);
-
-            // Append after-the-fragment SQL if it exists
-            fragment = from frag in query.AfterFragment
-                       where type == frag.Key
-                       select frag;
-
-            if (0 == fragment.Count()) return;
-
-            sql.Append(" ").Append(fragment.ElementAt(0).Value);
+                    ((FragmentedQuery)library[name]).Assemble(fragments);
         }
 
         #endregion
