@@ -100,9 +100,42 @@
         [Test]
         public void Assemble()
         {
-            // Set up a query with fragments and after-fragments on every type
-            FragmentedQuery query = new FragmentedQuery { SQL = "original" };
-            
+            // Set up a query with SQL and fragments/after-fragments on every type
+            var query = AllFragmentsUsed();
+            var fragments = AllFragments();
+
+            query.SQL = "original";
+
+            // Put it all together
+            query.Assemble(fragments);
+
+            // Check the results
+            Assert.AreEqual(
+                "original select after-select insert after-insert update after-update delete after-delete from after-from where after-where orderby after-orderby",
+                query.SQL, "Fragmented query was not generated correctly");
+            Assert.AreEqual(0, query.Fragments.Count, "Query fragments were not cleared");
+            Assert.AreEqual(0, query.AfterFragment.Count, "Query after-fragments were not cleared");
+
+            // Same as above, but this time without SQL
+            query = AllFragmentsUsed();
+
+            query.Assemble(fragments);
+
+            Assert.AreEqual(
+                "select after-select insert after-insert update after-update delete after-delete from after-from where after-where orderby after-orderby",
+                query.SQL, "Fragmented query with no prior SQL was not generated correctly");
+        }
+
+        /// <summary>
+        /// Get a fragmented query with all fragments used
+        /// </summary>
+        /// <returns>
+        /// A fragmented query with all fragments used
+        /// </returns>
+        private FragmentedQuery AllFragmentsUsed()
+        {
+            var query = new FragmentedQuery();
+
             query.Fragments.Add(QueryFragmentType.Select, "unit.test.select");
             query.Fragments.Add(QueryFragmentType.From, "unit.test.from");
             query.Fragments.Add(QueryFragmentType.Where, "unit.test.where");
@@ -119,8 +152,18 @@
             query.AfterFragment.Add(QueryFragmentType.Where, "after-where");
             query.AfterFragment.Add(QueryFragmentType.OrderBy, "after-orderby");
 
-            // Set up fragments
-            Dictionary<string, QueryFragment> fragments = new Dictionary<string, QueryFragment>();
+            return query;
+        }
+
+        /// <summary>
+        /// Get a list of fragments with their type name as the SQL for the fragment
+        /// </summary>
+        /// <returns>
+        /// A list of fragments
+        /// </returns>
+        private Dictionary<string, QueryFragment> AllFragments()
+        {
+            var fragments = new Dictionary<string, QueryFragment>();
 
             fragments.Add("unit.test.select", new QueryFragment { SQL = "select" });
             fragments.Add("unit.test.insert", new QueryFragment { SQL = "insert" });
@@ -130,15 +173,7 @@
             fragments.Add("unit.test.where", new QueryFragment { SQL = "where" });
             fragments.Add("unit.test.orderby", new QueryFragment { SQL = "orderby" });
 
-            // Put it all together
-            query.Assemble(fragments);
-
-            // Check the results
-            Assert.AreEqual(
-                "original select after-select insert after-insert update after-update delete after-delete from after-from where after-where orderby after-orderby",
-                query.SQL);
-            Assert.AreEqual(0, query.Fragments.Count);
-            Assert.AreEqual(0, query.AfterFragment.Count);
+            return fragments;
         }
     }
 }

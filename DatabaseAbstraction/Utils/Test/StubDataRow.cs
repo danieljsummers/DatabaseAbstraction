@@ -14,6 +14,8 @@
     /// </remarks>
     public sealed class StubDataRow
     {
+        #region Properties
+
         /// <summary>
         /// The values for the row
         /// </summary>
@@ -37,6 +39,23 @@
         }
 
         /// <summary>
+        /// The number of values in this row
+        /// </summary>
+        public int Length
+        {
+            get { return (null == _values) ? -1 : _values.Length; }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Force use of data constructor
+        /// </summary>
+        private StubDataRow() { }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StubDataRow"/> class
         /// </summary>
         /// <param name="values">
@@ -46,5 +65,8 @@
         {
             _values = values;
         }
+
+        #endregion
+
     }
 }

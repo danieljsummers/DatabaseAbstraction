@@ -56,7 +56,7 @@
             foreach (QueryFragmentType type in Enum.GetValues(typeof(QueryFragmentType)))
                 AppendFragment(type, sql, fragments);
 
-            SQL = sql.ToString();
+            SQL = sql.ToString().Trim();
 
             // Clear out the fragment definitions
             _fragments = null;

@@ -82,7 +82,12 @@
 
         #endregion
 
-        #region Constructor
+        #region Constructors
+
+        /// <summary>
+        /// Force use of the parameter constructor
+        /// </summary>
+        private StubResultSet() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StubResultSet"/> class with the column names

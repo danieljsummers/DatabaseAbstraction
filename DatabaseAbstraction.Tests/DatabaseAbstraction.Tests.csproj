@@ -52,6 +52,8 @@
     <Compile Include="Queries\DatabaseQueryLibraryTest.cs" />
     <Compile Include="Utils\DbUtilsTest.cs" />
     <Compile Include="Utils\NullUtilsTest.cs" />
+    <Compile Include="Utils\Test\StubDataRowTest.cs" />
+    <Compile Include="Utils\Test\StubResultSetTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseAbstraction\DatabaseAbstraction.csproj">
