@@ -4,6 +4,7 @@
     using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Utils;
 
     /// <summary>
     /// This represents a set of contact information.
@@ -72,11 +73,7 @@
         /// </returns>
         public Dictionary<string, object> DataParameters()
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-
-            parameters.Add("id", ID);
-
-            return parameters;
+            return DbUtils.SingleParameter("id", ID);
         }
 
         #endregion

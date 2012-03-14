@@ -82,7 +82,8 @@
                            where type == frag.Key
                            select frag;
 
-            if (0 == fragment.Count()) return;
+            if (0 == fragment.Count())
+                return;
 
             // Is there a fragment that matches the name of this fragment?
             if (!fragments.ContainsKey(fragment.ElementAt(0).Value))
@@ -93,7 +94,7 @@
             sql.Append(" ").Append(fragments[fragment.ElementAt(0).Value].SQL);
 
             // Append the parameter for this fragment
-            foreach (KeyValuePair<string, DbType> parameter in fragments[fragment.ElementAt(0).Value].Parameters)
+            foreach (var parameter in fragments[fragment.ElementAt(0).Value].Parameters)
                 Parameters.Add(parameter.Key, parameter.Value);
 
             // Append after-the-fragment SQL if it exists
@@ -101,7 +102,8 @@
                        where type == frag.Key
                        select frag;
 
-            if (0 == fragment.Count()) return;
+            if (0 == fragment.Count())
+                return;
 
             sql.Append(" ").Append(fragment.ElementAt(0).Value);
         }

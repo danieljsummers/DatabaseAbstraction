@@ -24,7 +24,7 @@ namespace DatabaseAbstraction.Utils
         /// </returns>
         public static Dictionary<string, object> SingleParameter(string name, object parameter)
         {
-            Dictionary<string, object> list = new Dictionary<string, object>();
+            var list = new Dictionary<string, object>();
             list.Add(name, parameter);
             return list;
         }

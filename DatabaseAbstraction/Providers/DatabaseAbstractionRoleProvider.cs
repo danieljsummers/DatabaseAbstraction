@@ -81,7 +81,7 @@
                 config["writeExceptionsToEventLog"], "false"));
 
             // Initialize connection string
-            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
+            var settings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
 
             if ((null == settings) || (String.IsNullOrEmpty(settings.ConnectionString)))
                 throw new ProviderException("Connection string cannot be blank.");
@@ -115,30 +115,30 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
                     // Validate the roles
-                    foreach (string rolename in rolenames)
+                    foreach (var rolename in rolenames)
                         if (!RoleExists(rolename, database))
                             throw new ProviderException("Role name not found.");
 
                     // Validate the users in the roles
-                    foreach (string username in usernames)
+                    foreach (var username in usernames)
                     {
                         if (username.Contains(","))
                             throw new ArgumentException("User names cannot contain commas.");
 
-                        foreach (string rolename in rolenames)
+                        foreach (var rolename in rolenames)
                             if (IsUserInRole(username, rolename, database))
                                 throw new ProviderException("User is already in role.");
                     }
 
                     // Add the users to the roles
-                    Dictionary<string, object> parameters = GetDefaultParameters("");
+                    var parameters = GetDefaultParameters("");
                     parameters.Add("username", "");
 
-                    foreach (string username in usernames)
-                        foreach (string rolename in rolenames)
+                    foreach (var username in usernames)
+                        foreach (var rolename in rolenames)
                         {
                             parameters["username"] = username;
                             parameters["rolename"] = rolename;
@@ -168,7 +168,7 @@
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
                     if (RoleExists(rolename, database))
                         throw new ProviderException("Role name already exists.");
@@ -200,7 +200,7 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
                     if (!RoleExists(rolename, database))
                         throw new ProviderException("Role does not exist.");
@@ -234,12 +234,12 @@
         /// </returns>
         public override string[] GetAllRoles()
         {
-            List<string> roles = new List<string>();
+            var roles = new List<string>();
 
             try
             {
-                using (IDatabaseService database = Database())
-                    using (IDataReader reader = database.Select("provider.get.role.by_application",
+                using (var database = Database())
+                    using (var reader = database.Select("provider.get.role.by_application",
                             DbUtils.SingleParameter("application_name", ApplicationName)))
                         while (reader.Read())
                             roles.Add(reader.GetString(reader.GetOrdinal("rolename")));
@@ -265,16 +265,16 @@
         /// </returns>
         public override string[] GetRolesForUser(string username)
         {
-            List<string> roles = new List<string>();
+            var roles = new List<string>();
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
             parameters.Add("username", username);
             parameters.Add("application_name", ApplicationName);
 
             try
             {
-                using (IDatabaseService database = Database())
-                    using (IDataReader reader = database.Select("provider.get.user_role.by_user", parameters))
+                using (var database = Database())
+                    using (var reader = database.Select("provider.get.user_role.by_user", parameters))
                         while (reader.Read())
                             roles.Add(reader.GetString(reader.GetOrdinal("rolename")));
             }
@@ -299,7 +299,7 @@
         /// </returns>
         public override string[] GetUsersInRole(string rolename)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
                 return GetUsersInRole(rolename, database);
         }
 
@@ -317,12 +317,11 @@
         /// </returns>
         private string[] GetUsersInRole(string rolename, IDatabaseService database)
         {
-            List<string> names = new List<string>();
+            var names = new List<string>();
 
             try
             {
-                using (IDataReader reader = database.Select("provider.get.user_role.by_role",
-                        GetDefaultParameters(rolename)))
+                using (var reader = database.Select("provider.get.user_role.by_role", GetDefaultParameters(rolename)))
                     while (reader.Read())
                         names.Add(reader.GetString(reader.GetOrdinal("username")));
             }
@@ -350,7 +349,7 @@
         /// </returns>
         public override bool IsUserInRole(string username, string rolename)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
                 return IsUserInRole(username, rolename, database);
         }
 
@@ -371,12 +370,12 @@
         /// </returns>
         private bool IsUserInRole(string username, string rolename, IDatabaseService database)
         {
-            Dictionary<string, object> parameters = GetDefaultParameters(rolename);
+            var parameters = GetDefaultParameters(rolename);
             parameters.Add("username", username);
 
             try
             {
-                using (IDataReader reader = database.SelectOne("provider.count.user_role", parameters))
+                using (var reader = database.SelectOne("provider.count.user_role", parameters))
                     return ((reader.Read()) && (0 < reader.GetInt32(reader.GetOrdinal("role_count"))));
             }
             catch (DataException exception)
@@ -400,22 +399,22 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    foreach (string rolename in rolenames)
+                    foreach (var rolename in rolenames)
                         if (!RoleExists(rolename, database))
                             throw new ProviderException("Role name not found.");
 
-                    foreach (string username in usernames)
-                        foreach (string rolename in rolenames)
+                    foreach (var username in usernames)
+                        foreach (var rolename in rolenames)
                             if (!IsUserInRole(username, rolename, database))
                                 throw new ProviderException("User is not in role.");
 
-                    Dictionary<string, object> parameters = GetDefaultParameters("");
+                    var parameters = GetDefaultParameters("");
                     parameters.Add("username", "");
 
-                    foreach (string username in usernames)
-                        foreach (string rolename in rolenames)
+                    foreach (var username in usernames)
+                        foreach (var rolename in rolenames)
                         {
                             parameters["username"] = username;
                             parameters["rolename"] = rolename;
@@ -442,7 +441,7 @@
         /// </returns>
         public override bool RoleExists(string rolename)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
                 return RoleExists(rolename, database);
         }
 
@@ -462,7 +461,7 @@
         {
             try
             {
-                using (IDataReader reader = database.SelectOne("provider.role_exists", GetDefaultParameters(rolename)))
+                using (var reader = database.SelectOne("provider.role_exists", GetDefaultParameters(rolename)))
                     return ((reader.Read()) && (0 < reader.GetInt32(reader.GetOrdinal("role_count"))));
             }
             catch (DataException exception)
@@ -487,15 +486,15 @@
         /// </returns>
         public override string[] FindUsersInRole(string rolename, string usernameToMatch)
         {
-            List<string> users = new List<string>();
+            var users = new List<string>();
 
-            Dictionary<string, object> parameters = GetDefaultParameters(rolename);
+            var parameters = GetDefaultParameters(rolename);
             parameters.Add("username", usernameToMatch);
 
             try
             {
-                using (IDatabaseService database = Database())
-                using (IDataReader reader = database.Select("provider.find.user_role", parameters))
+                using (var database = Database())
+                using (var reader = database.Select("provider.find.user_role", parameters))
                     while (reader.Read())
                         users.Add(reader.GetString(reader.GetOrdinal("username")));
             }
@@ -524,7 +523,7 @@
         /// </returns>
         private Dictionary<string, object> GetDefaultParameters(string rolename)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
 
             parameters.Add("rolename", rolename);
             parameters.Add("application_name", ApplicationName);
@@ -549,5 +548,6 @@
         }
 
         #endregion
+
     }
 }

@@ -75,13 +75,16 @@ namespace DatabaseAbstraction
 
             // Fill the query library
             Queries = new Dictionary<string, DatabaseQuery>();
-            foreach (IQueryLibrary library in classes) library.GetQueries(Queries);
+            
+            foreach (IQueryLibrary library in classes)
+                library.GetQueries(Queries);
 
             // Add database queries
             (new DatabaseQueryLibrary()).GetQueries(Queries);
 
             // Set the name property in every query
-            foreach (KeyValuePair<string, DatabaseQuery> query in Queries) query.Value.Name = query.Key;
+            foreach (var query in Queries)
+                query.Value.Name = query.Key;
 
             // Initialize the executed query list
             ExecutedQueries = new List<ExecutedQuery>();
@@ -98,7 +101,7 @@ namespace DatabaseAbstraction
 
         public IDataReader Select(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("SELECT"))
                 throw new NotSupportedException(String.Format("Query {0} is not a select statement", queryName));
@@ -133,7 +136,7 @@ namespace DatabaseAbstraction
 
         public void Insert(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("INSERT"))
                 throw new NotSupportedException(String.Format("Query {0} is not an insert statement", queryName));
@@ -148,7 +151,7 @@ namespace DatabaseAbstraction
 
         public void Update(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("UPDATE"))
                 throw new NotSupportedException(String.Format("Query {0} is not an update statement", queryName));
@@ -163,7 +166,7 @@ namespace DatabaseAbstraction
 
         public void Delete(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("DELETE"))
                 throw new NotSupportedException(String.Format("Query {0} is not a delete statement", queryName));
@@ -212,7 +215,9 @@ namespace DatabaseAbstraction
         /// </exception>
         private DatabaseQuery GetQuery(string queryName)
         {
-            if (Queries.ContainsKey(queryName)) return Queries[queryName];
+            if (Queries.ContainsKey(queryName))
+                return Queries[queryName];
+
             throw new KeyNotFoundException("Unable to find query " + queryName);
         }
 

@@ -111,7 +111,7 @@
             WriteExceptionsToEventLog = Convert.ToBoolean(ProviderUtils.ConfigValue(
                 config["writeExceptionsToEventLog"], "true"));
 
-            string configFormat = ProviderUtils.ConfigValue(config["passwordFormat"], "Hashed");
+            var configFormat = ProviderUtils.ConfigValue(config["passwordFormat"], "Hashed");
 
             switch (configFormat)
             {
@@ -129,7 +129,7 @@
             }
 
             // Initialize connection string
-            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
+            var settings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
 
             if ((null == settings) || (String.IsNullOrEmpty(settings.ConnectionString)))
                 throw new ProviderException("Connection string cannot be blank.");
@@ -137,7 +137,7 @@
             ConnectionString = settings.ConnectionString;
 
             // Get encryption and decryption key information from the configuration
-            Configuration cfg = WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.ApplicationVirtualPath);
+            var cfg = WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.ApplicationVirtualPath);
             machineKey = (MachineKeySection)cfg.GetSection("system.web/machineKey");
 
             if (machineKey.ValidationKey.Contains("AutoGenerate"))
@@ -238,12 +238,12 @@
         /// </returns>
         public override bool ChangePassword(string username, string oldPwd, string newPwd)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
             {
                 if (!ValidateUser(username, oldPwd, database))
                     return false;
 
-                ValidatePasswordEventArgs args = new ValidatePasswordEventArgs(username, newPwd, true);
+                var args = new ValidatePasswordEventArgs(username, newPwd, true);
 
                 OnValidatingPassword(args);
 
@@ -255,7 +255,7 @@
                         throw new MembershipPasswordException("Change password canceled due to new password validation failure.");
                 }
 
-                Dictionary<string, object> parameters = GetDefaultParameters(username);
+                var parameters = GetDefaultParameters(username);
                 parameters.Add("password", EncodePassword(newPwd));
                 parameters.Add("last_password_changed_date", DateTime.Now);
 
@@ -295,12 +295,12 @@
         public override bool ChangePasswordQuestionAndAnswer(string username, string password, string newPwdQuestion,
             string newPwdAnswer)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
             {
                 if (!ValidateUser(username, password, database))
                     return false;
 
-                Dictionary<string, object> parameters = GetDefaultParameters(username);
+                var parameters = GetDefaultParameters(username);
 
                 parameters.Add("question", newPwdQuestion);
                 parameters.Add("answer", EncodePassword(newPwdAnswer));
@@ -354,7 +354,7 @@
             string passwordQuestion, string passwordAnswer, bool isApproved, object providerUserKey,
             out MembershipCreateStatus status)
         {
-            ValidatePasswordEventArgs args = new ValidatePasswordEventArgs(username, password, true);
+            var args = new ValidatePasswordEventArgs(username, password, true);
 
             OnValidatingPassword(args);
 
@@ -370,7 +370,7 @@
                 return null;
             }
 
-            MembershipUser user = GetUser(username, false);
+            var user = GetUser(username, false);
 
             if (user != null)
             {
@@ -378,7 +378,7 @@
                 return null;
             }
 
-            DateTime createDate = DateTime.Now;
+            var createDate = DateTime.Now;
 
             if (providerUserKey == null)
             {
@@ -393,7 +393,7 @@
                 }
             }
 
-            Dictionary<string, object> parameters = GetDefaultParameters(username);
+            var parameters = GetDefaultParameters(username);
 
             parameters.Add("user_id", providerUserKey.ToString());
             parameters.Add("password", EncodePassword(password));
@@ -405,7 +405,7 @@
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
                     database.Insert("provider.insert.user", parameters);
                     user = GetUser(username, false, database);
@@ -440,9 +440,9 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    MembershipUser user = GetUser(username, false, database);
+                    var user = GetUser(username, false, database);
 
                     if (deleteAllRelatedData)
                     {
@@ -480,13 +480,13 @@
         public override MembershipUserCollection GetAllUsers(int pageIndex, int pageSize, out int totalRecords)
         {
             totalRecords = 0;
-            MembershipUserCollection users = new MembershipUserCollection();
+            var users = new MembershipUserCollection();
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    using (IDataReader reader = database.SelectOne("provider.count.users",
+                    using (var reader = database.SelectOne("provider.count.users",
                         DbUtils.SingleParameter("application_name", ApplicationName)))
                     {
                         reader.Read();
@@ -518,19 +518,19 @@
         /// </returns>
         public override int GetNumberOfUsersOnline()
         {
-            TimeSpan onlineSpan = new TimeSpan(0, System.Web.Security.Membership.UserIsOnlineTimeWindow, 0);
+            var onlineSpan = new TimeSpan(0, System.Web.Security.Membership.UserIsOnlineTimeWindow, 0);
 
             int numOnline = 0;
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
 
             parameters.Add("last_activity_date", DateTime.Now.Subtract(onlineSpan));
             parameters.Add("application_name", ApplicationName);
 
             try
             {
-                using (IDatabaseService database = Database())
-                using (IDataReader reader = database.SelectOne("provider.count.user.online", parameters))
+                using (var database = Database())
+                using (var reader = database.SelectOne("provider.count.user.online", parameters))
                     if (reader.Read())
                         numOnline = reader.GetInt32(reader.GetOrdinal("user_count"));
             }
@@ -564,14 +564,14 @@
             if (PasswordFormat == MembershipPasswordFormat.Hashed)
                 throw new ProviderException("Cannot retrieve Hashed passwords.");
 
-            string password = "";
-            string passwordAnswer = "";
+            var password = "";
+            var passwordAnswer = "";
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    using (IDataReader reader = database.SelectOne("provider.retrieve_password",
+                    using (var reader = database.SelectOne("provider.retrieve_password",
                         GetDefaultParameters(username)))
                     {
                         if (!reader.Read())
@@ -618,7 +618,7 @@
         /// </returns>
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
                 return GetUser(username, userIsOnline, database);
         }
 
@@ -641,12 +641,12 @@
         {
             try
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                var parameters = new Dictionary<string, object>();
 
                 parameters.Add("username", username);
                 parameters.Add("application_name", ApplicationName);
 
-                using (IDataReader reader = database.SelectOne("provider.get.user", parameters))
+                using (var reader = database.SelectOne("provider.get.user", parameters))
                 {
                     if (!reader.Read())
                         return null;
@@ -681,9 +681,9 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    using (IDataReader reader = database.SelectOne("provider.get.user.by_id",
+                    using (var reader = database.SelectOne("provider.get.user.by_id",
                         DbUtils.SingleParameter("user_id", providerUserKey)))
                     {
                         if (!reader.Read())
@@ -691,7 +691,7 @@
                             return null;
                         }
 
-                        MembershipUser user = GetUserFromReader(reader);
+                        var user = GetUserFromReader(reader);
 
                         if ((null != user) && (userIsOnline))
                             UpdateLastActivity(user.UserName, database);
@@ -721,12 +721,12 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
                     if (null == GetUser(username, false, database))
                         return false;
 
-                    Dictionary<string, object> parameters = GetDefaultParameters(username);
+                    var parameters = GetDefaultParameters(username);
 
                     parameters.Add("is_locked_out", false);
                     parameters.Add("last_locked_out_date", DateTime.Now);
@@ -757,14 +757,14 @@
         {
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    Dictionary<string, object> parameters = new Dictionary<string, object>();
+                    var parameters = new Dictionary<string, object>();
 
                     parameters.Add("email", email);
                     parameters.Add("application_name", ApplicationName);
 
-                    using (IDataReader reader = database.SelectOne("provider.get.username_by_email", parameters))
+                    using (var reader = database.SelectOne("provider.get.username_by_email", parameters))
                     {
                         if (!reader.Read()) return String.Empty;
                         return NullUtils.GetString(reader, "username");
@@ -802,10 +802,10 @@
                 throw new ProviderException("Password answer required for password reset.");
             }
 
-            string newPassword = Membership.GeneratePassword(newPasswordLength, MinRequiredNonAlphanumericCharacters);
+            var newPassword = Membership.GeneratePassword(newPasswordLength, MinRequiredNonAlphanumericCharacters);
 
             // Validate password
-            ValidatePasswordEventArgs args = new ValidatePasswordEventArgs(username, newPassword, true);
+            var args = new ValidatePasswordEventArgs(username, newPassword, true);
             OnValidatingPassword(args);
 
             if (args.Cancel)
@@ -818,9 +818,9 @@
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    using (IDataReader reader = database.SelectOne("provider.retrieve_password",
+                    using (var reader = database.SelectOne("provider.retrieve_password",
                         GetDefaultParameters(username)))
                     {
                         if (!reader.Read())
@@ -838,7 +838,7 @@
                     }
 
                     // Set the password
-                    Dictionary<string, object> parameters = GetDefaultParameters(username);
+                    var parameters = GetDefaultParameters(username);
 
                     parameters.Add("password", EncodePassword(newPassword));
                     parameters.Add("last_password_changed_date", DateTime.Now);
@@ -864,7 +864,7 @@
         /// </param>
         public override void UpdateUser(MembershipUser user)
         {
-            Dictionary<string, object> parameters = GetDefaultParameters(user.UserName);
+            var parameters = GetDefaultParameters(user.UserName);
 
             parameters.Add("email", user.Email);
             parameters.Add("comment", user.Comment);
@@ -872,7 +872,7 @@
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                     database.Update("provider.update.user", parameters);
             }
             catch (DataException exception)
@@ -897,7 +897,7 @@
         /// </returns>
         public override bool ValidateUser(string username, string password)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
                 return ValidateUser(username, password, database);
         }
 
@@ -920,19 +920,19 @@
         {
             bool isValid = false;
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
             parameters.Add("username", username);
             parameters.Add("application_name", ApplicationName);
 
             // Is the user approved?
-            bool isApproved = false;
+            var isApproved = false;
 
             // The password.
-            string actualPassword = "";
+            var actualPassword = "";
 
             try
             {
-                using (IDataReader reader = database.SelectOne("provider.validate_user", parameters))
+                using (var reader = database.SelectOne("provider.validate_user", parameters))
                 {
                     if (reader.Read())
                     {
@@ -988,13 +988,13 @@
             out int totalRecords)
         {
             totalRecords = 0;
-            MembershipUserCollection users = new MembershipUserCollection();
+            var users = new MembershipUserCollection();
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    using (IDataReader reader = database.SelectOne("provider.count.user.by_username",
+                    using (var reader = database.SelectOne("provider.count.user.by_username",
                         GetDefaultParameters(usernameToMatch)))
                     {
                         if (reader.Read())
@@ -1041,17 +1041,17 @@
             out int totalRecords)
         {
             totalRecords = 0;
-            MembershipUserCollection users = new MembershipUserCollection();
+            var users = new MembershipUserCollection();
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
             parameters.Add("email", emailToMatch);
             parameters.Add("application_name", ApplicationName);
 
             try
             {
-                using (IDatabaseService database = Database())
+                using (var database = Database())
                 {
-                    using (IDataReader reader = database.SelectOne("provider.count.user.by_email", parameters))
+                    using (var reader = database.SelectOne("provider.count.user.by_email", parameters))
                     {
                         if (reader.Read())
                             totalRecords = reader.GetInt32(reader.GetOrdinal("user_count"));
@@ -1116,7 +1116,7 @@
         /// </returns>
         private Dictionary<string, object> GetDefaultParameters(string username)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
 
             parameters.Add("username", username);
             parameters.Add("application_name", ApplicationName);
@@ -1135,7 +1135,7 @@
         /// </param>
         private void UpdateLastActivity(string username, IDatabaseService database)
         {
-            Dictionary<string, object> parameters = GetDefaultParameters(username);
+            var parameters = GetDefaultParameters(username);
             parameters.Add("last_activity_date", DateTime.Now);
 
             database.Update("provider.update.last_activity", parameters);
@@ -1152,7 +1152,7 @@
         /// </param>
         private void UpdateFailureCount(string username, string failureType)
         {
-            using (IDatabaseService database = Database())
+            using (var database = Database())
                 UpdateFailureCount(username, failureType, database);
         }
 
@@ -1170,12 +1170,12 @@
         /// </param>
         private void UpdateFailureCount(string username, string failureType, IDatabaseService database)
         {
-            DateTime windowStart = new DateTime();
-            int failureCount = 0;
+            var windowStart = new DateTime();
+            var failureCount = 0;
 
             try
             {
-                using (IDataReader reader = database.SelectOne("provider.failure_counts", GetDefaultParameters(username)))
+                using (var reader = database.SelectOne("provider.failure_counts", GetDefaultParameters(username)))
                 {
                     if (reader.Read())
                     {
@@ -1193,8 +1193,8 @@
                     }
                 }
 
-                DateTime windowEnd = windowStart.AddMinutes(PasswordAttemptWindow);
-                Dictionary<string, object> parameters = GetDefaultParameters(username);
+                var windowEnd = windowStart.AddMinutes(PasswordAttemptWindow);
+                var parameters = GetDefaultParameters(username);
 
                 if ((failureCount == 0) || (DateTime.Now > windowEnd))
                 {
@@ -1243,8 +1243,8 @@
         /// </returns>
         private bool CheckPassword(string password, string dbpassword)
         {
-            string pass1 = password;
-            string pass2 = dbpassword;
+            var pass1 = password;
+            var pass2 = dbpassword;
 
             switch (PasswordFormat)
             {
@@ -1272,7 +1272,7 @@
         /// </returns>
         private string EncodePassword(string password)
         {
-            string encodedPassword = password;
+            var encodedPassword = password;
 
             switch (PasswordFormat)
             {
@@ -1282,7 +1282,7 @@
                     encodedPassword = Convert.ToBase64String(EncryptPassword(Encoding.Unicode.GetBytes(password)));
                     break;
                 case MembershipPasswordFormat.Hashed:
-                    HMACSHA1 hash = new HMACSHA1();
+                    var hash = new HMACSHA1();
                     hash.Key = HexToByte(machineKey.ValidationKey);
                     encodedPassword = Convert.ToBase64String(hash.ComputeHash(Encoding.Unicode.GetBytes(password)));
                     break;
@@ -1304,7 +1304,7 @@
         /// </returns>
         private string UnEncodePassword(string encodedPassword)
         {
-            string password = encodedPassword;
+            var password = encodedPassword;
 
             switch (PasswordFormat)
             {
@@ -1336,8 +1336,8 @@
         /// </returns>
         private byte[] HexToByte(string hexString)
         {
-            byte[] returnBytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < returnBytes.Length; i++)
+            var returnBytes = new byte[hexString.Length / 2];
+            for (var i = 0; i < returnBytes.Length; i++)
                 returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
             return returnBytes;
         }
@@ -1366,11 +1366,11 @@
         private void GetPageOfUsers(string queryName, int pageIndex, int pageSize, IDatabaseService database,
             Dictionary<string, object> parameters, MembershipUserCollection users)
         {
-            int counter = 0;
-            int startIndex = pageIndex * pageSize;
-            int endIndex = startIndex + pageSize - 1;
+            var counter = 0;
+            var startIndex = pageIndex * pageSize;
+            var endIndex = startIndex + pageSize - 1;
 
-            using (IDataReader reader = database.Select(queryName, parameters))
+            using (var reader = database.Select(queryName, parameters))
             {
                 while (reader.Read())
                 {
@@ -1399,12 +1399,10 @@
             if (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
                 return DbUtils.CreateDatabaseService(ConnectionString, ProviderName);
 
-            List<IQueryFragmentProvider> fragmentProviders = new List<IQueryFragmentProvider>();
-            fragmentProviders.Add(new ProviderQueryLibrary());
-
-            return DbUtils.CreateDatabaseService(ConnectionString, ProviderName, fragmentProviders, new ProviderQueryLibrary());
+            return DbUtils.CreateDatabaseService(ConnectionString, ProviderName, new ProviderQueryLibrary());
         }
 
         #endregion
+
     }
 }

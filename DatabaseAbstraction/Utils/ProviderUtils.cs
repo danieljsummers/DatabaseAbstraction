@@ -63,11 +63,11 @@
         public static ProviderException WriteToEventLog(Exception exception, string action, string source,
             string exceptionText)
         {
-            EventLog log = new EventLog();
+            var log = new EventLog();
             log.Source = source;
             log.Log = "Application";
 
-            string message = "An exception occurred communicating with the data source.\n\n";
+            var message = "An exception occurred communicating with the data source.\n\n";
             message += "Action: " + action + "\n\n";
             message += "Exception: " + exception.ToString();
 

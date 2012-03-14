@@ -220,7 +220,7 @@ namespace DatabaseAbstraction
         /// </exception>
         private IDbCommand GetCommandForSelect(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("SELECT"))
                 throw new NotSupportedException("Query " + queryName + " is not a select statement");
@@ -242,7 +242,7 @@ namespace DatabaseAbstraction
         /// </exception>
         public virtual void Insert(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("INSERT"))
                 throw new NotSupportedException("Query " + queryName + " is not an insert statement");
@@ -280,7 +280,7 @@ namespace DatabaseAbstraction
         /// </exception>
         public virtual void Update(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("UPDATE"))
                 throw new NotSupportedException("Query " + queryName + " is not an update statement");
@@ -318,7 +318,7 @@ namespace DatabaseAbstraction
         /// </exception>
         public virtual void Delete(string queryName, Dictionary<string, object> parameters)
         {
-            DatabaseQuery query = GetQuery(queryName);
+            var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("DELETE"))
                 throw new NotSupportedException("Query " + queryName + " is not a delete statement");
@@ -364,7 +364,7 @@ namespace DatabaseAbstraction
                     "Invalid generic sequence \"{0}\" received (must be of the format \"table_id|table_name\"",
                     sequenceName));
 
-            Dictionary<string, object> parameters = new Dictionary<string,object>();
+            var parameters = new Dictionary<string, object>();
             parameters.Add("[]primary_key_name", inputParameters[0]);
             parameters.Add("[]table_name", inputParameters[1]);
 
@@ -386,8 +386,12 @@ namespace DatabaseAbstraction
         /// </exception>
         private DatabaseQuery GetQuery(string queryName)
         {
-            if (StaticQueries.ContainsKey(queryName)) return StaticQueries[queryName];
-            if (Queries.ContainsKey(queryName)) return Queries[queryName];
+            if (StaticQueries.ContainsKey(queryName))
+                return StaticQueries[queryName];
+
+            if (Queries.ContainsKey(queryName))
+                return Queries[queryName];
+
             throw new KeyNotFoundException("Unable to find query " + queryName);
         }
 
@@ -411,7 +415,7 @@ namespace DatabaseAbstraction
 
             if (null == parameters) return command;
 
-            foreach (KeyValuePair<string, DbType> queryParameter in query.Parameters)
+            foreach (var queryParameter in query.Parameters)
             {
                 if (parameters.ContainsKey(queryParameter.Key))
                 {
@@ -444,13 +448,23 @@ namespace DatabaseAbstraction
         /// Fill the static query library
         /// </summary>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary"/> classes to use to populate the library
+        /// The <see cref="IQueryLibrary"/> classes to use to populate the library; these classes will also be searched
+        /// for fragment providers, and they will be used if found
         /// </param>
         public static void FillStaticQueryLibrary(params IQueryLibrary[] classes)
         {
             FillStaticQueryLibrary(null, classes);
         }
 
+        /// <summary>
+        /// Fill the static query library
+        /// </summary>
+        /// <param name="fragments">
+        /// The fragment providers
+        /// </param>
+        /// <param name="classes">
+        /// The query providers
+        /// </param>
         public static void FillStaticQueryLibrary(List<IQueryFragmentProvider> fragments, params IQueryLibrary[] classes)
         {
             FillQueryLibrary(StaticQueries, fragments, classes);
@@ -468,17 +482,27 @@ namespace DatabaseAbstraction
         private static void FillQueryLibrary(Dictionary<string, DatabaseQuery> library,
             List<IQueryFragmentProvider> fragmentProviders, params IQueryLibrary[] classes)
         {
-            Dictionary<string, QueryFragment> fragments = new Dictionary<string, QueryFragment>();
-            
-            if (null != fragmentProviders)
-                foreach (IQueryFragmentProvider provider in fragmentProviders)
-                    provider.Fragments(fragments);
+            // Check the library classes for fragments
+            if (null == fragmentProviders)
+                fragmentProviders = new List<IQueryFragmentProvider>();
 
-            foreach (IQueryLibrary theLibrary in classes)
+            foreach (var provider in classes)
+                if (typeof(IQueryFragmentProvider).IsAssignableFrom(provider.GetType()))
+                    if (!fragmentProviders.Contains((IQueryFragmentProvider)provider))
+                        fragmentProviders.Add((IQueryFragmentProvider)provider);
+
+            // Get the fragments
+            var fragments = new Dictionary<string, QueryFragment>();
+
+            foreach (var provider in fragmentProviders)
+                provider.Fragments(fragments);
+
+            // Get the queries
+            foreach (var theLibrary in classes)
                 theLibrary.GetQueries(library);
 
             // Set the name property in every query
-            foreach (KeyValuePair<string, DatabaseQuery> query in library)
+            foreach (var query in library)
                 query.Value.Name = query.Key;
 
             // Assemble fragmented queries
@@ -496,10 +520,13 @@ namespace DatabaseAbstraction
         /// </summary>
         public void Dispose()
         {
-            if (ConnectionState.Closed != Connection.State) Connection.Close();
+            if (ConnectionState.Closed != Connection.State)
+                Connection.Close();
+
             Connection.Dispose();
         }
 
         #endregion
+
     }
 }

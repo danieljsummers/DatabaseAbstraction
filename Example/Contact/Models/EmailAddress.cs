@@ -61,7 +61,7 @@
         /// </returns>
         public Dictionary<string, object> DataParameters()
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
 
             parameters.Add("email_id", ID);
             parameters.Add("contact_id", ContactID);

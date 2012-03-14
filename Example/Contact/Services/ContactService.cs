@@ -58,15 +58,15 @@
             Data.Insert(QueryPrefix + "insert", contact);
 
             // Insert the addresses.
-            foreach (Address address in contact.Addresses)
+            foreach (var address in contact.Addresses)
                 InsertAddress(address, contact.ID);
 
             // Insert the phone numbers.
-            foreach (PhoneNumber phone in contact.PhoneNumbers)
+            foreach (var phone in contact.PhoneNumbers)
                 InsertPhone(phone, contact.ID);
 
             // Insert the e-mail address.
-            foreach (EmailAddress email in contact.EmailAddresses)
+            foreach (var email in contact.EmailAddresses)
                 InsertEmail(email, contact.ID);
         }
 
@@ -127,11 +127,11 @@
         /// </returns>
         public ContactInformation GetContact(int contactID)
         {
-            Dictionary<string, object> parameters = DbUtils.SingleParameter("contact_id", contactID);
+            var parameters = DbUtils.SingleParameter("contact_id", contactID);
 
             ContactInformation contact;
 
-            using (IDataReader data = Data.SelectOne(QueryPrefix + "get", parameters))
+            using (var data = Data.SelectOne(QueryPrefix + "get", parameters))
             {
                 if (!data.Read()) return null;
                 contact = new ContactInformation(data);
@@ -155,7 +155,7 @@
         /// </param>
         private void GetAddress(ContactInformation contact, Dictionary<string, object> parameters)
         {
-            using (IDataReader data = Data.Select(QueryPrefix + "get.address", parameters))
+            using (var data = Data.Select(QueryPrefix + "get.address", parameters))
                 while (data.Read())
                     contact.Addresses.Add(new Address(data));
         }
@@ -171,7 +171,7 @@
         /// </param>
         private void GetPhones(ContactInformation contact, Dictionary<string, object> parameters)
         {
-            using (IDataReader data = Data.Select(QueryPrefix + "get.phone", parameters))
+            using (var data = Data.Select(QueryPrefix + "get.phone", parameters))
                 while (data.Read())
                     contact.PhoneNumbers.Add(new PhoneNumber(data));
         }
@@ -187,7 +187,7 @@
         /// </param>
         private void GetEmails(ContactInformation contact, Dictionary<string, object> parameters)
         {
-            using (IDataReader data = Data.Select(QueryPrefix + "get.email", parameters))
+            using (var data = Data.Select(QueryPrefix + "get.email", parameters))
                 while (data.Read())
                     contact.EmailAddresses.Add(new EmailAddress(data));
         }
@@ -213,9 +213,9 @@
         /// </param>
         private void UpdateAddresses(ContactInformation contact)
         {
-            StringBuilder addressIDs = new StringBuilder("0");
+            var addressIDs = new StringBuilder("0");
 
-            foreach (Address address in contact.Addresses)
+            foreach (var address in contact.Addresses)
             {
                 if (0 == address.ID)
                     InsertAddress(address, contact.ID);
@@ -239,9 +239,9 @@
         /// </param>
         private void UpdatePhones(ContactInformation contact)
         {
-            StringBuilder phoneIDs = new StringBuilder("0");
+            var phoneIDs = new StringBuilder("0");
 
-            foreach (PhoneNumber phone in contact.PhoneNumbers)
+            foreach (var phone in contact.PhoneNumbers)
             {
                 if (0 == phone.ID)
                     InsertPhone(phone, contact.ID);
@@ -265,9 +265,9 @@
         /// </param>
         private void UpdateEmails(ContactInformation contact)
         {
-            StringBuilder emailIDs = new StringBuilder("0");
+            var emailIDs = new StringBuilder("0");
 
-            foreach (EmailAddress email in contact.EmailAddresses)
+            foreach (var email in contact.EmailAddresses)
             {
                 if (0 == email.ID)
                     InsertEmail(email, contact.ID);
@@ -291,7 +291,7 @@
         /// </param>
         public void DeleteContact(int contactID)
         {
-            Dictionary<string, object> parameters = DbUtils.SingleParameter("contact_id", contactID);
+            var parameters = DbUtils.SingleParameter("contact_id", contactID);
 
             Data.Delete(QueryPrefix + "delete.address", parameters);
             Data.Delete(QueryPrefix + "delete.phone", parameters);
@@ -307,10 +307,10 @@
         /// </returns>
         public List<KeyValuePair<int, string>> GetStateList()
         {
-            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            var list = new List<KeyValuePair<int, string>>();
 
             // FIXME: hard-coded USA
-            using (IDataReader data = Data.Select(QueryPrefix + "list.states", DbUtils.SingleParameter("country_id", 1)))
+            using (var data = Data.Select(QueryPrefix + "list.states", DbUtils.SingleParameter("country_id", 1)))
                 while (data.Read())
                     list.Add(new KeyValuePair<int, string>(data.GetInt32(data.GetOrdinal("id")),
                             data.GetString(data.GetOrdinal("description"))));
@@ -326,12 +326,12 @@
         /// </returns>
         public Dictionary<string, string> GetPhoneContactTypeList()
         {
-            Dictionary<string, string> list = new Dictionary<string, string>();
+            var list = new Dictionary<string, string>();
 
-            string[] names = Enum.GetNames(typeof(ContactType));
-            int[] values = (int[])Enum.GetValues(typeof(ContactType));
+            var names = Enum.GetNames(typeof(ContactType));
+            var values = (int[])Enum.GetValues(typeof(ContactType));
 
-            for (int index = 0; index < names.Length; index++)
+            for (var index = 0; index < names.Length; index++)
                 list.Add(values[index].ToString(), names[index]);
 
             return list;
@@ -345,14 +345,15 @@
         /// </returns>
         public Dictionary<string, string> GetEmailContactTypeList()
         {
-            Dictionary<string, string> list = new Dictionary<string, string>();
+            var list = new Dictionary<string, string>();
 
-            string[] names = Enum.GetNames(typeof(ContactType));
-            int[] values = (int[])Enum.GetValues(typeof(ContactType));
+            var names = Enum.GetNames(typeof(ContactType));
+            var values = (int[])Enum.GetValues(typeof(ContactType));
 
-            for (int index = 0; index < names.Length; index++)
+            for (var index = 0; index < names.Length; index++)
             {
-                if (("Cell".Equals(names[index])) || ("Fax".Equals(names[index]))) continue;
+                if (("Cell".Equals(names[index])) || ("Fax".Equals(names[index])))
+                    continue;
                 list.Add(values[index].ToString(), names[index]);
             }
 
