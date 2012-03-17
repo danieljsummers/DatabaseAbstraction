@@ -26,11 +26,15 @@
             get
             {
                 /// If we haven't issued NextResult() yet, just advance to the first index.  IDataReader doesn't make
-                /// you do that, but if you're calling <see cref="MockDatabaseService"/>.Select, it does.  This way,
-                /// it can call NextResult() without skipping the first one, but that execution is not required.  Also,
-                /// if we set the index to 0 here, the next call to NextResult() will advance to index 1.
+                /// you do that, but if you're calling <see cref="DatabaseAbstraction.MockDatabaseService.Select"/>, it
+                /// does.  This way, it can call NextResult() without skipping the first one, but that execution is not
+                /// required.  Also, if we set the index to 0 here, the next call to NextResult() will advance to index
+                /// 1.
                 if (0 > CurrentResultSetIndex)
                     CurrentResultSetIndex = 0;
+
+                if (CurrentResultSetIndex >= ResultSets.Count)
+                    throw new InvalidOperationException("Current ResultSet is at EOF");
 
                 return ResultSets[CurrentResultSetIndex];
             }
@@ -41,10 +45,7 @@
         /// </summary>
         public int FieldCount
         {
-            get
-            {
-                return CurrentResultSet.GetFieldNames().Length;
-            }
+            get { return CurrentResultSet.GetFieldNames().Length; }
         }
 
         /// <summary>
@@ -58,10 +59,7 @@
         /// </returns>
         public object this[int index]
         {
-            get
-            {
-                return CurrentResultSet[index];
-            }
+            get { return CurrentResultSet[index]; }
         }
 
         /// <summary>
@@ -75,10 +73,7 @@
         /// </returns>
         public object this[string name]
         {
-            get
-            {
-                return CurrentResultSet[name];
-            }
+            get { return CurrentResultSet[name]; }
         }
         
         /// <summary>
@@ -164,58 +159,78 @@
         /// <summary>
         /// Get the schema for the current result set
         /// </summary>
-        /// <remarks>stub</remarks>
+        /// <exception cref="System.NotImplementedException">
+        /// This functionality is not implemented
+        /// </exception>
         public DataTable GetSchemaTable()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("StubDataReader does not implement this functionality");
         }
 
         /// <summary>
         /// Get the nesting level for the current row
         /// </summary>
-        /// <remarks>stub</remarks>
+        /// <exception cref="System.NotImplementedException">
+        /// This functionality is not implemented
+        /// </exception>
         public int Depth
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException("StubDataReader does not implement this functionality"); }
         }
 
         /// <summary>
         /// Is this data reader closed?
         /// </summary>
-        /// <remarks>stub</remarks>
         public bool IsClosed
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// <summary>
         /// How many records were affected by the last command?
         /// </summary>
-        /// <remarks>stub</remarks>
         public int RecordsAffected
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
+        /// <summary>
+        /// Get the name of the column at the specified index
+        /// </summary>
+        /// <param name="index">
+        /// The index of the column
+        /// </param>
+        /// <returns>
+        /// The name of the column at the specified index
+        /// </returns>
         public string GetName(int index)
         {
             return CurrentResultSet.GetFieldNames()[index];
         }
 
+        /// <summary>
+        /// Get the data type name (same as <see cref="DatabaseAbstraction.Utils.Test.StubDataReader.GetName"/>)
+        /// </summary>
+        /// <param name="index">
+        /// The index of the column
+        /// </param>
+        /// <returns>
+        /// The name of the column at the specified index
+        /// </returns>
         public string GetDataTypeName(int index)
         {
             return GetName(index);
         }
 
+        /// <summary>
+        /// Get the type of a given field
+        /// </summary>
+        /// <param name="index">
+        /// The index of the column
+        /// </param>
+        /// <returns>
+        /// The field type of the given column
+        /// </returns>
         public Type GetFieldType(int index)
         {
             return ResultSets[0][index].GetType();
@@ -331,7 +346,7 @@
 
         public IDataReader GetData(int index)
         {
-            StubDataReader reader = new StubDataReader(ResultSets);
+            var reader = new StubDataReader(ResultSets);
 
             int currentIndex = 0;
             while (currentIndex < CurrentResultSetIndex)

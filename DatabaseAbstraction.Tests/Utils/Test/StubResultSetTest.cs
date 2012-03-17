@@ -1,11 +1,8 @@
 ﻿namespace DatabaseAbstraction.Tests.Utils.Test
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using NUnit.Framework;
     using DatabaseAbstraction.Utils.UnitTest;
+    using NUnit.Framework;
 
     /// <summary>
     /// Unit Tests for the StubResultSet class
@@ -25,9 +22,12 @@
             try
             {
                 var row = result.CurrentRow;
-                Assert.Fail("Attempt to get current should have failed because Read() has not been called");
+                Assert.Fail("Attempt to get current row should have thrown an exception (BOF)");
             }
-            catch (ArgumentOutOfRangeException) { }
+            catch (InvalidOperationException exception)
+            {
+                Assert.AreEqual("Current ResultSet is at BOF", exception.Message, "Unexpected BOF exception message");
+            }
 
             // Current Row after Read()
             result = new StubResultSet("a", "b", "c");
@@ -43,6 +43,16 @@
 
             // Final Read() should return false
             Assert.False(result.Read(), "Read() should have encountered the end of the set");
+
+            try
+            {
+                var row = result.CurrentRow;
+                Assert.Fail("Attempt to get current row should have thrown an exception (EOF)");
+            }
+            catch (InvalidOperationException exception)
+            {
+                Assert.AreEqual("Current ResultSet is at EOF", exception.Message, "Unexpected EOF exception message");
+            }
         }
 
         /// <summary>

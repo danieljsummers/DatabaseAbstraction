@@ -20,15 +20,14 @@ namespace DatabaseAbstraction
     {
         #region Properties
 
-        private static Dictionary<string, DatabaseQuery> _staticQueries;
-
         /// <summary>
         /// Static queries
         /// </summary>
         /// <remarks>
         /// The database service opens a connection, so implementors may wish to implement this as an instance class
         /// and not a singleton.  However, to reduce the overhead associated with creating a query library, this
-        /// query library can be created using the <see cref="FillStaticQueryLibrary"/> method (for example, in
+        /// query library can be created using the
+        /// <see cref="DatabaseAbstraction.DatabaseService.FillStaticQueryLibrary"/> method (for example, in
         /// Application_Start() of a web project).  The service will search it first, then the instance-level library.
         /// This provides the flexibility to put at many queries in the static library as the implmentor desires,
         /// while allowing them to add more queries to each instance of the service.
@@ -46,9 +45,10 @@ namespace DatabaseAbstraction
                 return _staticQueries;
             }
         }
+        private static Dictionary<string, DatabaseQuery> _staticQueries;
 
         /// <summary>
-        /// The instance query library (see notes for <see cref="StaticQueries"/>)
+        /// The instance query library (see notes for <see cref="DatabaseAbstraction.DatabaseService.StaticQueries"/>)
         /// </summary>
         protected Dictionary<string, DatabaseQuery> Queries { get; set; }
 
@@ -75,7 +75,7 @@ namespace DatabaseAbstraction
         /// Constructor for this class
         /// </summary>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary"/> classes to use when building the query library
+        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryLibrary"/> classes to use to build the query library
         /// </param>
         public DatabaseService(params IQueryLibrary[] classes) : this(null, classes) { }
 
@@ -83,10 +83,10 @@ namespace DatabaseAbstraction
         /// Constructor for this class
         /// </summary>
         /// <param name="fragments">
-        /// The <see cref="IQueryFragmentProvider"/> objects which provide query fragments
+        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryFragmentProvider"/> classes with query fragments
         /// </param>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary"/> classes to use when building the query library
+        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryLibrary"/> classes to use to build the query library
         /// </param>
         public DatabaseService(List<IQueryFragmentProvider> fragments, params IQueryLibrary[] classes)
         {
@@ -131,7 +131,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public virtual IDataReader Select(string queryName, Dictionary<string, object> parameters)
         {
-            using (IDbCommand command = GetCommandForSelect(queryName, parameters))
+            using (var command = GetCommandForSelect(queryName, parameters))
                 return command.ExecuteReader();
         }
 
@@ -142,8 +142,7 @@ namespace DatabaseAbstraction
         /// The name of the query
         /// </param>
         /// <param name="model">
-        /// The <see cref="IDatabaseModel"/> model object
-        /// to use for the query.
+        /// The <see cref="DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object to use for the query
         /// </param>
         /// <returns>
         /// A data reader with the data
@@ -181,7 +180,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public virtual IDataReader SelectOne(string queryName, Dictionary<string, object> parameters)
         {
-            using (IDbCommand command = GetCommandForSelect(queryName, parameters))
+            using (var command = GetCommandForSelect(queryName, parameters))
                 return command.ExecuteReader(CommandBehavior.SingleRow);
         }
 
@@ -192,8 +191,7 @@ namespace DatabaseAbstraction
         /// The name of the query
         /// </param>
         /// <param name="model">
-        /// The <see cref="IDatabaseModel"/> model object
-        /// to use for the query.
+        /// The <see cref="DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object to use for the query
         /// </param>
         /// <returns>
         /// A data reader with the data
@@ -215,7 +213,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A command ready to execute
         /// </returns>
-        /// <exception cref="NotSupportedException">
+        /// <exception cref="System.NotSupportedException">
         /// If the query is not a SELECT statement
         /// </exception>
         private IDbCommand GetCommandForSelect(string queryName, Dictionary<string, object> parameters)
@@ -223,7 +221,7 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("SELECT"))
-                throw new NotSupportedException("Query " + queryName + " is not a select statement");
+                throw new NotSupportedException(String.Format("Query {0} is not a select statement", queryName));
 
             return MakeCommand(query, parameters);
         }
@@ -237,7 +235,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters to use for the command
         /// </param>
-        /// <exception cref="NotSupportedException">
+        /// <exception cref="System.NotSupportedException">
         /// If the query is not an INSERT statement
         /// </exception>
         public virtual void Insert(string queryName, Dictionary<string, object> parameters)
@@ -245,9 +243,9 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("INSERT"))
-                throw new NotSupportedException("Query " + queryName + " is not an insert statement");
+                throw new NotSupportedException(String.Format("Query {0} is not an insert statement", queryName));
 
-            using (IDbCommand command = MakeCommand(query, parameters))
+            using (var command = MakeCommand(query, parameters))
                 command.ExecuteNonQuery();
         }
 
@@ -258,8 +256,7 @@ namespace DatabaseAbstraction
         /// The name of the query to execute
         /// </param>
         /// <param name="model">
-        /// The <see cref="IDatabaseModel"/> model object
-        /// to use for the query.
+        /// The <see cref="DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object to use for the query
         /// </param>
         public virtual void Insert(string queryName, IDatabaseModel model)
         {
@@ -275,7 +272,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters to use for the command
         /// </param>
-        /// <exception cref="NotSupportedException">
+        /// <exception cref="System.NotSupportedException">
         /// If the query is not an UPDATE statement
         /// </exception>
         public virtual void Update(string queryName, Dictionary<string, object> parameters)
@@ -283,9 +280,9 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("UPDATE"))
-                throw new NotSupportedException("Query " + queryName + " is not an update statement");
+                throw new NotSupportedException(String.Format("Query {0} is not an update statement", queryName));
 
-            using (IDbCommand command = MakeCommand(query, parameters))
+            using (var command = MakeCommand(query, parameters))
                 command.ExecuteNonQuery();
         }
 
@@ -296,8 +293,7 @@ namespace DatabaseAbstraction
         /// The name of the query to execute
         /// </param>
         /// <param name="model">
-        /// The <see cref="IDatabaseModel"/> model object
-        /// to use for the query.
+        /// The <see cref="DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object to use for the query
         /// </param>
         public virtual void Update(string queryName, IDatabaseModel model)
         {
@@ -313,7 +309,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters to use for the command
         /// </param>
-        /// <exception cref="NotSupportedException">
+        /// <exception cref="System.NotSupportedException">
         /// If the query is not an DELETE statement
         /// </exception>
         public virtual void Delete(string queryName, Dictionary<string, object> parameters)
@@ -321,9 +317,9 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("DELETE"))
-                throw new NotSupportedException("Query " + queryName + " is not a delete statement");
+                throw new NotSupportedException(String.Format("Query {0} is not a delete statement", queryName));
 
-            using (IDbCommand command = MakeCommand(query, parameters))
+            using (var command = MakeCommand(query, parameters))
                 command.ExecuteNonQuery();
         }
 
@@ -334,8 +330,7 @@ namespace DatabaseAbstraction
         /// The name of the query to execute
         /// </param>
         /// <param name="model">
-        /// The <see cref="IDatabaseModel"/> model object
-        /// to use for the query.
+        /// The <see cref="DatabaseAbstraction.Interfaces.IDatabaseModel"/> model object to use for the query
         /// </param>
         public virtual void Delete(string queryName, IDatabaseModel model)
         {
@@ -357,7 +352,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public virtual int Sequence(string sequenceName)
         {
-            string[] inputParameters = sequenceName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+            var inputParameters = sequenceName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
             if (2 != inputParameters.Length)
                 throw new ArgumentException(String.Format(
@@ -368,7 +363,7 @@ namespace DatabaseAbstraction
             parameters.Add("[]primary_key_name", inputParameters[0]);
             parameters.Add("[]table_name", inputParameters[1]);
 
-            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("max_pk")) + 1 : 0;
         }
 
@@ -392,7 +387,7 @@ namespace DatabaseAbstraction
             if (Queries.ContainsKey(queryName))
                 return Queries[queryName];
 
-            throw new KeyNotFoundException("Unable to find query " + queryName);
+            throw new KeyNotFoundException(String.Format("Unable to find query {0}", queryName));
         }
 
         /// <summary>
@@ -409,11 +404,12 @@ namespace DatabaseAbstraction
         /// </returns>
         private IDbCommand MakeCommand(DatabaseQuery query, Dictionary<string, object> parameters)
         {
-            IDbCommand command = Connection.CreateCommand();
+            var command = Connection.CreateCommand();
             command.CommandText = String.Copy(query.SQL);
             command.CommandType = CommandType.Text;
 
-            if (null == parameters) return command;
+            if (null == parameters)
+                return command;
 
             foreach (var queryParameter in query.Parameters)
             {
@@ -428,7 +424,7 @@ namespace DatabaseAbstraction
                     else
                     {
                         // Bind the parameter.
-                        IDbDataParameter param = command.CreateParameter();
+                        var param = command.CreateParameter();
                         param.ParameterName = queryParameter.Key;
                         param.DbType = queryParameter.Value;
                         param.Value = parameters[queryParameter.Key];
@@ -479,7 +475,7 @@ namespace DatabaseAbstraction
         /// <param name="classes">
         /// The query library classes to use to fill the library
         /// </param>
-        private static void FillQueryLibrary(Dictionary<string, DatabaseQuery> library,
+        public static void FillQueryLibrary(Dictionary<string, DatabaseQuery> library,
             List<IQueryFragmentProvider> fragmentProviders, params IQueryLibrary[] classes)
         {
             // Check the library classes for fragments
@@ -507,7 +503,7 @@ namespace DatabaseAbstraction
 
             // Assemble fragmented queries
             foreach (string name in library.Keys)
-                if (library[name].GetType().Equals(typeof(FragmentedQuery)))
+                if (typeof(FragmentedQuery) == library[name].GetType())
                     ((FragmentedQuery)library[name]).Assemble(fragments);
         }
 

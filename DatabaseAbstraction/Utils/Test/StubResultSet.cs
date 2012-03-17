@@ -39,10 +39,19 @@
         /// <summary>
         /// Get the current row
         /// </summary>
+        /// <exception cref="System.InvalidOperationException">
+        /// If the result set is at BOF or EOF
+        /// </exception>
         public StubDataRow CurrentRow
         {
             get
             {
+                if (0 > _currentIndex)
+                    throw new InvalidOperationException("Current ResultSet is at BOF");
+
+                if (_currentIndex >= _rows.Count)
+                    throw new InvalidOperationException("Current ResultSet is at EOF");
+
                 return _rows[_currentIndex];
             }
         }
@@ -58,11 +67,9 @@
         /// </returns>
         public object this[string name]
         {
-            get
-            {
-                return CurrentRow[GetIndexFromFieldName(name)];
-            }
+            get { return CurrentRow[GetIndexFromFieldName(name)]; }
         }
+
         /// <summary>
         /// Get a piece of data from the current row by column index
         /// </summary>
@@ -74,10 +81,7 @@
         /// </returns>
         public object this[int index]
         {
-            get
-            {
-                return CurrentRow[index];
-            }
+            get { return CurrentRow[index]; }
         }
 
         #endregion

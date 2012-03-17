@@ -1,7 +1,5 @@
 namespace DatabaseAbstraction
 {
-    #region Usings
-
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -11,8 +9,6 @@ namespace DatabaseAbstraction
     using DatabaseAbstraction.Queries;
     using DatabaseAbstraction.Utils.UnitTest;
     using NUnit.Framework;
-
-    #endregion
 
     /// <summary>
     /// Mock implementation of a database service
@@ -47,7 +43,7 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Query library
         /// </summary>
-        private Dictionary<string, DatabaseQuery> Queries { get; set; }
+        public Dictionary<string, DatabaseQuery> Queries { get; private set; }
 
         /// <summary>
         /// Executed queries and their parameters
@@ -57,37 +53,48 @@ namespace DatabaseAbstraction
         /// <summary>
         /// The data returned by this instance
         /// </summary>
-        private StubDataReader Data { get; set; }
+        public StubDataReader Data { get; private set; }
 
         #endregion
 
-        #region Constructor
+        #region Constructors
 
         /// <summary>
         /// Construct the database service
         /// </summary>
+        /// <param name="data">
+        /// The <see cref="DatabaseAbstraction.Utils.Test.StubDataReader"/> with data to use for query executions
+        /// </param>
         /// <param name="classes">
-        /// The <see cref="IQueryLibrary"/> classes to use when building the query library
+        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryLibrary"/> classes to use to build the query library
         /// </param>
         public MockDatabaseService(StubDataReader data, params IQueryLibrary[] classes)
+            : this(data, new List<IQueryFragmentProvider>(), classes) { }
+
+        /// <summary>
+        /// Construct the database service
+        /// </summary>
+        /// <param name="data">
+        /// The <see cref="DatabaseAbstraction.Utils.Test.StubDataReader"/> with data to use for query executions
+        /// </param>
+        /// <param name="fragments">
+        /// A list of <see cref="DatabaseAbstraction.Interfaces.IQueryFragmentProvider"/> classes to use when assembling
+        /// fragmented queries
+        /// </param>
+        /// <param name="classes">
+        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryLibrary"/> classes to use to build the query library
+        /// </param>
+        public MockDatabaseService(StubDataReader data, List<IQueryFragmentProvider> fragments,
+            params IQueryLibrary[] classes)
         {
             Data = data;
-
-            // Fill the query library
             Queries = new Dictionary<string, DatabaseQuery>();
-            
-            foreach (IQueryLibrary library in classes)
-                library.GetQueries(Queries);
-
-            // Add database queries
-            (new DatabaseQueryLibrary()).GetQueries(Queries);
-
-            // Set the name property in every query
-            foreach (var query in Queries)
-                query.Value.Name = query.Key;
-
-            // Initialize the executed query list
             ExecutedQueries = new List<ExecutedQuery>();
+
+            DatabaseService.FillQueryLibrary(Queries, fragments, classes);
+
+            if (!Queries.ContainsKey("database.sequence.generic"))
+                DatabaseService.FillQueryLibrary(Queries, fragments, new DatabaseQueryLibrary());
         }
 
         #endregion
@@ -106,12 +113,12 @@ namespace DatabaseAbstraction
             if (!query.SQL.ToUpper().StartsWith("SELECT"))
                 throw new NotSupportedException(String.Format("Query {0} is not a select statement", queryName));
 
-            RecordQuery(queryName, "select", parameters);
+            RecordQuery(queryName, QueryType.Select, parameters);
 
             if (Data.NextResult())
                 return Data;
 
-            return null;
+            return new StubDataReader(new StubResultSet());
         }
 
         public IDataReader Select(string queryName, IDatabaseModel model)
@@ -141,7 +148,7 @@ namespace DatabaseAbstraction
             if (!query.SQL.ToUpper().StartsWith("INSERT"))
                 throw new NotSupportedException(String.Format("Query {0} is not an insert statement", queryName));
 
-            RecordQuery(queryName, "insert", parameters);
+            RecordQuery(queryName, QueryType.Insert, parameters);
         }
 
         public void Insert(string queryName, IDatabaseModel model)
@@ -156,7 +163,7 @@ namespace DatabaseAbstraction
             if (!query.SQL.ToUpper().StartsWith("UPDATE"))
                 throw new NotSupportedException(String.Format("Query {0} is not an update statement", queryName));
 
-            RecordQuery(queryName, "update", parameters);
+            RecordQuery(queryName, QueryType.Update, parameters);
         }
 
         public void Update(string queryName, IDatabaseModel model)
@@ -171,7 +178,7 @@ namespace DatabaseAbstraction
             if (!query.SQL.ToUpper().StartsWith("DELETE"))
                 throw new NotSupportedException(String.Format("Query {0} is not a delete statement", queryName));
 
-            RecordQuery(queryName, "delete", parameters);
+            RecordQuery(queryName, QueryType.Delete, parameters);
         }
 
         public void Delete(string queryName, IDatabaseModel model)
@@ -181,17 +188,29 @@ namespace DatabaseAbstraction
 
         public int Sequence(string sequenceName)
         {
-            RecordQuery(sequenceName, "sequence", null);
+            RecordQuery(sequenceName, QueryType.Sequence, null);
             return -1;
         }
 
         public int LastIdentity()
         {
-            RecordQuery("", "identity", null);
+            RecordQuery("", QueryType.Identity, null);
             return -1;
         }
 
-        private void RecordQuery(string queryName, string queryType, Dictionary<string, object> parameters)
+        /// <summary>
+        /// Record a query execution
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query being executed
+        /// </param>
+        /// <param name="queryType">
+        /// The type of the query being executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameter with which the query was executed
+        /// </param>
+        private void RecordQuery(string queryName, QueryType queryType, Dictionary<string, object> parameters)
         {
             ExecutedQueries.Add(new ExecutedQuery
             {
@@ -218,7 +237,7 @@ namespace DatabaseAbstraction
             if (Queries.ContainsKey(queryName))
                 return Queries[queryName];
 
-            throw new KeyNotFoundException("Unable to find query " + queryName);
+            throw new KeyNotFoundException(String.Format("Unable to find query {0}", queryName));
         }
 
         /// <summary>
@@ -250,7 +269,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedSelect(string queryName)
         {
-            AssertPerformedType(queryName, "select");
+            AssertPerformedType(queryName, QueryType.Select);
         }
 
         /// <summary>
@@ -261,7 +280,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedInsert(string queryName)
         {
-            AssertPerformedType(queryName, "insert");
+            AssertPerformedType(queryName, QueryType.Insert);
         }
 
         /// <summary>
@@ -272,7 +291,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedUpdate(string queryName)
         {
-            AssertPerformedType(queryName, "update");
+            AssertPerformedType(queryName, QueryType.Update);
         }
 
         /// <summary>
@@ -283,7 +302,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedDelete(string queryName)
         {
-            AssertPerformedType(queryName, "delete");
+            AssertPerformedType(queryName, QueryType.Delete);
         }
 
         /// <summary>
@@ -294,7 +313,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedSequence(string queryName)
         {
-            AssertPerformedType(queryName, "sequence");
+            AssertPerformedType(queryName, QueryType.Sequence);
         }
 
         /// <summary>
@@ -302,7 +321,7 @@ namespace DatabaseAbstraction
         /// </summary>
         public void AssertPerformedIdentity()
         {
-            AssertPerformedType("", "identity");
+            AssertPerformedType("", QueryType.Identity);
         }
 
         /// <summary>
@@ -314,10 +333,11 @@ namespace DatabaseAbstraction
         /// <param name="type">
         /// The type of the query that should have been executed
         /// </param>
-        private void AssertPerformedType(string queryName, string type)
+        private void AssertPerformedType(string queryName, QueryType type)
         {
             if (0 == GetExecutedQueries(queryName, type).Count())
-                Assert.Fail(String.Format("{0} Query {1} was not performed", Capitalize(type), queryName));
+                Assert.Fail(String.Format("{0} Query {1} was not performed", Enum.GetName(typeof(QueryType), type),
+                    queryName));
         }
 
         /// <summary>
@@ -331,7 +351,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformed(string queryName, int times)
         {
-            IEnumerable<ExecutedQuery> queries = GetExecutedQueries(queryName);
+            var queries = GetExecutedQueries(queryName);
             if (times != queries.Count())
                 Assert.Fail(String.Format("Query {0} executed {1} time(s), but should have been executed {2} time(s)",
                     queryName, queries.Count(), times));
@@ -348,7 +368,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedSelect(string queryName, int times)
         {
-            AssertPerformedType(queryName, "select", times);
+            AssertPerformedType(queryName, QueryType.Select, times);
         }
 
         /// <summary>
@@ -362,7 +382,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedInsert(string queryName, int times)
         {
-            AssertPerformedType(queryName, "insert", times);
+            AssertPerformedType(queryName, QueryType.Insert, times);
         }
 
         /// <summary>
@@ -376,7 +396,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedUpdate(string queryName, int times)
         {
-            AssertPerformedType(queryName, "update", times);
+            AssertPerformedType(queryName, QueryType.Update, times);
         }
 
         /// <summary>
@@ -390,7 +410,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedDelete(string queryName, int times)
         {
-            AssertPerformedType(queryName, "delete", times);
+            AssertPerformedType(queryName, QueryType.Delete, times);
         }
 
         /// <summary>
@@ -404,7 +424,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedSequence(string queryName, int times)
         {
-            AssertPerformedType(queryName, "sequence", times);
+            AssertPerformedType(queryName, QueryType.Sequence, times);
         }
 
         /// <summary>
@@ -415,7 +435,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedIdentity(int times)
         {
-            AssertPerformedType("", "identity", times);
+            AssertPerformedType("", QueryType.Identity, times);
         }
 
         /// <summary>
@@ -430,12 +450,12 @@ namespace DatabaseAbstraction
         /// <param name="times">
         /// The number of times the query should have been executed
         /// </param>
-        private void AssertPerformedType(string queryName, string type, int times)
+        private void AssertPerformedType(string queryName, QueryType type, int times)
         {
             var queries = GetExecutedQueries(queryName, type);
             if (times != queries.Count())
                 Assert.Fail(String.Format("{0} Query {1} executed {2} time(s), but should have been executed {3} time(s)",
-                    Capitalize(type), queryName, queries.Count(), times));
+                    Enum.GetName(typeof(QueryType), type), queryName, queries.Count(), times));
         }
 
         /// <summary>
@@ -467,7 +487,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedSelect(string queryName, Dictionary<string, object> parameters)
         {
-            AssertPerformedType(queryName, "select", parameters);
+            AssertPerformedType(queryName, QueryType.Select, parameters);
         }
 
         /// <summary>
@@ -481,7 +501,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedInsert(string queryName, Dictionary<string, object> parameters)
         {
-            AssertPerformedType(queryName, "insert", parameters);
+            AssertPerformedType(queryName, QueryType.Insert, parameters);
         }
 
         /// <summary>
@@ -495,7 +515,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedUpdate(string queryName, Dictionary<string, object> parameters)
         {
-            AssertPerformedType(queryName, "update", parameters);
+            AssertPerformedType(queryName, QueryType.Update, parameters);
         }
 
         /// <summary>
@@ -509,21 +529,7 @@ namespace DatabaseAbstraction
         /// </param>
         public void AssertPerformedDelete(string queryName, Dictionary<string, object> parameters)
         {
-            AssertPerformedType(queryName, "delete", parameters);
-        }
-
-        /// <summary>
-        /// Assert that a sequence query was performed with the specified parameters
-        /// </summary>
-        /// <param name="queryName">
-        /// The name of the query that should have been executed
-        /// </param>
-        /// <param name="parameters">
-        /// The parameters with which the query should have been executed
-        /// </param>
-        public void AssertPerformedSequence(string queryName, Dictionary<string, object> parameters)
-        {
-            AssertPerformedType(queryName, "sequence", parameters);
+            AssertPerformedType(queryName, QueryType.Delete, parameters);
         }
 
         /// <summary>
@@ -538,50 +544,183 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters that should have been passed to the query
         /// </param>
-        private void AssertPerformedType(string queryName, string type, Dictionary<string, object> parameters)
+        private void AssertPerformedType(string queryName, QueryType type, Dictionary<string, object> parameters)
         {
             var queries = GetExecutedQueries(queryName, type);
             if (!FindQueryWithParameters(parameters, queries))
                 Assert.Fail(String.Format(
                     "The passed query parameters for {0} query {1} were not found in any of the {2} execution(s) of that query.",
-                    Capitalize(type), queryName, queries.Count()));
+                    Enum.GetName(typeof(QueryType), type), queryName, queries.Count()));
         }
-        
+
+        /// <summary>
+        /// Assert that a given query has been executed a given number of times with the given parameters
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query that should have been executed
+        /// </param>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters with which the query should have been executed
+        /// </param>
+        public void AssertPerformed(string queryName, int times, Dictionary<string, object> parameters)
+        {
+            var matches = CountQueryWithParameters(parameters, GetExecutedQueries(queryName));
+            if (times != matches)
+                Assert.Fail(String.Format(
+                    "Query {0} with parameters executed {1} time(s), but should have been executed {2} time(s)",
+                    queryName, matches, times));
+        }
+
+        /// <summary>
+        /// Assert that a SELECT query was performed a given number of times with the specified parameters
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query that should have been executed
+        /// </param>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters with which the query should have been executed
+        /// </param>
+        public void AssertPerformedSelect(string queryName, int times, Dictionary<string, object> parameters)
+        {
+            AssertPerformedType(queryName, QueryType.Select, times, parameters);
+        }
+
+        /// <summary>
+        /// Assert that a INSERT query was performed a given number of times with the specified parameters
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query that should have been executed
+        /// </param>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters with which the query should have been executed
+        /// </param>
+        public void AssertPerformedInsert(string queryName, int times, Dictionary<string, object> parameters)
+        {
+            AssertPerformedType(queryName, QueryType.Insert, times, parameters);
+        }
+
+        /// <summary>
+        /// Assert that a UPDATE query was performed a given number of times with the specified parameters
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query that should have been executed
+        /// </param>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters with which the query should have been executed
+        /// </param>
+        public void AssertPerformedUpdate(string queryName, int times, Dictionary<string, object> parameters)
+        {
+            AssertPerformedType(queryName, QueryType.Update, times, parameters);
+        }
+
+        /// <summary>
+        /// Assert that a DELETE query was performed a given number of times with the specified parameters
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query that should have been executed
+        /// </param>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters with which the query should have been executed
+        /// </param>
+        public void AssertPerformedDelete(string queryName, int times, Dictionary<string, object> parameters)
+        {
+            AssertPerformedType(queryName, QueryType.Delete, times, parameters);
+        }
+
+        /// <summary>
+        /// Assert that a given query of a given type has been executed a given number of times with the given
+        /// parameters
+        /// </summary>
+        /// <param name="queryName">
+        /// The name of the query that should have been executed
+        /// </param>
+        /// <param name="type">
+        /// The type of the query that should have been executed
+        /// </param>
+        /// <param name="times">
+        /// The number of times the query should have been executed
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters that should have been passed to the query
+        /// </param>
+        private void AssertPerformedType(string queryName, QueryType type, int times,
+            Dictionary<string, object> parameters)
+        {
+            var matches = CountQueryWithParameters(parameters, GetExecutedQueries(queryName, type));
+            if (times != matches)
+                Assert.Fail(String.Format(
+                    "{0} Query {1} with parameters executed {2} time(s), but should have been executed {3} time(s)",
+                    Enum.GetName(typeof(QueryType), type), queryName, matches, times));
+        }
+
         /// <summary>
         /// Check to see that a query contains the given parameters
         /// </summary>
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        /// <param name="query">
-        /// The executed query record
+        /// <param name="queries">
+        /// The executed query records
         /// </param>
         /// <returns>
         /// True if they match, false if not
         /// </returns>
         private bool FindQueryWithParameters(Dictionary<string, object> parameters, IEnumerable<ExecutedQuery> queries)
         {
-            foreach (ExecutedQuery query in queries)
+            return 0 < CountQueryWithParameters(parameters, queries);
+        }
+
+        /// <summary>
+        /// Count the number of query executions with the given parameters
+        /// </summary>
+        /// <param name="parameters">
+        /// The parameters with which the query should have been executed
+        /// </param>
+        /// <param name="queries">
+        /// The executed query records
+        /// </param>
+        /// <returns>
+        /// The number of matches found
+        /// </returns>
+        private int CountQueryWithParameters(Dictionary<string, object> parameters, IEnumerable<ExecutedQuery> queries)
+        {
+            int matches = 0;
+
+            foreach (var query in queries)
             {
                 bool good = true;
 
-                if (query.Parameters.Count != parameters.Count)
+                if ((null == query.Parameters) || (query.Parameters.Count != parameters.Count))
                     continue;
 
                 for (int index = 0; index < parameters.Count; index++)
-                {
-                    if ((!query.Parameters.ElementAt(index).Key.Equals(parameters.ElementAt(index).Key))
-                        || (!query.Parameters.ElementAt(index).Value.Equals(parameters.ElementAt(index).Value)))
+                    if ((!String.Equals(parameters.ElementAt(index).Key, query.Parameters.ElementAt(index).Key))
+                        || (!Object.Equals(parameters.ElementAt(index).Value, query.Parameters.ElementAt(index).Value)))
                     {
                         good = false;
                         break;
                     }
-                }
 
-                if (good) return true;
+                if (good)
+                    matches++;
             }
 
-            return false;
+            return matches;
         }
 
         /// <summary>
@@ -612,7 +751,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A set of executed queries
         /// </returns>
-        private IEnumerable<ExecutedQuery> GetExecutedQueries(string queryName, string queryType)
+        private IEnumerable<ExecutedQuery> GetExecutedQueries(string queryName, QueryType queryType)
         {
             return from query in ExecutedQueries
                    where query.QueryName == queryName && query.QueryType == queryType
@@ -621,10 +760,23 @@ namespace DatabaseAbstraction
 
         #endregion
 
-        #region Structs
+        #region Structs and Enums
 
         /// <summary>
-        /// This represents an executed query.
+        /// The type of query that was executed
+        /// </summary>
+        private enum QueryType
+        {
+            Select,
+            Insert,
+            Update,
+            Delete,
+            Sequence,
+            Identity
+        };
+
+        /// <summary>
+        /// An executed query
         /// </summary>
         private struct ExecutedQuery
         {
@@ -634,9 +786,9 @@ namespace DatabaseAbstraction
             public string QueryName { get; set; }
 
             /// <summary>
-            /// The type of the executed query (select|insert|update|delete|sequence|identity)
+            /// The type of the executed query
             /// </summary>
-            public string QueryType { get; set; }
+            public QueryType QueryType { get; set; }
 
             /// <summary>
             /// The parameters passed with the executed query
@@ -646,24 +798,5 @@ namespace DatabaseAbstraction
 
         #endregion
 
-        #region Util
-
-        /// <summary>
-        /// Capitalize the first letter in the given string
-        /// </summary>
-        /// <param name="theString">
-        /// The string to capitalize
-        /// </param>
-        /// <returns>
-        /// The capitalized string
-        /// </returns>
-        private string Capitalize(string theString)
-        {
-            char[] chars = theString.ToCharArray();
-            chars[0] = char.ToUpper(chars[0]);
-            return new string(chars);
-        }
-
-        #endregion
     }
 }

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseServiceTest.cs" />
+    <Compile Include="MockDatabaseServiceTest.cs" />
     <Compile Include="Models\DatabaseQueryTest.cs" />
     <Compile Include="Models\FragmentedQueryTest.cs" />
     <Compile Include="Models\QueryFragmentTest.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Queries\DatabaseQueryLibraryTest.cs" />
     <Compile Include="Utils\DbUtilsTest.cs" />
     <Compile Include="Utils\NullUtilsTest.cs" />
+    <Compile Include="Utils\Test\StubDataReaderTest.cs" />
     <Compile Include="Utils\Test\StubDataRowTest.cs" />
     <Compile Include="Utils\Test\StubResultSetTest.cs" />
   </ItemGroup>
