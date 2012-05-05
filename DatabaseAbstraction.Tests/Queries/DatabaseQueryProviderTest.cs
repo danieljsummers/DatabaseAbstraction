@@ -6,22 +6,20 @@
     using NUnit.Framework;
 
     /// <summary>
-    /// Tests for the <see cref="DatabaseQueryLibrary"/> class
+    /// Unit Test for the <see cref="DatabaseQueryProvider"/> class
     /// </summary>
     [TestFixture]
-    public class DatabaseQueryLibraryTest
+    public class DatabaseQueryProviderTest
     {
         /// <summary>
-        /// Test the database queries
+        /// Test the queries being provided
         /// </summary>
         [Test]
-        public void Library()
+        public void Queries()
         {
             // Get the queries
-            Dictionary<string, DatabaseQuery> queries = new Dictionary<string, DatabaseQuery>();
-            DatabaseQueryLibrary library = new DatabaseQueryLibrary();
-            
-            library.GetQueries(queries);
+            var queries = new Dictionary<string, DatabaseQuery>();
+            new DatabaseQueryProvider().Queries(queries);
 
             // Ensure they all exist
             Assert.AreEqual(7, queries.Count);

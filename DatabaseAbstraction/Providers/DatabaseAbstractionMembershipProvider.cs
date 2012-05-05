@@ -530,9 +530,9 @@
             try
             {
                 using (var database = Database())
-                using (var reader = database.SelectOne("provider.count.user.online", parameters))
-                    if (reader.Read())
-                        numOnline = reader.GetInt32(reader.GetOrdinal("user_count"));
+                    using (var reader = database.SelectOne("provider.count.user.online", parameters))
+                        if (reader.Read())
+                            numOnline = reader.GetInt32(reader.GetOrdinal("user_count"));
             }
             catch (DataException exception)
             {
@@ -1114,7 +1114,7 @@
         /// <returns>
         /// A dictionary with "username" and "application_name" parameters filled
         /// </returns>
-        private Dictionary<string, object> GetDefaultParameters(string username)
+        private IDictionary<string, object> GetDefaultParameters(string username)
         {
             var parameters = new Dictionary<string, object>();
 
@@ -1364,7 +1364,7 @@
         /// The user collection to populate
         /// </param>
         private void GetPageOfUsers(string queryName, int pageIndex, int pageSize, IDatabaseService database,
-            Dictionary<string, object> parameters, MembershipUserCollection users)
+            IDictionary<string, object> parameters, MembershipUserCollection users)
         {
             var counter = 0;
             var startIndex = pageIndex * pageSize;
@@ -1399,7 +1399,7 @@
             if (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
                 return DbUtils.CreateDatabaseService(ConnectionString, ProviderName);
 
-            return DbUtils.CreateDatabaseService(ConnectionString, ProviderName, new ProviderQueryLibrary());
+            return DbUtils.CreateDatabaseService(ConnectionString, ProviderName, typeof(ProviderQueryProvider));
         }
 
         #endregion

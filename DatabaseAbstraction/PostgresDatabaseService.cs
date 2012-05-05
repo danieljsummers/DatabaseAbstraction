@@ -1,7 +1,6 @@
 namespace DatabaseAbstraction
 {
     using System;
-    using System.Collections.Generic;
     using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
@@ -18,29 +17,12 @@ namespace DatabaseAbstraction
         /// <param name="connectionString">
         /// The string to use when creating the database connection
         /// </param>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service
+        /// <param name="providers">
+        /// Providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
-        public PostgresDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : this(connectionString, null, classes) { }
-
-        /// <summary>
-        /// Constructor for the PostgreSQL database service
-        /// </summary>
-        /// <param name="connectionString">
-        /// The string to use when creating the database connection
-        /// </param>
-        /// <param name="fragments">
-        /// The classes providing query fragments for instance-level queries
-        /// </param>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service
-        /// </param>
-        public PostgresDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
-            params IQueryLibrary[] classes)
-            : base(fragments, classes)
+        public PostgresDatabaseService(string connectionString, params Type[] providers)
+            : base(providers)
         {
-            // Connect to the database.
             Connection = new NpgsqlConnection(connectionString);
             Connection.Open();
         }

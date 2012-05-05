@@ -544,7 +544,7 @@
             // instance query library instead.
             return (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
                 ? DbUtils.CreateDatabaseService(ConnectionString, ProviderName)
-                : DbUtils.CreateDatabaseService(ConnectionString, ProviderName, new ProviderQueryLibrary());
+                : DbUtils.CreateDatabaseService(ConnectionString, ProviderName, typeof(ProviderQueryProvider));
         }
 
         #endregion

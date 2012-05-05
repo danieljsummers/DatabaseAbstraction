@@ -9,7 +9,7 @@
     /// This contains queries necessary for the contact information models.
     /// It uses the "contact." query name space by default.
     /// </summary>
-    public sealed class ContactQueryLibrary : IQueryLibrary
+    public sealed class ContactQueryProvider : IDatabaseQueryProvider
     {
         /// <summary>
         /// The prefix to use for queries in this library
@@ -27,7 +27,7 @@
         /// <param name="queries">
         /// The query library being built
         /// </param>
-        public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+        public void Queries(IDictionary<string, DatabaseQuery> queries)
         {
             // Select
             queries.Add(Prefix + "get", Get());

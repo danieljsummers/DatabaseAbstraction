@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Web Developer Express 2010
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAbstraction", "DatabaseAbstraction\DatabaseAbstraction.csproj", "{D0739870-EB46-4DFF-820F-BC39D3D8E61E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{2AADCD50-21D0-479A-B43B-E306337DE3C3}"

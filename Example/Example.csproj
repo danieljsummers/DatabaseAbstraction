@@ -46,11 +46,10 @@
     <Compile Include="Contact\Models\EmailAddress.cs" />
     <Compile Include="Contact\Models\PhoneNumber.cs" />
     <Compile Include="Contact\Models\State.cs" />
-    <Compile Include="Contact\Queries\ContactQueryLibrary.cs" />
+    <Compile Include="Contact\Queries\ContactQueryProvider.cs" />
     <Compile Include="Contact\Services\ContactService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DatabaseAbstraction\DatabaseAbstraction.csproj">
       <Project>{D0739870-EB46-4DFF-820F-BC39D3D8E61E}</Project>

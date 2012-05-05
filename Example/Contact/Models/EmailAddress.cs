@@ -8,7 +8,7 @@
     /// <summary>
     /// This represents a single e-mail address.
     /// </summary>
-    public sealed class EmailAddress : IDatabaseModel
+    public sealed class EmailAddress : IParameterProvider
     {
         /// <summary>
         /// The ID of this e-mail address.
@@ -59,7 +59,7 @@
         /// <returns>
         /// The key/value pairs representing the properties of this object
         /// </returns>
-        public Dictionary<string, object> DataParameters()
+        public IDictionary<string, object> Parameters()
         {
             var parameters = new Dictionary<string, object>();
 

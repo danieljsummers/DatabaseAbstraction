@@ -9,7 +9,7 @@
     /// <summary>
     /// This represents a set of contact information.
     /// </summary>
-    public sealed class ContactInformation : IDatabaseModel, IQueryFragmentProvider
+    public sealed class ContactInformation : IParameterProvider, IQueryFragmentProvider
     {
         #region Properties
 
@@ -21,17 +21,17 @@
         /// <summary>
         /// The addresses for this contact.
         /// </summary>
-        public List<Address> Addresses { get; private set; }
+        public IList<Address> Addresses { get; private set; }
 
         /// <summary>
         /// The phone numbers for this contact.
         /// </summary>
-        public List<PhoneNumber> PhoneNumbers { get; private set; }
+        public IList<PhoneNumber> PhoneNumbers { get; private set; }
 
         /// <summary>
         /// The e-mail addresses for this contact.
         /// </summary>
-        public List<EmailAddress> EmailAddresses { get; private set; }
+        public IList<EmailAddress> EmailAddresses { get; private set; }
 
         #endregion
 
@@ -63,7 +63,7 @@
 
         #endregion
 
-        #region IDatabaseModel Implementation
+        #region IParameterProvider Implementation
 
         /// <summary>
         /// Get the properties of this object to be bound to a SQL statement. 
@@ -71,7 +71,7 @@
         /// <returns>
         /// The key/value pairs representing the properties of this object.
         /// </returns>
-        public Dictionary<string, object> DataParameters()
+        public IDictionary<string, object> Parameters()
         {
             return DbUtils.SingleParameter("id", ID);
         }
@@ -86,7 +86,7 @@
         /// <param name="fragments">
         /// The fragment dictionary being built
         /// </param>
-        public void Fragments(Dictionary<string, QueryFragment> fragments)
+        public void Fragments(IDictionary<string, QueryFragment> fragments)
         {
             // From
             fragments.Add("contact.from.join_contact_type", FromJoinContactTypeFragment());

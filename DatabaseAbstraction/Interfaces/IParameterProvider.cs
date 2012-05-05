@@ -1,12 +1,11 @@
-namespace DatabaseAbstraction.Interfaces
+﻿namespace DatabaseAbstraction.Interfaces
 {
     using System.Collections.Generic;
 
     /// <summary>
-    /// This defines methods required for models to be used as parameters for a
-    /// <see cref="DatabaseAbstraction.Interfaces.IDatabaseModel"/> implementation.
+    /// This defines methods necessary to provide parameters to DatabaseAbstraction services.
     /// </summary>
-    public interface IDatabaseModel
+    public interface IParameterProvider
     {
         /// <summary>
         /// The properties of the object as a string/object key/value pair
@@ -14,6 +13,6 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// The properties as a string/object dictionary.
         /// </returns>
-        Dictionary<string, object> DataParameters();
+        IDictionary<string, object> Parameters();
     }
 }

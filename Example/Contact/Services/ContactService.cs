@@ -12,7 +12,7 @@
     /// This service manipulates the common contact information objects
     /// </summary>
     /// <remarks>
-    /// To utilize this service, you must load the information from the <see cref="ContactQueryLibrary"/> and the query
+    /// To utilize this service, you must load the information from the <see cref="ContactQueryProvider"/> and the query
     /// fragments from the <see cref="ContactInformation"/> class into the database instance used to construct the
     /// instance of this service.
     /// </remarks>
@@ -153,7 +153,7 @@
         /// <param name="parameters">
         /// The contact ID in parameter form
         /// </param>
-        private void GetAddress(ContactInformation contact, Dictionary<string, object> parameters)
+        private void GetAddress(ContactInformation contact, IDictionary<string, object> parameters)
         {
             using (var data = Data.Select(QueryPrefix + "get.address", parameters))
                 while (data.Read())
@@ -169,7 +169,7 @@
         /// <param name="parameters">
         /// The contact ID in parameter form
         /// </param>
-        private void GetPhones(ContactInformation contact, Dictionary<string, object> parameters)
+        private void GetPhones(ContactInformation contact, IDictionary<string, object> parameters)
         {
             using (var data = Data.Select(QueryPrefix + "get.phone", parameters))
                 while (data.Read())
@@ -185,7 +185,7 @@
         /// <param name="parameters">
         /// The contact ID in parameter form
         /// </param>
-        private void GetEmails(ContactInformation contact, Dictionary<string, object> parameters)
+        private void GetEmails(ContactInformation contact, IDictionary<string, object> parameters)
         {
             using (var data = Data.Select(QueryPrefix + "get.email", parameters))
                 while (data.Read())

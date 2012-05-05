@@ -15,7 +15,7 @@
         [Test]
         public void Getters()
         {
-            DatabaseQuery query = new DatabaseQuery();
+            var query = new DatabaseQuery();
 
             Assert.NotNull(query.Parameters);
             Assert.AreEqual(0, query.Parameters.Count);

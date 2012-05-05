@@ -19,7 +19,7 @@
         [Test]
         public void Getters()
         {
-            FragmentedQuery query = new FragmentedQuery();
+            var query = new FragmentedQuery();
 
             Assert.NotNull(query.Fragments, "Fragment dictionary should not be null");
             Assert.NotNull(query.AfterFragment, "After Fragment dictionary should not be null");
@@ -34,7 +34,7 @@
         [Test]
         public void AppendFragment()
         {
-            FragmentedQuery query = new FragmentedQuery();
+            var query = new FragmentedQuery();
             query.Name = "unit.test.query";
 
             // Set up the fragment
@@ -42,11 +42,11 @@
             query.Fragments.Add(QueryFragmentType.Where, "unit.test.fragment");
             query.AfterFragment.Add(QueryFragmentType.Where, "afterwards");
 
-            Dictionary<string, QueryFragment> fragments = new Dictionary<string, QueryFragment>();
+            var fragments = new Dictionary<string, QueryFragment>();
             fragments.Add("unit.test.fragment", new QueryFragment { SQL = "the fragment" });
             fragments["unit.test.fragment"].Parameters.Add("unit.test.parameter", DbType.String);
 
-            StringBuilder sql = new StringBuilder();
+            var sql = new StringBuilder();
 
             // Assemble this fragment
             query.AppendFragment(QueryFragmentType.Where, sql, fragments);
@@ -161,7 +161,7 @@
         /// <returns>
         /// A list of fragments
         /// </returns>
-        private Dictionary<string, QueryFragment> AllFragments()
+        private IDictionary<string, QueryFragment> AllFragments()
         {
             var fragments = new Dictionary<string, QueryFragment>();
 

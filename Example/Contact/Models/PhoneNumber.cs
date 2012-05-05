@@ -9,7 +9,7 @@
     /// <summary>
     /// This represents a single phone number.
     /// </summary>
-    public sealed class PhoneNumber : IDatabaseModel
+    public sealed class PhoneNumber : IParameterProvider
     {
         /// <summary>
         /// The ID for this phone number.
@@ -92,7 +92,7 @@
         /// <returns>
         /// The key/value pairs representing the properties of this object.
         /// </returns>
-        public Dictionary<string, object> DataParameters()
+        public IDictionary<string, object> Parameters()
         {
             var parameters = new Dictionary<string, object>();
 

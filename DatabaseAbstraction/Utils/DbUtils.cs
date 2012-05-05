@@ -2,7 +2,6 @@ namespace DatabaseAbstraction.Utils
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using DatabaseAbstraction.Interfaces;
 
     /// <summary>
@@ -22,7 +21,7 @@ namespace DatabaseAbstraction.Utils
         /// <returns>
         /// A parameter list suitable for use with the Database Abstraction methods
         /// </returns>
-        public static Dictionary<string, object> SingleParameter(string name, object parameter)
+        public static IDictionary<string, object> SingleParameter(string name, object parameter)
         {
             var list = new Dictionary<string, object>();
             list.Add(name, parameter);
@@ -38,61 +37,37 @@ namespace DatabaseAbstraction.Utils
         /// <param name="providerName">
         /// The provider name (used to derive concrete class)
         /// </param>
-        /// <param name="queries">
-        /// The <see cref="IQueryLibrary"/> classes with instance-level queries
+        /// <param name="providers">
+        /// Providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
         /// <returns>
-        /// A database connection of the applicable type
+        /// A database service of the applicable type
         /// </returns>
         public static IDatabaseService CreateDatabaseService(string connectionString, string providerName,
-            params IQueryLibrary[] queries)
-        {
-            return CreateDatabaseService(connectionString, providerName, null, queries);
-        }
-
-        /// <summary>
-        /// Get a database connection
-        /// </summary>
-        /// <param name="connectionString">
-        /// The connection string to use when creating the connection
-        /// </param>
-        /// <param name="providerName">
-        /// The provider name (used to derive concrete class)
-        /// </param>
-        /// <param name="fragments">
-        /// The <see cref="IQueryFragmentProvider"/> classes to use in building instance-level queries
-        /// </param>
-        /// <param name="queries">
-        /// The <see cref="IQueryLibrary"/> classes with instance-level queries
-        /// </param>
-        /// <returns>
-        /// A database connection of the applicable type
-        /// </returns>
-        public static IDatabaseService CreateDatabaseService(string connectionString, string providerName,
-            List<IQueryFragmentProvider> fragments, params IQueryLibrary[] queries)
+            params Type[] providers)
         {
             IDatabaseService service = null;
 
             switch (providerName)
             {
                 case "Npgsql":
-                    service = new PostgresDatabaseService(connectionString, fragments, queries);
+                    service = new PostgresDatabaseService(connectionString, providers);
                     break;
 
                 case "MySql.Data.MySqlClient":
-                    service = new MySqlDatabaseService(connectionString, fragments, queries);
+                    service = new MySqlDatabaseService(connectionString, providers);
                     break;
 
                 case "System.Data.SqlClient":
-                    service = new SqlDatabaseService(connectionString, fragments, queries);
+                    service = new SqlDatabaseService(connectionString, providers);
                     break;
 
                 case "System.Data.SQLite":
-                    service = new SQLiteDatabaseService(connectionString, fragments, queries);
+                    service = new SQLiteDatabaseService(connectionString, providers);
                     break;
 
                 case "System.Data.Odbc":
-                    service = new OdbcDatabaseService(connectionString, fragments, queries);
+                    service = new OdbcDatabaseService(connectionString, providers);
                     break;
             }
 

@@ -2,14 +2,14 @@
 {
     using System.Collections.Generic;
     using System.Data;
-    using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
+    using DatabaseAbstraction.Interfaces;
 
     /// <summary>
-    /// This contains queries to support the membership provider.
+    /// This class provides queries for the membership and role providers.
     /// It uses the "provider" query namespace.
     /// </summary>
-    public class ProviderQueryLibrary : IQueryLibrary, IQueryFragmentProvider
+    public class ProviderQueryProvider : IDatabaseQueryProvider, IQueryFragmentProvider
     {
         /// <summary>
         /// The prefix to use for queries in this library
@@ -23,49 +23,55 @@
 
         #region Main
 
-        public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+        /// <summary>
+        /// Get the queries from this provider
+        /// </summary>
+        /// <param name="queryLibrary">
+        /// The query library being built
+        /// </param>
+        public void Queries(IDictionary<string, DatabaseQuery> queryLibrary)
         {
             // Select
-            queries.Add(Prefix + "validate_user", ValidateUser());
-            queries.Add(Prefix + "get.user", GetUser());
-            queries.Add(Prefix + "get.user.by_application", GetUserByApplication());
-            queries.Add(Prefix + "get.user.by_id", GetUserByID());
-            queries.Add(Prefix + "get.username_by_email", GetUsernameByEmail());
-            queries.Add(Prefix + "find.user.by_username", FindUserByUsername());
-            queries.Add(Prefix + "find.user.by_email", FindUserByEmail());
-            queries.Add(Prefix + "count.user", CountUser());
-            queries.Add(Prefix + "count.user.online", CountUserOnline());
-            queries.Add(Prefix + "count.user.by_username", CountUserByUsername());
-            queries.Add(Prefix + "count.user.by_email", CountUserByEmail());
-            queries.Add(Prefix + "retrieve_password", RetrievePassword());
-            queries.Add(Prefix + "failure_counts", FailureCounts());
-            queries.Add(Prefix + "role_exists", RoleExists());
-            queries.Add(Prefix + "count.user_role", CountUserRole());
-            queries.Add(Prefix + "get.role.by_application", GetRoleByApplication());
-            queries.Add(Prefix + "get.user_role.by_role", GetUserRoleByRole());
-            queries.Add(Prefix + "get.user_role.by_user", GetUserRoleByUser());
-            queries.Add(Prefix + "find.user_role", FindUserRole());
+            queryLibrary.Add(Prefix + "validate_user", ValidateUser());
+            queryLibrary.Add(Prefix + "get.user", GetUser());
+            queryLibrary.Add(Prefix + "get.user.by_application", GetUserByApplication());
+            queryLibrary.Add(Prefix + "get.user.by_id", GetUserByID());
+            queryLibrary.Add(Prefix + "get.username_by_email", GetUsernameByEmail());
+            queryLibrary.Add(Prefix + "find.user.by_username", FindUserByUsername());
+            queryLibrary.Add(Prefix + "find.user.by_email", FindUserByEmail());
+            queryLibrary.Add(Prefix + "count.user", CountUser());
+            queryLibrary.Add(Prefix + "count.user.online", CountUserOnline());
+            queryLibrary.Add(Prefix + "count.user.by_username", CountUserByUsername());
+            queryLibrary.Add(Prefix + "count.user.by_email", CountUserByEmail());
+            queryLibrary.Add(Prefix + "retrieve_password", RetrievePassword());
+            queryLibrary.Add(Prefix + "failure_counts", FailureCounts());
+            queryLibrary.Add(Prefix + "role_exists", RoleExists());
+            queryLibrary.Add(Prefix + "count.user_role", CountUserRole());
+            queryLibrary.Add(Prefix + "get.role.by_application", GetRoleByApplication());
+            queryLibrary.Add(Prefix + "get.user_role.by_role", GetUserRoleByRole());
+            queryLibrary.Add(Prefix + "get.user_role.by_user", GetUserRoleByUser());
+            queryLibrary.Add(Prefix + "find.user_role", FindUserRole());
 
             // Insert
-            queries.Add(Prefix + "insert.user", InsertUser());
-            queries.Add(Prefix + "insert.role", InsertRole());
-            queries.Add(Prefix + "insert.user_role", InsertUserRole());
+            queryLibrary.Add(Prefix + "insert.user", InsertUser());
+            queryLibrary.Add(Prefix + "insert.role", InsertRole());
+            queryLibrary.Add(Prefix + "insert.user_role", InsertUserRole());
 
             // Update
-            queries.Add(Prefix + "update.login_date", UpdateLoginDate());
-            queries.Add(Prefix + "change_password", ChangePassword());
-            queries.Add(Prefix + "update.password_question", UpdatePasswordQuestion());
-            queries.Add(Prefix + "update.activity_date", UpdateActivityDate());
-            queries.Add(Prefix + "update.failure.password", UpdateFailurePassword());
-            queries.Add(Prefix + "update.failure.answer", UpdateFailureAnswer());
-            queries.Add(Prefix + "update.set_locked", UpdateSetLocked());
-            queries.Add(Prefix + "update.user", UpdateUser());
+            queryLibrary.Add(Prefix + "update.login_date", UpdateLoginDate());
+            queryLibrary.Add(Prefix + "change_password", ChangePassword());
+            queryLibrary.Add(Prefix + "update.password_question", UpdatePasswordQuestion());
+            queryLibrary.Add(Prefix + "update.activity_date", UpdateActivityDate());
+            queryLibrary.Add(Prefix + "update.failure.password", UpdateFailurePassword());
+            queryLibrary.Add(Prefix + "update.failure.answer", UpdateFailureAnswer());
+            queryLibrary.Add(Prefix + "update.set_locked", UpdateSetLocked());
+            queryLibrary.Add(Prefix + "update.user", UpdateUser());
 
             // Delete
-            queries.Add(Prefix + "delete.user", DeleteUser());
-            queries.Add(Prefix + "delete.role", DeleteRole());
-            queries.Add(Prefix + "delete.user_role", DeleteUserRole());
-            queries.Add(Prefix + "delete.user_role.by_role", DeleteUserRoleByRole());
+            queryLibrary.Add(Prefix + "delete.user", DeleteUser());
+            queryLibrary.Add(Prefix + "delete.role", DeleteRole());
+            queryLibrary.Add(Prefix + "delete.user_role", DeleteUserRole());
+            queryLibrary.Add(Prefix + "delete.user_role.by_role", DeleteUserRoleByRole());
         }
 
         #endregion
@@ -785,7 +791,7 @@
         /// <returns>
         /// The fragments for the query
         /// </returns>
-        public void Fragments(Dictionary<string, QueryFragment> fragments)
+        public void Fragments(IDictionary<string, QueryFragment> fragments)
         {
             // Select
             fragments.Add("user.select.column_list", UserSelectColumnListFragment());
@@ -801,10 +807,10 @@
         private QueryFragment UserSelectColumnListFragment()
         {
             return new QueryFragment
-                {
-                    SQL = @"user_id, username, email, password_question, comment, is_approved, is_locked_out, creation_date,
+            {
+                SQL = @"user_id, username, email, password_question, comment, is_approved, is_locked_out, creation_date,
                     last_login_date, last_activity_date, last_password_changed_date, last_locked_out_date"
-                };
+            };
         }
 
         /// <summary>

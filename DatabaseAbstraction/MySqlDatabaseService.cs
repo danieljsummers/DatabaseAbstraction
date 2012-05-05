@@ -1,7 +1,6 @@
 namespace DatabaseAbstraction
 {
-    using System.Collections.Generic;
-    using System.Data;
+    using System;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
     using MySql.Data.MySqlClient;
@@ -17,29 +16,12 @@ namespace DatabaseAbstraction
         /// <param name="connectionString">
         /// The string to use when creating the database connection
         /// </param>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service
+        /// <param name="providers">
+        /// Providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
-        public MySqlDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : this(connectionString, null, classes) { }
-
-        /// <summary>
-        /// Constructor for the MySQL database service
-        /// </summary>
-        /// <param name="connectionString">
-        /// The string to use when creating the database connection
-        /// </param>
-        /// <param name="fragments">
-        /// The classes providing query fragments for instance-level queries
-        /// </param>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service
-        /// </param>
-        public MySqlDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
-            params IQueryLibrary[] classes)
-            : base(fragments, classes)
+        public MySqlDatabaseService(string connectionString, params Type[] providers)
+            : base(providers)
         {
-            // Connect to the database.
             Connection = new MySqlConnection(connectionString);
             Connection.Open();
         }
@@ -59,8 +41,8 @@ namespace DatabaseAbstraction
         /// </returns>
         public override int Sequence(string sequenceName)
         {
-            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.mysql",
-                                                  DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.mysql",
+                                          DbUtils.SingleParameter("[]sequence_name", sequenceName)))
                 return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("auto_increment")) : 0;
         }
 
@@ -72,7 +54,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public int LastIdentity()
         {
-            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.mysql"))
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.mysql"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

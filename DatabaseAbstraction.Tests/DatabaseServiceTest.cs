@@ -31,7 +31,7 @@
         public void FillStaticQueryLibrary()
         {
             // Query Library Only
-            TestDatabaseService.FillStaticQueryLibrary(new TestQueryLibrary());
+            TestDatabaseService.FillStaticQueryLibrary(typeof(TestDatabaseQueryProvider));
 
             Assert.IsNotNull(TestDatabaseService.StaticQueries, "The static queries should not have been null");
             Assert.AreEqual(2, TestDatabaseService.StaticQueries.Count, "There should be two queries in the library");
@@ -41,15 +41,12 @@
             // Query Library / Fragment Library specified
             ClearStaticQueryLibrary();
 
-            var fragments = new List<IQueryFragmentProvider>();
-            fragments.Add(new TestFragmentLibrary());
-
-            // This call will do nothing with the fragments; we're looking for NPEs and such
-            TestDatabaseService.FillStaticQueryLibrary(fragments, new TestQueryLibrary());
+            // (note: this call will do nothing with the fragments; we're looking for NPEs and such)
+            TestDatabaseService.FillStaticQueryLibrary(typeof(TestFragmentProvider), typeof(TestDatabaseQueryProvider));
 
             // Query/Fragment Library combined
             ClearStaticQueryLibrary();
-            TestDatabaseService.FillStaticQueryLibrary(new TestQueryAndFragmentLibrary());
+            TestDatabaseService.FillStaticQueryLibrary(typeof(TestQueryAndFragmentProvider));
 
             Assert.AreEqual(1, TestDatabaseService.StaticQueries.Count, "There should be one query in the library");
             Assert.IsTrue(TestDatabaseService.StaticQueries.ContainsKey("test2.query1"), "Query 1 not found");
@@ -75,7 +72,7 @@
         /// <summary>
         /// Only query library
         /// </summary>
-        private class TestQueryLibrary : IQueryLibrary
+        private class TestDatabaseQueryProvider : IDatabaseQueryProvider
         {
             public string Prefix
             {
@@ -83,7 +80,7 @@
                 set { throw new NotImplementedException("Leave my prefix alone!"); }
             }
 
-            public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+            public void Queries(IDictionary<string, DatabaseQuery> queries)
             {
                 queries.Add(Prefix + "query1", new DatabaseQuery { SQL = "SELECT 3" });
                 queries.Add(Prefix + "query2", new DatabaseQuery { SQL = "SELECT q" });
@@ -93,9 +90,9 @@
         /// <summary>
         /// Only fragment provider
         /// </summary>
-        private class TestFragmentLibrary : IQueryFragmentProvider
+        private class TestFragmentProvider : IQueryFragmentProvider
         {
-            public void Fragments(Dictionary<string, QueryFragment> fragments)
+            public void Fragments(IDictionary<string, QueryFragment> fragments)
             {
                 fragments.Add("test.fragment", new QueryFragment());
             }
@@ -104,7 +101,7 @@
         /// <summary>
         /// Query and fragment provider
         /// </summary>
-        private class TestQueryAndFragmentLibrary : IQueryLibrary, IQueryFragmentProvider
+        private class TestQueryAndFragmentProvider : IDatabaseQueryProvider, IQueryFragmentProvider
         {
             public string Prefix
             {
@@ -112,7 +109,7 @@
                 set { throw new NotImplementedException("Leave my prefix alone!"); }
             }
 
-            public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+            public void Queries(IDictionary<string, DatabaseQuery> queries)
             {
                 queries.Add(Prefix + "query1", AFragmentedQuery());
             }
@@ -126,7 +123,7 @@
                 return query;
             }
 
-            public void Fragments(Dictionary<string, QueryFragment> fragments)
+            public void Fragments(IDictionary<string, QueryFragment> fragments)
             {
                 fragments.Add("test.from", new QueryFragment { SQL = "from some_table" });
             }

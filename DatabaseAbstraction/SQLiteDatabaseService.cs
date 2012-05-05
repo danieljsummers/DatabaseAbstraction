@@ -1,9 +1,8 @@
 namespace DatabaseAbstraction
 {
-    using System.Data;
+    using System;
     using System.Data.SQLite;
     using DatabaseAbstraction.Interfaces;
-    using System.Collections.Generic;
 
     /// <summary>
     /// A SQLite implementation of a database service
@@ -16,29 +15,12 @@ namespace DatabaseAbstraction
         /// <param name="connectionString">
         /// The string to use when creating the database connection
         /// </param>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service
+        /// <param name="providers">
+        /// Providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
-        public SQLiteDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : this(connectionString, null, classes) { }
-
-        /// <summary>
-        /// Constructor for the SQLite database service
-        /// </summary>
-        /// <param name="connectionString">
-        /// The string to use when creating the database connection
-        /// </param>
-        /// <param name="fragments">
-        /// The classes providing query fragments for instance-level queries
-        /// </param>
-        /// <param name="classes">
-        /// Classes that contain query libraries to use when initializing the service
-        /// </param>
-        public SQLiteDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
-            params IQueryLibrary[] classes)
-            : base(fragments, classes)
+        public SQLiteDatabaseService(string connectionString, params Type[] providers)
+            : base(providers)
         {
-            // Connect to the database.
             Connection = new SQLiteConnection(connectionString);
             Connection.Open();
         }
@@ -51,7 +33,7 @@ namespace DatabaseAbstraction
         /// </returns>
         public int LastIdentity()
         {
-            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.sqlite"))
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.sqlite"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

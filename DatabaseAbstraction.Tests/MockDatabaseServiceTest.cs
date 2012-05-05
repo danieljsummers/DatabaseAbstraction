@@ -23,12 +23,12 @@
         [Test]
         public void Constructor()
         {
-            var data = new MockDatabaseService(null, new TestQueryLibrary());
+            var data = new MockDatabaseService(null, typeof(TestQueryProvider));
             Assert.IsNotNull(data, "The Mock Database Service should not have been null");
 
             // We need the database queries so we can subtract them from the count
             var databaseQueries = new Dictionary<string, DatabaseQuery>();
-            new DatabaseQueryLibrary().GetQueries(databaseQueries);
+            new DatabaseQueryProvider().Queries(databaseQueries);
 
             Assert.AreEqual(4, data.Queries.Count - databaseQueries.Count, "There should have been 4 queries loaded");
         }
@@ -56,7 +56,7 @@
             result3.AddRow(3, "They Find You");
 
             // Initialize the service
-            var data = new MockDatabaseService(new StubDataReader(result1, result2, result3), new TestQueryLibrary());
+            var data = new MockDatabaseService(new StubDataReader(result1, result2, result3), typeof(TestQueryProvider));
             var model = new TestModel { Col1 = 13 };
 
             // Check for expected results
@@ -74,7 +74,7 @@
                 Assert.AreEqual("Yes", reader[1], "Database Model Select returned unexpected results");
             }
 
-            using (var reader = data.Select("test.select", model.DataParameters()))
+            using (var reader = data.Select("test.select", model.Parameters()))
             {
                 Assert.IsNotNull(reader, "Parameter Dictionary Select should not have returned null");
                 Assert.IsTrue(reader.Read(), "Parameter Dictionary Select results should not have been empty");
@@ -91,8 +91,8 @@
             data.AssertPerformed("test.select");
             data.AssertPerformedSelect("test.select");
             data.AssertPerformedSelect("test.select", 4);
-            data.AssertPerformedSelect("test.select", model.DataParameters());
-            data.AssertPerformedSelect("test.select", 2, model.DataParameters());
+            data.AssertPerformedSelect("test.select", model.Parameters());
+            data.AssertPerformedSelect("test.select", 2, model.Parameters());
 
             // Validate type checking
             try
@@ -114,23 +114,23 @@
         public void InsertAndAssertPerformedInsert()
         {
             // Initialize the service
-            var data = new MockDatabaseService(null, new TestQueryLibrary());
+            var data = new MockDatabaseService(null, typeof(TestQueryProvider));
             var model = new TestModel { Col1 = 4, Col2 = "UnitTest" };
 
             // Run the test
             data.Insert("test.insert", model);
 
             model.Col2 = "TestUnit";
-            data.Insert("test.insert", model.DataParameters());
+            data.Insert("test.insert", model.Parameters());
 
             // Check the results
             data.AssertPerformed("test.insert");
             data.AssertPerformedInsert("test.insert");
             data.AssertPerformedInsert("test.insert", 2);
-            data.AssertPerformedInsert("test.insert", model.DataParameters());
+            data.AssertPerformedInsert("test.insert", model.Parameters());
 
             model.Col2 = "UnitTest";
-            data.AssertPerformedInsert("test.insert", 1, model.DataParameters());
+            data.AssertPerformedInsert("test.insert", 1, model.Parameters());
 
             // Validate type checking
             try
@@ -152,7 +152,7 @@
         public void UpdateAndAssertPerformedUpdate()
         {
             // Initialize the service
-            var data = new MockDatabaseService(null, new TestQueryLibrary());
+            var data = new MockDatabaseService(null, typeof(TestQueryProvider));
             var model = new TestModel { Col1 = 5, Col2 = "UnitTest" };
 
             // Run the test
@@ -160,17 +160,17 @@
 
             model.Col1 = 7;
             model.Col2 = "TestUnit";
-            data.Update("test.update", model.DataParameters());
+            data.Update("test.update", model.Parameters());
 
             // Check the results
             data.AssertPerformed("test.update");
             data.AssertPerformedUpdate("test.update");
             data.AssertPerformedUpdate("test.update", 2);
-            data.AssertPerformedUpdate("test.update", model.DataParameters());
+            data.AssertPerformedUpdate("test.update", model.Parameters());
 
             model.Col1 = 5;
             model.Col2 = "UnitTest";
-            data.AssertPerformedUpdate("test.update", 1, model.DataParameters());
+            data.AssertPerformedUpdate("test.update", 1, model.Parameters());
 
             // Validate type checking
             try
@@ -192,7 +192,7 @@
         public void DeleteAndAssertPerformedDelete()
         {
             // Initialize the service
-            var data = new MockDatabaseService(null, new TestQueryLibrary());
+            var data = new MockDatabaseService(null, typeof(TestQueryProvider));
             var model = new TestModel { Col1 = 24, Col2 = "UnitTest" };
 
             // Run the test
@@ -200,17 +200,17 @@
 
             model.Col1 = 25;
             model.Col2 = "TestUnit";
-            data.Delete("test.delete", model.DataParameters());
+            data.Delete("test.delete", model.Parameters());
 
             // Check the results
             data.AssertPerformed("test.delete");
             data.AssertPerformedDelete("test.delete");
             data.AssertPerformedDelete("test.delete", 2);
-            data.AssertPerformedDelete("test.delete", model.DataParameters());
+            data.AssertPerformedDelete("test.delete", model.Parameters());
 
             model.Col1 = 24;
             model.Col2 = "UnitTest";
-            data.AssertPerformedDelete("test.delete", 1, model.DataParameters());
+            data.AssertPerformedDelete("test.delete", 1, model.Parameters());
 
             // Validate type checking
             try
@@ -260,7 +260,7 @@
         [Test]
         public void QueryNotFound()
         {
-            var data = new MockDatabaseService(null, new TestQueryLibrary());
+            var data = new MockDatabaseService(null, typeof(TestQueryProvider));
 
             try
             {
@@ -281,7 +281,7 @@
         /// <summary>
         /// A few queries to use for testing
         /// </summary>
-        private class TestQueryLibrary : IQueryLibrary
+        private class TestQueryProvider : IDatabaseQueryProvider
         {
             public string Prefix
             {
@@ -289,12 +289,12 @@
                 set { throw new NotImplementedException("Leave my prefix alone!"); }
             }
 
-            public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+            public void Queries(IDictionary<string, DatabaseQuery> queryLibrary)
             {
-                queries.Add(Prefix + "select", Select());
-                queries.Add(Prefix + "insert", Insert());
-                queries.Add(Prefix + "update", Update());
-                queries.Add(Prefix + "delete", Delete());
+                queryLibrary.Add(Prefix + "select", Select());
+                queryLibrary.Add(Prefix + "insert", Insert());
+                queryLibrary.Add(Prefix + "update", Update());
+                queryLibrary.Add(Prefix + "delete", Delete());
             }
 
             private DatabaseQuery Select()
@@ -332,12 +332,12 @@
         /// <summary>
         /// A database model to use for testing
         /// </summary>
-        private class TestModel : IDatabaseModel
+        private class TestModel : IParameterProvider
         {
             public int Col1 { get; set; }
             public string Col2 { get; set; }
 
-            public Dictionary<string, object> DataParameters()
+            public IDictionary<string, object> Parameters()
             {
                 var parameters = new Dictionary<string, object>();
 

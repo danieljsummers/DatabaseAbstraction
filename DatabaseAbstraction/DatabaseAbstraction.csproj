@@ -16,7 +16,7 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
@@ -32,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -49,6 +50,7 @@
     <Reference Include="nunit.framework, Version=2.5.8.10295, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\nunit.framework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
@@ -62,22 +64,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Interfaces\IParameterProvider.cs" />
     <Compile Include="Interfaces\IQueryFragmentProvider.cs" />
+    <Compile Include="Interfaces\IDatabaseQueryProvider.cs" />
     <Compile Include="Models\FragmentedQuery.cs" />
     <Compile Include="Models\QueryFragment.cs" />
     <Compile Include="Models\QueryFragmentType.cs" />
     <Compile Include="OdbcDatabaseService.cs" />
     <Compile Include="Providers\DatabaseAbstractionMembershipProvider.cs" />
-    <Compile Include="Interfaces\IDatabaseModel.cs" />
     <Compile Include="Interfaces\IDatabaseService.cs" />
-    <Compile Include="Interfaces\IQueryLibrary.cs" />
     <Compile Include="Models\DatabaseQuery.cs" />
     <Compile Include="PostgresDatabaseService.cs" />
     <Compile Include="Providers\DatabaseAbstractionRoleProvider.cs" />
-    <Compile Include="Queries\DatabaseQueryLibrary.cs" />
     <Compile Include="DatabaseService.cs" />
     <Compile Include="MySqlDatabaseService.cs" />
-    <Compile Include="Queries\ProviderQueryLibrary.cs" />
+    <Compile Include="Queries\DatabaseQueryProvider.cs" />
+    <Compile Include="Queries\ProviderQueryProvider.cs" />
     <Compile Include="SqlDatabaseService.cs" />
     <Compile Include="MockDatabaseService.cs" />
     <Compile Include="SQLiteDatabaseService.cs" />

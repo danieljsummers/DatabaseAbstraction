@@ -66,12 +66,10 @@
             var log = new EventLog();
             log.Source = source;
             log.Log = "Application";
-
-            var message = "An exception occurred communicating with the data source.\n\n";
-            message += "Action: " + action + "\n\n";
-            message += "Exception: " + exception.ToString();
-
-            log.WriteEntry(message);
+            
+            log.WriteEntry(String.Format(
+                "An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}", action,
+                exception.ToString()));
 
             if (null != exceptionText)
                 return new ProviderException(exceptionText);

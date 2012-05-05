@@ -43,12 +43,12 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Query library
         /// </summary>
-        public Dictionary<string, DatabaseQuery> Queries { get; private set; }
+        public IDictionary<string, DatabaseQuery> Queries { get; private set; }
 
         /// <summary>
         /// Executed queries and their parameters
         /// </summary>
-        private List<ExecutedQuery> ExecutedQueries { get; set; }
+        private IList<ExecutedQuery> ExecutedQueries { get; set; }
 
         /// <summary>
         /// The data returned by this instance
@@ -63,38 +63,21 @@ namespace DatabaseAbstraction
         /// Construct the database service
         /// </summary>
         /// <param name="data">
-        /// The <see cref="DatabaseAbstraction.Utils.Test.StubDataReader"/> with data to use for query executions
+        /// The <see cref="StubDataReader"/> with data to use for query executions
         /// </param>
-        /// <param name="classes">
-        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryLibrary"/> classes to use to build the query library
+        /// <param name="providers">
+        /// Providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
-        public MockDatabaseService(StubDataReader data, params IQueryLibrary[] classes)
-            : this(data, new List<IQueryFragmentProvider>(), classes) { }
-
-        /// <summary>
-        /// Construct the database service
-        /// </summary>
-        /// <param name="data">
-        /// The <see cref="DatabaseAbstraction.Utils.Test.StubDataReader"/> with data to use for query executions
-        /// </param>
-        /// <param name="fragments">
-        /// A list of <see cref="DatabaseAbstraction.Interfaces.IQueryFragmentProvider"/> classes to use when assembling
-        /// fragmented queries
-        /// </param>
-        /// <param name="classes">
-        /// The <see cref="DatabaseAbstraction.Interfaces.IQueryLibrary"/> classes to use to build the query library
-        /// </param>
-        public MockDatabaseService(StubDataReader data, List<IQueryFragmentProvider> fragments,
-            params IQueryLibrary[] classes)
+        public MockDatabaseService(StubDataReader data, params Type[] providers)
         {
             Data = data;
             Queries = new Dictionary<string, DatabaseQuery>();
             ExecutedQueries = new List<ExecutedQuery>();
 
-            DatabaseService.FillQueryLibrary(Queries, fragments, classes);
+            DatabaseService.FillQueryLibrary(Queries, providers);
 
             if (!Queries.ContainsKey("database.sequence.generic"))
-                DatabaseService.FillQueryLibrary(Queries, fragments, new DatabaseQueryLibrary());
+                DatabaseService.FillQueryLibrary(Queries, typeof(DatabaseQueryProvider));
         }
 
         #endregion
@@ -106,7 +89,7 @@ namespace DatabaseAbstraction
             return Select(queryName, new Dictionary<string, object>());
         }
 
-        public IDataReader Select(string queryName, Dictionary<string, object> parameters)
+        public IDataReader Select(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
@@ -121,9 +104,9 @@ namespace DatabaseAbstraction
             return new StubDataReader(new StubResultSet());
         }
 
-        public IDataReader Select(string queryName, IDatabaseModel model)
+        public IDataReader Select(string queryName, IParameterProvider model)
         {
-            return Select(queryName, model.DataParameters());
+            return Select(queryName, model.Parameters());
         }
 
         public IDataReader SelectOne(string queryName)
@@ -131,17 +114,17 @@ namespace DatabaseAbstraction
             return Select(queryName, new Dictionary<string, object>());
         }
 
-        public IDataReader SelectOne(string queryName, Dictionary<string, object> parameters)
+        public IDataReader SelectOne(string queryName, IDictionary<string, object> parameters)
         {
             return Select(queryName, parameters);
         }
 
-        public IDataReader SelectOne(string queryName, IDatabaseModel model)
+        public IDataReader SelectOne(string queryName, IParameterProvider model)
         {
-            return Select(queryName, model.DataParameters());
+            return Select(queryName, model.Parameters());
         }
 
-        public void Insert(string queryName, Dictionary<string, object> parameters)
+        public void Insert(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
@@ -151,12 +134,12 @@ namespace DatabaseAbstraction
             RecordQuery(queryName, QueryType.Insert, parameters);
         }
 
-        public void Insert(string queryName, IDatabaseModel model)
+        public void Insert(string queryName, IParameterProvider model)
         {
-            Insert(queryName, model.DataParameters());
+            Insert(queryName, model.Parameters());
         }
 
-        public void Update(string queryName, Dictionary<string, object> parameters)
+        public void Update(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
@@ -166,12 +149,12 @@ namespace DatabaseAbstraction
             RecordQuery(queryName, QueryType.Update, parameters);
         }
 
-        public void Update(string queryName, IDatabaseModel model)
+        public void Update(string queryName, IParameterProvider model)
         {
-            Update(queryName, model.DataParameters());
+            Update(queryName, model.Parameters());
         }
 
-        public void Delete(string queryName, Dictionary<string, object> parameters)
+        public void Delete(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
@@ -181,9 +164,9 @@ namespace DatabaseAbstraction
             RecordQuery(queryName, QueryType.Delete, parameters);
         }
 
-        public void Delete(string queryName, IDatabaseModel model)
+        public void Delete(string queryName, IParameterProvider model)
         {
-            Delete(queryName, model.DataParameters());
+            Delete(queryName, model.Parameters());
         }
 
         public int Sequence(string sequenceName)
@@ -210,7 +193,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameter with which the query was executed
         /// </param>
-        private void RecordQuery(string queryName, QueryType queryType, Dictionary<string, object> parameters)
+        private void RecordQuery(string queryName, QueryType queryType, IDictionary<string, object> parameters)
         {
             ExecutedQueries.Add(new ExecutedQuery
             {
@@ -467,7 +450,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformed(string queryName, Dictionary<string, object> parameters)
+        public void AssertPerformed(string queryName, IDictionary<string, object> parameters)
         {
             var queries = GetExecutedQueries(queryName);
             if (!FindQueryWithParameters(parameters, queries))
@@ -485,7 +468,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedSelect(string queryName, Dictionary<string, object> parameters)
+        public void AssertPerformedSelect(string queryName, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Select, parameters);
         }
@@ -499,7 +482,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedInsert(string queryName, Dictionary<string, object> parameters)
+        public void AssertPerformedInsert(string queryName, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Insert, parameters);
         }
@@ -513,7 +496,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedUpdate(string queryName, Dictionary<string, object> parameters)
+        public void AssertPerformedUpdate(string queryName, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Update, parameters);
         }
@@ -527,7 +510,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedDelete(string queryName, Dictionary<string, object> parameters)
+        public void AssertPerformedDelete(string queryName, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Delete, parameters);
         }
@@ -544,7 +527,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters that should have been passed to the query
         /// </param>
-        private void AssertPerformedType(string queryName, QueryType type, Dictionary<string, object> parameters)
+        private void AssertPerformedType(string queryName, QueryType type, IDictionary<string, object> parameters)
         {
             var queries = GetExecutedQueries(queryName, type);
             if (!FindQueryWithParameters(parameters, queries))
@@ -565,7 +548,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformed(string queryName, int times, Dictionary<string, object> parameters)
+        public void AssertPerformed(string queryName, int times, IDictionary<string, object> parameters)
         {
             var matches = CountQueryWithParameters(parameters, GetExecutedQueries(queryName));
             if (times != matches)
@@ -586,7 +569,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedSelect(string queryName, int times, Dictionary<string, object> parameters)
+        public void AssertPerformedSelect(string queryName, int times, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Select, times, parameters);
         }
@@ -603,7 +586,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedInsert(string queryName, int times, Dictionary<string, object> parameters)
+        public void AssertPerformedInsert(string queryName, int times, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Insert, times, parameters);
         }
@@ -620,7 +603,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedUpdate(string queryName, int times, Dictionary<string, object> parameters)
+        public void AssertPerformedUpdate(string queryName, int times, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Update, times, parameters);
         }
@@ -637,7 +620,7 @@ namespace DatabaseAbstraction
         /// <param name="parameters">
         /// The parameters with which the query should have been executed
         /// </param>
-        public void AssertPerformedDelete(string queryName, int times, Dictionary<string, object> parameters)
+        public void AssertPerformedDelete(string queryName, int times, IDictionary<string, object> parameters)
         {
             AssertPerformedType(queryName, QueryType.Delete, times, parameters);
         }
@@ -659,7 +642,7 @@ namespace DatabaseAbstraction
         /// The parameters that should have been passed to the query
         /// </param>
         private void AssertPerformedType(string queryName, QueryType type, int times,
-            Dictionary<string, object> parameters)
+            IDictionary<string, object> parameters)
         {
             var matches = CountQueryWithParameters(parameters, GetExecutedQueries(queryName, type));
             if (times != matches)
@@ -680,7 +663,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// True if they match, false if not
         /// </returns>
-        private bool FindQueryWithParameters(Dictionary<string, object> parameters, IEnumerable<ExecutedQuery> queries)
+        private bool FindQueryWithParameters(IDictionary<string, object> parameters, IEnumerable<ExecutedQuery> queries)
         {
             return 0 < CountQueryWithParameters(parameters, queries);
         }
@@ -697,7 +680,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// The number of matches found
         /// </returns>
-        private int CountQueryWithParameters(Dictionary<string, object> parameters, IEnumerable<ExecutedQuery> queries)
+        private int CountQueryWithParameters(IDictionary<string, object> parameters, IEnumerable<ExecutedQuery> queries)
         {
             int matches = 0;
 
@@ -793,7 +776,7 @@ namespace DatabaseAbstraction
             /// <summary>
             /// The parameters passed with the executed query
             /// </summary>
-            public Dictionary<string, object> Parameters { get; set; }
+            public IDictionary<string, object> Parameters { get; set; }
         }
 
         #endregion

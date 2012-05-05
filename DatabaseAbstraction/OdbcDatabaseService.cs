@@ -1,8 +1,6 @@
 ﻿namespace DatabaseAbstraction
 {
     using System;
-    using System.Collections.Generic;
-    using System.Data;
     using System.Data.Odbc;
     using DatabaseAbstraction.Interfaces;
 
@@ -12,34 +10,17 @@
     public class OdbcDatabaseService : DatabaseService, IDatabaseService
     {
         /// <summary>
-        /// Constructor
+        /// Constructor for the ODBC database service
         /// </summary>
         /// <param name="connectionString">
         /// The string to use when creating the connection
         /// </param>
-        /// <param name="classes">
-        /// Zero or more <see cref="IQueryLibrary"/> classes with queries for this instance
+        /// <param name="providers">
+        /// Providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
-        public OdbcDatabaseService(string connectionString, params IQueryLibrary[] classes)
-            : this(connectionString, null, classes) { }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="connectionString">
-        /// The string to use when creating the connection
-        /// </param>
-        /// <param name="fragments">
-        /// The classes providing query fragments for instance-level queries
-        /// </param>
-        /// <param name="classes">
-        /// Zero or more <see cref="IQueryLibrary"/> classes with queries for this instance
-        /// </param>
-        public OdbcDatabaseService(string connectionString, List<IQueryFragmentProvider> fragments,
-            params IQueryLibrary[] classes)
-            : base(fragments, classes)
+        public OdbcDatabaseService(string connectionString, params Type[] providers)
+            : base(providers)
         {
-            // Connect to the database
             Connection = new OdbcConnection(connectionString);
             Connection.Open();
         }
@@ -62,7 +43,7 @@
                         + "connections.  If your data store supports it, define a \"{0}identity.odbc\" query and "
                         + "provide it to the database service, and it will be used.", DatabaseQueryPrefix));
 
-            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "identity.odbc"))
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.odbc"))
                 return (reader.Read()) ? reader.GetInt32(0) : 0;
         }
     }

@@ -7,7 +7,7 @@
     /// <summary>
     /// This represents a single physical or mailing address.
     /// </summary>
-    public sealed class Address : IDatabaseModel
+    public sealed class Address : IParameterProvider
     {
         /// <summary>
         /// The ID of this address
@@ -87,7 +87,7 @@
         /// <returns>
         /// The key/value pairs representing the properties of this object
         /// </returns>
-        public Dictionary<string, object> DataParameters()
+        public IDictionary<string, object> Parameters()
         {
             var parameters = new Dictionary<string, object>();
 

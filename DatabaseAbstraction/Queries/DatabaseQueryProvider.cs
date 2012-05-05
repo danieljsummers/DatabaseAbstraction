@@ -1,4 +1,4 @@
-namespace DatabaseAbstraction.Queries
+﻿namespace DatabaseAbstraction.Queries
 {
     using System.Collections.Generic;
     using System.Data;
@@ -9,7 +9,7 @@ namespace DatabaseAbstraction.Queries
     /// This contains queries to support the database.
     /// It uses the "database" query namespace by default.
     /// </summary>
-    public sealed class DatabaseQueryLibrary : IQueryLibrary
+    public class DatabaseQueryProvider : IDatabaseQueryProvider
     {
         /// <summary>
         /// The prefix to use for the queries in this file
@@ -26,10 +26,10 @@ namespace DatabaseAbstraction.Queries
         /// <summary>
         /// Fill the query library with queries from this class
         /// </summary>
-        /// <param name="queries">
+        /// <param name="queryLibrary">
         /// The query library being built
         /// </param>
-        public void GetQueries(Dictionary<string, DatabaseQuery> queries)
+        public void Queries(IDictionary<string, DatabaseQuery> queries)
         {
             // Select
             queries.Add(Prefix + "sequence.postgres", SequencePostgres());

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Linq;
     using System.Text;
 
@@ -14,28 +13,32 @@
         /// <summary>
         /// The fragments for the query, if any
         /// </summary>
-        public Dictionary<QueryFragmentType, string> Fragments
+        public IDictionary<QueryFragmentType, string> Fragments
         {
             get
             {
-                if (null == _fragments) _fragments = new Dictionary<QueryFragmentType, string>();
+                if (null == _fragments)
+                    _fragments = new Dictionary<QueryFragmentType, string>();
+
                 return _fragments;
             }
         }
-        private Dictionary<QueryFragmentType, string> _fragments;
+        private IDictionary<QueryFragmentType, string> _fragments;
 
         /// <summary>
         /// Straight SQL to include after the specified fragment
         /// </summary>
-        public Dictionary<QueryFragmentType, string> AfterFragment
+        public IDictionary<QueryFragmentType, string> AfterFragment
         {
             get
             {
-                if (null == _afterFragment) _afterFragment = new Dictionary<QueryFragmentType, string>();
+                if (null == _afterFragment)
+                    _afterFragment = new Dictionary<QueryFragmentType, string>();
+
                 return _afterFragment;
             }
         }
-        private Dictionary<QueryFragmentType, string> _afterFragment;
+        private IDictionary<QueryFragmentType, string> _afterFragment;
 
         /// <summary>
         /// Put the fragmented query together
@@ -49,9 +52,9 @@
         /// <returns>
         /// A database query
         /// </returns>
-        public void Assemble(Dictionary<string, QueryFragment> fragments)
+        public void Assemble(IDictionary<string, QueryFragment> fragments)
         {
-            StringBuilder sql = new StringBuilder(SQL);
+            var sql = new StringBuilder(SQL);
 
             foreach (QueryFragmentType type in Enum.GetValues(typeof(QueryFragmentType)))
                 AppendFragment(type, sql, fragments);
@@ -75,7 +78,7 @@
         /// <param name="fragments">
         /// The fragments available for selection
         /// </param>
-        public void AppendFragment(QueryFragmentType type, StringBuilder sql, Dictionary<string, QueryFragment> fragments)
+        public void AppendFragment(QueryFragmentType type, StringBuilder sql, IDictionary<string, QueryFragment> fragments)
         {
             // Does the query have a fragment of this type?
             var fragment = from frag in Fragments

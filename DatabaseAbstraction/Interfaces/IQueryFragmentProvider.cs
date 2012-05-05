@@ -4,8 +4,8 @@
     using DatabaseAbstraction.Models;
 
     /// <summary>
-    /// This defines methods required for models to provide query fragments for a
-    /// <see cref="DatabaseAbstraction.Interfaces.IQueryFragmentProvider"/> implementation
+    /// This defines methods required for classes that provide query fragments to use in combination with
+    /// <see cref="IDatabaseQueryProvider"/>s to create queries
     /// </summary>
     public interface IQueryFragmentProvider
     {
@@ -15,6 +15,6 @@
         /// <param name="fragments">
         /// The fragment collection being built
         /// </param>
-        void Fragments(Dictionary<string, QueryFragment> fragments);
+        void Fragments(IDictionary<string, QueryFragment> fragments);
     }
 }
