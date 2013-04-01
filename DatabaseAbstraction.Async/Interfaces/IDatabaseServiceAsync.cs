@@ -1,6 +1,7 @@
 ﻿namespace DatabaseAbstraction.Async.Interfaces
 {
     using DatabaseAbstraction.Interfaces;
+    using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
@@ -8,8 +9,13 @@
     /// <summary>
     /// Methods required for an asynchronous database service implementation
     /// </summary>
-    public interface IDatabaseServiceAsync
+    public interface IDatabaseServiceAsync : IDisposable
     {
+        /// <summary>
+        /// The concrete database service which will be enabled for asynchronous retrieval
+        /// </summary>
+        IDatabaseService Service { get; }
+
         /// <summary>
         /// Select a result set (async)
         /// </summary>

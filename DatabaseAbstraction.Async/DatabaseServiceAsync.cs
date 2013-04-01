@@ -13,12 +13,12 @@
     /// implementation need only define the identity methods, and populate the Connection property with a concrete
     /// connection.
     /// </summary>
-    public class DatabaseServiceAsync : IDatabaseServiceAsync, IDisposable
+    public class DatabaseServiceAsync : IDatabaseServiceAsync
     {
         /// <summary>
         /// The concrete (non-async) data service
         /// </summary>
-        private IDatabaseService Service { get; set; }
+        public IDatabaseService Service { get; set; }
 
         #region Constructors
 
