@@ -1,9 +1,9 @@
 namespace DatabaseAbstraction
 {
-    using System;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
     using MySql.Data.MySqlClient;
+    using System;
 
     /// <summary>
     /// A MySQL implementation of a database service
@@ -27,7 +27,7 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
-        /// Get the next value in a database sequence 
+        /// Get the next value in a database sequence (int)
         /// </summary>
         /// <remarks>
         /// This uses the SHOW TABLE STATUS command in MySQL.  MySQL does not support traditional sequences like
@@ -42,20 +42,52 @@ namespace DatabaseAbstraction
         public override int Sequence(string sequenceName)
         {
             using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.mysql",
-                                          DbUtils.SingleParameter("[]sequence_name", sequenceName)))
-                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("auto_increment")) : 0;
+                    DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return IntValue(reader, reader.GetOrdinal("auto_increment"));
         }
 
         /// <summary>
-        /// Get the last AUTO_INCREMENT inserted value
+        /// Get the next value in a database sequence (long)
+        /// </summary>
+        /// <remarks>
+        /// This uses the SHOW TABLE STATUS command in MySQL.  MySQL does not support traditional sequences like
+        /// PostgreSQL or Oracle; this will return the next value that will be assigned, but does not reserve it.
+        /// </remarks>
+        /// <param name="sequenceName">
+        /// The name of the sequence
+        /// </param>
+        /// <returns>
+        /// The next AUTO_INCREMENT value for the table specified
+        /// </returns>
+        public override long LongSequence(string sequenceName)
+        {
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.mysql",
+                    DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return LongValue(reader, reader.GetOrdinal("auto_increment"));
+        }
+
+        /// <summary>
+        /// Get the last AUTO_INCREMENT inserted value (int)
         /// </summary>
         /// <returns>
         /// The last value, or 0 if not found
         /// </returns>
-        public int LastIdentity()
+        public override int LastIdentity()
         {
             using (var reader = SelectOne(DatabaseQueryPrefix + "identity.mysql"))
-                return (reader.Read()) ? reader.GetInt32(0) : 0;
+                return IntValue(reader, 0);
+        }
+
+        /// <summary>
+        /// Get the last AUTO_INCREMENT inserted value (long)
+        /// </summary>
+        /// <returns>
+        /// The last value, or 0 if not found
+        /// </returns>
+        public override long LongLastIdentity()
+        {
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.mysql"))
+                return LongValue(reader, 0);
         }
     }
 }

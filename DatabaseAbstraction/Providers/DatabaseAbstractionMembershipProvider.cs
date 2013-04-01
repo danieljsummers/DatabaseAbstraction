@@ -1,24 +1,19 @@
 ﻿namespace DatabaseAbstraction.Providers
 {
-    #region Usings
-
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Queries;
+    using DatabaseAbstraction.Utils;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Configuration;
     using System.Configuration.Provider;
     using System.Data;
-    using System.Diagnostics;
     using System.Security.Cryptography;
     using System.Text;
     using System.Web.Configuration;
     using System.Web.Hosting;
     using System.Web.Security;
-    using DatabaseAbstraction.Interfaces;
-    using DatabaseAbstraction.Queries;
-    using DatabaseAbstraction.Utils;
-
-    #endregion
 
     /// <summary>
     /// This is a membership provider that utilizes a Database Abstraction implementation to perform membership
@@ -1396,10 +1391,9 @@
             // Determine if the "provider.validate_user" query exists in the static query library.  If it does, the
             // caller has already populated it, and we don't need to pass it.  If it does not, we'll be using an
             // instance query library instead.
-            if (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
-                return DbUtils.CreateDatabaseService(ConnectionString, ProviderName);
-
-            return DbUtils.CreateDatabaseService(ConnectionString, ProviderName, typeof(ProviderQueryProvider));
+            return (DatabaseService.StaticQueries.ContainsKey("provider.validate_user"))
+                ? DbUtils.CreateDatabaseService(ConnectionString, ProviderName)
+                : DbUtils.CreateDatabaseService(ConnectionString, ProviderName, typeof(ProviderQueryProvider));
         }
 
         #endregion

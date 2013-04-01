@@ -1,16 +1,17 @@
-namespace DatabaseAbstraction.Interfaces
+﻿namespace DatabaseAbstraction.Async.Interfaces
 {
-    using System;
+    using DatabaseAbstraction.Interfaces;
     using System.Collections.Generic;
     using System.Data;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// This interface describes the functions that must exist in a DatabaseService implementation.
+    /// Methods required for an asynchronous database service implementation
     /// </summary>
-    public interface IDatabaseService : IDisposable
+    public interface IDatabaseServiceAsync
     {
         /// <summary>
-        /// Select a result set
+        /// Select a result set (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -18,10 +19,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        IDataReader Select(string queryName);
+        Task<IDataReader> SelectAsync(string queryName);
 
         /// <summary>
-        /// Select a result set
+        /// Select a result set (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -32,10 +33,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        IDataReader Select(string queryName, IDictionary<string, object> parameters);
+        Task<IDataReader> SelectAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
-        /// Select a result set
+        /// Select a result set (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -46,10 +47,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        IDataReader Select(string queryName, IParameterProvider model);
+        Task<IDataReader> SelectAsync(string queryName, IParameterProvider model);
 
         /// <summary>
-        /// Select a single result
+        /// Select a single result (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -57,10 +58,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        IDataReader SelectOne(string queryName);
+        Task<IDataReader> SelectOneAsync(string queryName);
 
         /// <summary>
-        /// Select a single result
+        /// Select a single result (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -71,10 +72,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        IDataReader SelectOne(string queryName, IDictionary<string, object> parameters);
+        Task<IDataReader> SelectOneAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
-        /// Select a single result
+        /// Select a single result (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -85,10 +86,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        IDataReader SelectOne(string queryName, IParameterProvider model);
+        Task<IDataReader> SelectOneAsync(string queryName, IParameterProvider model);
 
         /// <summary>
-        /// Insert data
+        /// Insert data (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -96,10 +97,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <param name="parameters">
         /// The parameters to use in executing the query
         /// </param>
-        void Insert(string queryName, IDictionary<string, object> parameters);
+        Task InsertAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
-        /// Insert data
+        /// Insert data (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -107,10 +108,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <param name="model">
         /// The model from which parameters may be obtained
         /// </param>
-        void Insert(string queryName, IParameterProvider model);
+        Task InsertAsync(string queryName, IParameterProvider model);
 
         /// <summary>
-        /// Update data
+        /// Update data (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -118,10 +119,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <param name="parameters">
         /// The parameters to use in executing the query
         /// </param>
-        void Update(string queryName, IDictionary<string, object> parameters);
+        Task UpdateAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
-        /// Update data
+        /// Update data (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -129,10 +130,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <param name="model">
         /// The model from which parameters may be obtained
         /// </param>
-        void Update(string queryName, IParameterProvider model);
+        Task UpdateAsync(string queryName, IParameterProvider model);
 
         /// <summary>
-        /// Delete data
+        /// Delete data (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -140,10 +141,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <param name="parameters">
         /// The parameters to use in executing the query
         /// </param>
-        void Delete(string queryName, IDictionary<string, object> parameters);
+        Task DeleteAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
-        /// Delete data
+        /// Delete data (async)
         /// </summary>
         /// <param name="queryName">
         /// The name of the query to execute as defined in a <see cref="IDatabaseQueryProvider"/> instance
@@ -151,10 +152,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <param name="model">
         /// The model from which parameters may be obtained
         /// </param>
-        void Delete(string queryName, IParameterProvider model);
+        Task DeleteAsync(string queryName, IParameterProvider model);
 
         /// <summary>
-        /// Get a sequence from the database (int)
+        /// Get a sequence (int) from the database (async)
         /// </summary>
         /// <param name="sequenceName">
         /// The name of the sequence to query
@@ -162,10 +163,10 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// The sequence value
         /// </returns>
-        int Sequence(string sequenceName);
+        Task<int> SequenceAsync(string sequenceName);
 
         /// <summary>
-        /// Get a sequence from the database (long)
+        /// Get a sequence (long) from the database (async)
         /// </summary>
         /// <param name="sequenceName">
         /// The name of the sequence to query
@@ -173,22 +174,22 @@ namespace DatabaseAbstraction.Interfaces
         /// <returns>
         /// The sequence value
         /// </returns>
-        long LongSequence(string sequenceName);
+        Task<long> LongSequenceAsync(string sequenceName);
 
         /// <summary>
-        /// Get the last auto-incremented / auto-numbered / identity value (int)
+        /// Get the last auto-incremented / auto-numbered / identity value (async)
         /// </summary>
         /// <returns>
         /// The last identity value
         /// </returns>
-        int LastIdentity();
+        Task<int> LastIdentityAsync();
 
         /// <summary>
-        /// Get the last auto-incremented / auto-numbered / identity value (long)
+        /// Get the last auto-incremented / auto-numbered / identity value (async)
         /// </summary>
         /// <returns>
         /// The last identity value
         /// </returns>
-        long LongLastIdentity();
+        Task<long> LongLastIdentityAsync();
     }
 }

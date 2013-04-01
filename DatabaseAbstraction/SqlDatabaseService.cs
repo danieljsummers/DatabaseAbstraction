@@ -1,9 +1,9 @@
 namespace DatabaseAbstraction
 {
-    using System;
-    using System.Data.SqlClient;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
+    using System;
+    using System.Data.SqlClient;
 
     /// <summary>
     /// A SQL Server implementation of a database service.
@@ -27,7 +27,7 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
-        /// Get the next value in a database sequence 
+        /// Get the next value in a database sequence (int)
         /// </summary>
         /// <remarks>
         /// Technically, an IDENTITY column in SQL Server has its values assigned by the database.  This implementation
@@ -44,20 +44,54 @@ namespace DatabaseAbstraction
         public override int Sequence(string sequenceName)
         {
             using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.sqlserver",
-                                          DbUtils.SingleParameter("[]sequence_name", sequenceName)))
-                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) + 1 : 0;
+                    DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return IntValue(reader, reader.GetOrdinal("sequence_value")) + 1;
         }
 
         /// <summary>
-        /// Get the current SCOPE_IDENTITY value
+        /// Get the next value in a database sequence (long)
+        /// </summary>
+        /// <remarks>
+        /// Technically, an IDENTITY column in SQL Server has its values assigned by the database.  This implementation
+        /// retrieves the current IDENTITY value and increments it by 1.  Note that SQL Server IDENTITY values can have
+        /// a different increment; however, this will mimic the traditional implementation of sequences in other
+        /// databases.
+        /// </remarks>
+        /// <param name="sequenceName">
+        /// The name of the sequence
+        /// </param>
+        /// <returns>
+        /// The current identity value plus one; zero if nothing found
+        /// </returns>
+        public override long LongSequence(string sequenceName)
+        {
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.sqlserver",
+                    DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return LongValue(reader, reader.GetOrdinal("sequence_value")) + 1;
+        }
+
+        /// <summary>
+        /// Get the current SCOPE_IDENTITY value (int)
         /// </summary>
         /// <returns>
         /// The last value, or 0 if not found
         /// </returns>
-        public int LastIdentity()
+        public override int LastIdentity()
         {
             using (var reader = SelectOne(DatabaseQueryPrefix + "identity.sqlserver"))
-                return (reader.Read()) ? reader.GetInt32(0) : 0;
+                return IntValue(reader, 0);
+        }
+
+        /// <summary>
+        /// Get the current SCOPE_IDENTITY value (long)
+        /// </summary>
+        /// <returns>
+        /// The last value, or 0 if not found
+        /// </returns>
+        public override long LongLastIdentity()
+        {
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.sqlserver"))
+                return LongValue(reader, 0);
         }
     }
 }

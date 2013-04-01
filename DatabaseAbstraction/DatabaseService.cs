@@ -202,7 +202,7 @@ namespace DatabaseAbstraction
         /// <exception cref="System.NotSupportedException">
         /// If the query is not a SELECT statement
         /// </exception>
-        private IDbCommand GetCommandForSelect(string queryName, IDictionary<string, object> parameters)
+        protected IDbCommand GetCommandForSelect(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
@@ -324,7 +324,7 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
-        /// Get a sequence
+        /// Get a sequence (int)
         /// </summary>
         /// <remarks>
         /// This method is very dumb; it simply returns a value of MAX(PK) + 1.  However, for SQLite, and for ODBC
@@ -350,8 +350,54 @@ namespace DatabaseAbstraction
             parameters.Add("[]table_name", inputParameters[1]);
 
             using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
-                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("max_pk")) + 1 : 0;
+                return IntValue(reader, reader.GetOrdinal("max_pk")) + 1;
         }
+
+        /// <summary>
+        /// Get a sequence (long)
+        /// </summary>
+        /// <remarks>
+        /// This method is very dumb; it simply returns a value of MAX(PK) + 1.  However, for SQLite, and for ODBC
+        /// connections (source unknown), this is the best we can do.
+        /// </remarks>
+        /// <param name="sequenceName">
+        /// The primary key name and table name, separated by a pipe (ex. "table_id|table_name")
+        /// </param>
+        /// <returns>
+        /// The next value in sequence for the given primary key
+        /// </returns>
+        public virtual long LongSequence(string sequenceName)
+        {
+            var inputParameters = sequenceName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (2 != inputParameters.Length)
+                throw new ArgumentException(String.Format(
+                    "Invalid generic sequence \"{0}\" received (must be of the format \"table_id|table_name\"",
+                    sequenceName));
+
+            var parameters = new Dictionary<string, object>();
+            parameters.Add("[]primary_key_name", inputParameters[0]);
+            parameters.Add("[]table_name", inputParameters[1]);
+
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
+                return LongValue(reader, reader.GetOrdinal("max_pk")) + 1;
+        }
+
+        /// <summary>
+        /// Get the last "identity" value, whatever that may be (implementation specific) (int)
+        /// </summary>
+        /// <returns>
+        /// The identity value
+        /// </returns>
+        public abstract int LastIdentity();
+
+        /// <summary>
+        /// Get the last "identity" value, whatever that may be (implementation specific) (long)
+        /// </summary>
+        /// <returns>
+        /// The identity value
+        /// </returns>
+        public abstract long LongLastIdentity();
 
         /// <summary>
         /// Get a query from the library 
@@ -365,7 +411,7 @@ namespace DatabaseAbstraction
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">
         /// Thrown when the query name is not found in the query library
         /// </exception>
-        private DatabaseQuery GetQuery(string queryName)
+        protected DatabaseQuery GetQuery(string queryName)
         {
             if (StaticQueries.ContainsKey(queryName))
                 return StaticQueries[queryName];
@@ -388,7 +434,7 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A command ready to execute
         /// </returns>
-        private IDbCommand MakeCommand(DatabaseQuery query, IDictionary<string, object> parameters)
+        protected IDbCommand MakeCommand(DatabaseQuery query, IDictionary<string, object> parameters)
         {
             var command = Connection.CreateCommand();
             command.CommandText = String.Copy(query.SQL);
@@ -420,6 +466,60 @@ namespace DatabaseAbstraction
             }
 
             return command;
+        }
+
+        /// <summary>
+        /// Get an int value from a data reader
+        /// </summary>
+        /// <param name="reader">
+        /// The data reader (will have Read() executed on it)
+        /// </param>
+        /// <param name="columnIndex">
+        /// The index of the column
+        /// </param>
+        /// <returns>
+        /// The value of the column as an int, whether exposed as a long or an int
+        /// </returns>
+        protected int IntValue(IDataReader reader, int columnIndex)
+        {
+            if (!reader.Read())
+                return 0;
+
+            try
+            {
+                return reader.GetInt32(columnIndex);
+            }
+            catch (InvalidCastException)
+            {
+                return Convert.ToInt32(reader.GetInt64(columnIndex));
+            }
+        }
+
+        /// <summary>
+        /// Get a long value from a data reader
+        /// </summary>
+        /// <param name="reader">
+        /// The data reader (will have Read() executed on it)
+        /// </param>
+        /// <param name="columnIndex">
+        /// The index of the column
+        /// </param>
+        /// <returns>
+        /// The value of the column as a long, whether exposed as an int or a long
+        /// </returns>
+        protected long LongValue(IDataReader reader, int columnIndex)
+        {
+            if (!reader.Read())
+                return 0L;
+
+            try
+            {
+                return reader.GetInt64(columnIndex);
+            }
+            catch (InvalidCastException)
+            {
+                return Convert.ToInt64(reader.GetInt32(columnIndex));
+            }
         }
 
         #endregion

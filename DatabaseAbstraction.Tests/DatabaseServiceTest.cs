@@ -63,7 +63,11 @@
         /// </summary>
         private class TestDatabaseService : DatabaseService, IDatabaseService
         {
-            public int LastIdentity()
+            public override int LastIdentity()
+            {
+                throw new NotImplementedException();
+            }
+            public override long LongLastIdentity()
             {
                 throw new NotImplementedException();
             }

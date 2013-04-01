@@ -1,14 +1,18 @@
 ﻿namespace DatabaseAbstraction
 {
+    using DatabaseAbstraction.Interfaces;
     using System;
     using System.Data.Odbc;
-    using DatabaseAbstraction.Interfaces;
 
     /// <summary>
     /// An ODBC implementation of a database service
     /// </summary>
     public class OdbcDatabaseService : DatabaseService, IDatabaseService
     {
+        private string _noQuery = "There is no way for Database Abstraction to determine proper identity SQL syntax "
+            + "for ODBC connections.  If your data store supports it, define a \"{0}identity.odbc\" query and "
+            + "provide it to the database service, and it will be used.";
+
         /// <summary>
         /// Constructor for the ODBC database service
         /// </summary>
@@ -26,7 +30,7 @@
         }
 
         /// <summary>
-        /// Get the last inserted identity value; ODBC users must provide their own implementation
+        /// Get the last inserted identity value; ODBC users must provide their own implementation (int)
         /// </summary>
         /// <returns>
         /// The identity if the query is defined; an exception if not.
@@ -34,17 +38,33 @@
         /// <exception cref="InvalidOperationException">
         /// If there is no query defined
         /// </exception>
-        public int LastIdentity()
+        public override int LastIdentity()
         {
             if (!StaticQueries.ContainsKey(DatabaseQueryPrefix + "identity.odbc"))
                 if (!Queries.ContainsKey(DatabaseQueryPrefix + "identity.odbc"))
-                    throw new InvalidOperationException(String.Format(
-                        "There is no way for Database Abstraction to determine proper identity SQL syntax for ODBC "
-                        + "connections.  If your data store supports it, define a \"{0}identity.odbc\" query and "
-                        + "provide it to the database service, and it will be used.", DatabaseQueryPrefix));
+                    throw new InvalidOperationException(String.Format(_noQuery, DatabaseQueryPrefix));
 
             using (var reader = SelectOne(DatabaseQueryPrefix + "identity.odbc"))
-                return (reader.Read()) ? reader.GetInt32(0) : 0;
+                return IntValue(reader, 0);
+        }
+
+        /// <summary>
+        /// Get the last inserted identity value; ODBC users must provide their own implementation (long)
+        /// </summary>
+        /// <returns>
+        /// The identity if the query is defined; an exception if not.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// If there is no query defined
+        /// </exception>
+        public override long LongLastIdentity()
+        {
+            if (!StaticQueries.ContainsKey(DatabaseQueryPrefix + "identity.odbc"))
+                if (!Queries.ContainsKey(DatabaseQueryPrefix + "identity.odbc"))
+                    throw new InvalidOperationException(String.Format(_noQuery, DatabaseQueryPrefix));
+
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.odbc"))
+                return LongValue(reader, 0);
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿namespace DatabaseAbstraction.Providers
 {
-    #region Usings
-
+    using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Queries;
+    using DatabaseAbstraction.Utils;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -10,11 +11,6 @@
     using System.Data;
     using System.Web.Hosting;
     using System.Web.Security;
-    using DatabaseAbstraction.Interfaces;
-    using DatabaseAbstraction.Queries;
-    using DatabaseAbstraction.Utils;
-
-    #endregion
 
     /// <summary>
     /// This is a role provider that utilizes a Database Abstraction implementation to perform role management
@@ -69,7 +65,7 @@
             if (String.IsNullOrEmpty(config["description"]))
             {
                 config.Remove("description");
-                config.Add("description", "Sample ODBC Role provider");
+                config.Add("description", "DatabaseAbstraction Role provider");
             }
 
             // Initialize the abstract base class
@@ -521,7 +517,7 @@
         /// <returns>
         /// A parameter dictionary
         /// </returns>
-        private Dictionary<string, object> GetDefaultParameters(string rolename)
+        private IDictionary<string, object> GetDefaultParameters(string rolename)
         {
             var parameters = new Dictionary<string, object>();
 

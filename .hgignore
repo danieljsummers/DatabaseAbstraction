@@ -17,3 +17,5 @@ Example/bin/Release/MySql.*
 Example/bin/Release/Npgsql.*
 Example/bin/Release/nunit.*
 Example/bin/Release/System.Data.SQLite.*
+DatabaseAbstraction.Async/obj
+DatabaseAbstraction.Async/bin/Debug

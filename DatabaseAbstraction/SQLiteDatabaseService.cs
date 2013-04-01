@@ -1,8 +1,8 @@
 namespace DatabaseAbstraction
 {
+    using DatabaseAbstraction.Interfaces;
     using System;
     using System.Data.SQLite;
-    using DatabaseAbstraction.Interfaces;
 
     /// <summary>
     /// A SQLite implementation of a database service
@@ -26,15 +26,27 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
-        /// Get the last INTEGER PRIMARY KEY auto-incrementing inserted value
+        /// Get the last INTEGER PRIMARY KEY auto-incrementing inserted value (int)
         /// </summary>
         /// <returns>
         /// The last value, or 0 if not found
         /// </returns>
-        public int LastIdentity()
+        public override int LastIdentity()
         {
             using (var reader = SelectOne(DatabaseQueryPrefix + "identity.sqlite"))
-                return (reader.Read()) ? reader.GetInt32(0) : 0;
+                return IntValue(reader, 0);
+        }
+
+        /// <summary>
+        /// Get the last INTEGER PRIMARY KEY auto-incrementing inserted value (long)
+        /// </summary>
+        /// <returns>
+        /// The last value, or 0 if not found
+        /// </returns>
+        public override long LongLastIdentity()
+        {
+            using (var reader = SelectOne(DatabaseQueryPrefix + "identity.sqlite"))
+                return LongValue(reader, 0);
         }
     }
 }

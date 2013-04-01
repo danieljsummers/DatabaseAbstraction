@@ -175,10 +175,22 @@ namespace DatabaseAbstraction
             return -1;
         }
 
+        public long LongSequence(string sequenceName)
+        {
+            RecordQuery(sequenceName, QueryType.Sequence, null);
+            return -1L;
+        }
+
         public int LastIdentity()
         {
             RecordQuery("", QueryType.Identity, null);
             return -1;
+        }
+        
+        public long LongLastIdentity()
+        {
+            RecordQuery("", QueryType.Identity, null);
+            return -1L;
         }
 
         /// <summary>

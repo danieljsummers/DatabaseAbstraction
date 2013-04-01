@@ -1,10 +1,9 @@
 namespace DatabaseAbstraction
 {
-    using System;
-    using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Utils;
     using Npgsql;
+    using System;
 
     /// <summary>
     /// A PostgreSQL implementation of a database service
@@ -28,7 +27,7 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
-        /// Get the next value in a database sequence 
+        /// Get the next value in a database sequence (int)
         /// </summary>
         /// <param name="sequenceName">
         /// The name of the sequence
@@ -38,13 +37,32 @@ namespace DatabaseAbstraction
         /// </returns>
         public override int Sequence(string sequenceName)
         {
-            using (IDataReader reader = SelectOne(DatabaseQueryPrefix + "sequence.postgres",
-                                                  DbUtils.SingleParameter("[]sequence_name", sequenceName)))
-                return (reader.Read()) ? reader.GetInt32(reader.GetOrdinal("sequence_value")) : 0;
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.postgres",
+                    DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return IntValue(reader, reader.GetOrdinal("sequence_value"));
         }
 
         /// <summary>
-        /// Get the last inserted identity value (N/A for PostgreSQL)
+        /// Get the next value in a database sequence (long)
+        /// </summary>
+        /// <remarks>
+        /// Newer versions of PostgreSQL are returning SERIAL columns as longs, so we try long first
+        /// </remarks>
+        /// <param name="sequenceName">
+        /// The name of the sequence
+        /// </param>
+        /// <returns>
+        /// The value of the sequence
+        /// </returns>
+        public override long LongSequence(string sequenceName)
+        {
+            using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.postgres",
+                    DbUtils.SingleParameter("[]sequence_name", sequenceName)))
+                return LongValue(reader, reader.GetOrdinal("sequence_value"));
+        }
+
+        /// <summary>
+        /// Get the last inserted identity value (int - N/A for PostgreSQL)
         /// </summary>
         /// <returns>
         /// Nothing but an exception
@@ -52,10 +70,24 @@ namespace DatabaseAbstraction
         /// <exception cref="InvalidOperationException">
         /// PostgreSQL does not support last identity; use Sequence() with the sequence name instead
         /// </exception>
-        public int LastIdentity()
+        public override int LastIdentity()
         {
             throw new InvalidOperationException(
                 "PostgreSQL does not support last identity; use Sequence() with the sequence name instead");
+        }
+
+        /// <summary>
+        /// Get the last inserted identity value (long - N/A for PostgreSQL)
+        /// </summary>
+        /// <returns>
+        /// Nothing but an exception
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// PostgreSQL does not support last identity; use Sequence() with the sequence name instead
+        /// </exception>
+        public override long LongLastIdentity()
+        {
+            return Convert.ToInt64(LastIdentity());
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAbstraction", "DatabaseAbstraction\DatabaseAbstraction.csproj", "{D0739870-EB46-4DFF-820F-BC39D3D8E61E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{2AADCD50-21D0-479A-B43B-E306337DE3C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAbstraction.Tests", "DatabaseAbstraction.Tests\DatabaseAbstraction.Tests.csproj", "{ADA1CC41-C66D-4855-8E75-F3700FCA953C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAbstraction.Async", "DatabaseAbstraction.Async\DatabaseAbstraction.Async.csproj", "{CF981CB7-767F-489A-9DF6-887B4FA678AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{ADA1CC41-C66D-4855-8E75-F3700FCA953C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADA1CC41-C66D-4855-8E75-F3700FCA953C}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADA1CC41-C66D-4855-8E75-F3700FCA953C}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{CF981CB7-767F-489A-9DF6-887B4FA678AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF981CB7-767F-489A-9DF6-887B4FA678AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF981CB7-767F-489A-9DF6-887B4FA678AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF981CB7-767F-489A-9DF6-887B4FA678AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,14 +38,13 @@ Global
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = DatabaseAbstraction\DatabaseAbstraction.csproj
 		Policies = $0
-		$0.TextStylePolicy = $1
+		$0.TextStylePolicy = $3
 		$1.inheritsSet = null
 		$1.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $2
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
-		$0.TextStylePolicy = $3
 		$3.FileWidth = 120
 		$3.TabWidth = 4
 		$3.inheritsSet = Mono
