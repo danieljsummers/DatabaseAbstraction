@@ -1,11 +1,11 @@
 namespace DatabaseAbstraction
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
 
     /// <summary>
     /// This abstract class contains the majority of the implementation of the database abstraction.  The specific

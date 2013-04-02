@@ -8,11 +8,12 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// This abstract class contains the majority of the async implementation of a database service.  As it extends
-    /// DatabaseService, it also provides the majority of the non-async implementation as well.  The specific
-    /// implementation need only define the identity methods, and populate the Connection property with a concrete
-    /// connection.
+    /// This class wraps a <see cref="IDatabaseService" /> instance and makes the calls conform to the .NET Framework
+    /// version 4.5's new async/await paradigm.
     /// </summary>
+    /// <remarks>
+    /// This also implements IDisposable, and disposes the database service instance when this instance is disposed.
+    /// </remarks>
     public class DatabaseServiceAsync : IDatabaseServiceAsync
     {
         /// <summary>

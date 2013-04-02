@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DatabaseAbstraction.Async")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Database Abstraction (Async Implementation)")]
+[assembly: AssemblyDescription("Provide async/await support for database services")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard")]
-[assembly: AssemblyProduct("DatabaseAbstraction.Async")]
-[assembly: AssemblyCopyright("Copyright © Hewlett-Packard 2013")]
+[assembly: AssemblyCompany("Developed by DJS Consulting")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("Licensed under Ms-RL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.9.1.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
