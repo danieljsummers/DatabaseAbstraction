@@ -2,19 +2,19 @@
 {
     using System;
     using DatabaseAbstraction.Utils.UnitTest;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
     /// Unit Tests for the StubResultSet class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class StubResultSetTest
     {
         /// <summary>
         /// Test the CurrentRow property and the Read() method
         /// </summary>
-        [Test]
-        public void CurrentRowAndRead()
+        [TestMethod]
+        public void StubResultSet_CurrentRow_Read_Success()
         {
             var result = new StubResultSet();
 
@@ -42,7 +42,7 @@
             Assert.AreEqual(4, result.CurrentRow[0], "Second row was not returned after second Read()");
 
             // Final Read() should return false
-            Assert.False(result.Read(), "Read() should have encountered the end of the set");
+            Assert.IsFalse(result.Read(), "Read() should have encountered the end of the set");
 
             try
             {
@@ -58,13 +58,13 @@
         /// <summary>
         /// Test the GetFieldNames() method
         /// </summary>
-        [Test]
-        public void GetFieldNames()
+        [TestMethod]
+        public void StubResultSet_GetFieldNames_Success()
         {
             var result = new StubResultSet("Q", "G", "yea");
             var fields = result.GetFieldNames();
 
-            Assert.NotNull(fields, "Field names should not have been null");
+            Assert.IsNotNull(fields, "Field names should not have been null");
             Assert.AreEqual(3, fields.Length, "There should have been 3 field names");
             Assert.AreEqual("Q", fields[0], "The first field name was incorrect");
             Assert.AreEqual("G", fields[1], "The second field name was incorrect");
@@ -74,8 +74,8 @@
         /// <summary>
         /// Tet the GetFieldName() method
         /// </summary>
-        [Test]
-        public void GetFieldName()
+        [TestMethod]
+        public void StubResultSet_GetFieldName_Success()
         {
             var result = new StubResultSet("x", "y", "d");
 
@@ -88,9 +88,9 @@
             }
             catch (ArgumentOutOfRangeException exception)
             {
-                Assert.True(exception.Message.StartsWith("Index can only be between 0 and 2"),
+                Assert.IsTrue(exception.Message.StartsWith("Index can only be between 0 and 2"),
                     "Unexpected exception message:\n" + exception.Message);
-                Assert.True(exception.Message.EndsWith("Parameter name: index"),
+                Assert.IsTrue(exception.Message.EndsWith("Parameter name: index"),
                     "Unexpected exception message:\n" + exception.Message);
             }
         }
@@ -98,8 +98,8 @@
         /// <summary>
         /// Test the AddRow() method
         /// </summary>
-        [Test]
-        public void AddRow()
+        [TestMethod]
+        public void StubResultSet_AddRow_Success()
         {
             var result = new StubResultSet("e", "f", "g");
             result.AddRow(3, 4, 5);
@@ -116,9 +116,9 @@
             }
             catch (ArgumentOutOfRangeException exception)
             {
-                Assert.True(exception.Message.StartsWith("The row must contain 3 items"),
+                Assert.IsTrue(exception.Message.StartsWith("The row must contain 3 items"),
                     "Unexpected exception message:\n" + exception.Message);
-                Assert.True(exception.Message.EndsWith("Parameter name: values"),
+                Assert.IsTrue(exception.Message.EndsWith("Parameter name: values"),
                     "Unexpected exception message:\n" + exception.Message);
             }
         }
@@ -126,8 +126,8 @@
         /// <summary>
         /// Test the GetIndexFieldFromName() method
         /// </summary>
-        [Test]
-        public void GetIndexFieldFromName()
+        [TestMethod]
+        public void StubResultSet_GetIndexFieldFromName_Success()
         {
             var result = new StubResultSet("three", "six", "five");
             Assert.AreEqual(1, result.GetIndexFromFieldName("six"), "Field 2 was not retrieved correctly");

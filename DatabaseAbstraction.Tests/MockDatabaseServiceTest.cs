@@ -1,18 +1,18 @@
 ﻿namespace DatabaseAbstraction.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
     using DatabaseAbstraction.Utils.UnitTest;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
 
     /// <summary>
     /// Unit Tests for the MockDatabaseService class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class MockDatabaseServiceTest
     {
         #region Tests
@@ -20,8 +20,8 @@
         /// <summary>
         /// Test the constructor
         /// </summary>
-        [Test]
-        public void Constructor()
+        [TestMethod]
+        public void MockDatabaseService_Constructor_Success()
         {
             var data = new MockDatabaseService(null, typeof(TestQueryProvider));
             Assert.IsNotNull(data, "The Mock Database Service should not have been null");
@@ -36,8 +36,8 @@
         /// <summary>
         /// Test the Select() and AssertPerformedSelect() methods
         /// </summary>
-        [Test]
-        public void SelectAndAssertPerformedSelect()
+        [TestMethod]
+        public void MockDatabaseService_SelectAndAssertPerformedSelect_Success()
         {
             // Set up some test data
             var result1 = new StubResultSet("col1", "col2");
@@ -110,8 +110,8 @@
         /// <summary>
         /// Test the Insert() and AssertPerformedInsert() methods
         /// </summary>
-        [Test]
-        public void InsertAndAssertPerformedInsert()
+        [TestMethod]
+        public void MockDatabaseService_InsertAndAssertPerformedInsert_Success()
         {
             // Initialize the service
             var data = new MockDatabaseService(null, typeof(TestQueryProvider));
@@ -148,8 +148,8 @@
         /// <summary>
         /// Test the Update() and AssertPerformedUpdate() methods
         /// </summary>
-        [Test]
-        public void UpdateAndAssertPerformedUpdate()
+        [TestMethod]
+        public void MockDatabaseService_UpdateAndAssertPerformedUpdate_Success()
         {
             // Initialize the service
             var data = new MockDatabaseService(null, typeof(TestQueryProvider));
@@ -188,8 +188,8 @@
         /// <summary>
         /// Test the Delete() and AssertPerformedDelete() methods
         /// </summary>
-        [Test]
-        public void DeleteAndAssertPerformedDelete()
+        [TestMethod]
+        public void MockDatabaseService_DeleteAndAssertPerformedDelete_Success()
         {
             // Initialize the service
             var data = new MockDatabaseService(null, typeof(TestQueryProvider));
@@ -228,8 +228,8 @@
         /// <summary>
         /// Test the Sequence() and AssertPerformedSequence() methods
         /// </summary>
-        [Test]
-        public void SequenceAndAssertPerformedSequence()
+        [TestMethod]
+        public void MockDatabaseService_SequenceAndAssertPerformedSequence_Success()
         {
             var data = new MockDatabaseService(null);
             data.Sequence("unit_test_sequence");
@@ -242,8 +242,8 @@
         /// <summary>
         /// Test the Identity() and AssertPerformedIdentity() methods
         /// </summary>
-        [Test]
-        public void IdentityAndAssertPerformedIdentity()
+        [TestMethod]
+        public void MockDatabaseService_IdentityAndAssertPerformedIdentity_Success()
         {
             var data = new MockDatabaseService(null);
             data.LastIdentity();
@@ -257,8 +257,8 @@
         /// <summary>
         /// Test a call for a query that is not in the library
         /// </summary>
-        [Test]
-        public void QueryNotFound()
+        [TestMethod]
+        public void MockDatabaseService_QueryNotFound_Failure()
         {
             var data = new MockDatabaseService(null, typeof(TestQueryProvider));
 

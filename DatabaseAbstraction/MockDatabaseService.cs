@@ -1,20 +1,20 @@
 namespace DatabaseAbstraction
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
     using DatabaseAbstraction.Utils.UnitTest;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
 
     /// <summary>
     /// Mock implementation of a database service
     /// </summary>
     /// <remarks>
-    /// This is designed to be used for NUnit-based unit tests.  Assuming the code uses dependency injection for the
+    /// This is designed to be used for Microsoft-based unit tests.  Assuming the code uses dependency injection for the
     /// IDatabaseService interface, this implementation can be substituted for the actual database.  Rather than
     /// actually storing data, it accumulates the query names and parameters passed to it, and provides a means to
     /// retrieve these for verification.  Remember that, unless instantiated statically, each test run will obtain a

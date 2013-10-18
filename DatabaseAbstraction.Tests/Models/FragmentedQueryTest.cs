@@ -1,50 +1,50 @@
 ﻿namespace DatabaseAbstraction.Tests.Models
 {
+    using DatabaseAbstraction.Models;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Text;
-    using DatabaseAbstraction.Models;
-    using NUnit.Framework;
 
     /// <summary>
     /// Unit tests for the <see cref="FragmentedQuery"/> class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class FragmentedQueryTest
     {
         /// <summary>
         /// Test the getters for the fragment and after-fragment dictionaries
         /// </summary>
-        [Test]
-        public void Getters()
+        [TestMethod]
+        public void FragmentedQuery_Fragments_Empty_Success()
         {
             var query = new FragmentedQuery();
 
-            Assert.NotNull(query.Fragments, "Fragment dictionary should not be null");
-            Assert.NotNull(query.AfterFragment, "After Fragment dictionary should not be null");
+            Assert.IsNotNull(query.Fragments, "Fragment dictionary should not be null");
+            Assert.IsNotNull(query.AfterFragment, "After Fragment dictionary should not be null");
 
             Assert.AreEqual(0, query.Fragments.Count, "Fragment dictionary should be empty");
             Assert.AreEqual(0, query.AfterFragment.Count, "After Fragment dictionary should be empty");
         }
 
         /// <summary>
-        /// Test the AppendFragment() method
+        /// Test the AppendFragment() method with a fragment and an after-fragment string
         /// </summary>
-        [Test]
-        public void AppendFragment()
+        [TestMethod]
+        public void FragmentedQuery_AppendFragment_WithFragmentAndAfter_Success()
         {
             var query = new FragmentedQuery();
             query.Name = "unit.test.query";
 
             // Set up the fragment
             query.SQL = "before";
-            query.Fragments.Add(QueryFragmentType.Where, "unit.test.fragment");
-            query.AfterFragment.Add(QueryFragmentType.Where, "afterwards");
+            query.Fragments[QueryFragmentType.Where] = "unit.test.fragment";
+            query.AfterFragment[QueryFragmentType.Where] = "afterwards";
 
             var fragments = new Dictionary<string, QueryFragment>();
-            fragments.Add("unit.test.fragment", new QueryFragment { SQL = "the fragment" });
-            fragments["unit.test.fragment"].Parameters.Add("unit.test.parameter", DbType.String);
+            fragments["unit.test.fragment"] = new QueryFragment { SQL = "the fragment" };
+            fragments["unit.test.fragment"].Parameters["unit.test.parameter"] = DbType.String;
 
             var sql = new StringBuilder();
 
@@ -54,36 +54,84 @@
             // Check the results
             Assert.AreEqual(" the fragment afterwards", sql.ToString());
             Assert.AreEqual(1, query.Parameters.Count);
-            Assert.True(query.Parameters.ContainsKey("unit.test.parameter"));
+            Assert.IsTrue(query.Parameters.ContainsKey("unit.test.parameter"));
             Assert.AreEqual(DbType.String, query.Parameters["unit.test.parameter"]);
+        }
 
-            // Test it with no after-fragment
-            sql.Clear();
-            query.AfterFragment.Clear();
-            query.Parameters.Clear();
+        /// <summary>
+        /// Test the AppendFragment() method with a fragment but without an after-fragment string
+        /// </summary>
+        [TestMethod]
+        public void FragmentedQuery_AppendFragment_WithFragmentNoAfter_Success()
+        {
+            var query = new FragmentedQuery();
+            query.Name = "unit.test.query";
 
+            // Set up the fragment
+            query.SQL = "before";
+            query.Fragments[QueryFragmentType.Where] = "unit.test.fragment";
+
+            var fragments = new Dictionary<string, QueryFragment>();
+            fragments["unit.test.fragment"] = new QueryFragment { SQL = "the fragment" };
+            fragments["unit.test.fragment"].Parameters["unit.test.parameter"] = DbType.String;
+
+            var sql = new StringBuilder();
+
+            // Assemble this fragment
             query.AppendFragment(QueryFragmentType.Where, sql, fragments);
 
             // Check the results
             Assert.AreEqual(" the fragment", sql.ToString());
             Assert.AreEqual(1, query.Parameters.Count);
+        }
 
-            // Test it with no fragments defined
-            sql.Clear();
-            query.Parameters.Clear();
+        /// <summary>
+        /// Test the AppendFragment() method without any fragments
+        /// </summary>
+        [TestMethod]
+        public void FragmentedQuery_AppendFragment_NoFragment_Success()
+        {
+            var query = new FragmentedQuery();
+            query.Name = "unit.test.query";
 
+            // Set up the fragment
+            query.SQL = "before";
+
+            var fragments = new Dictionary<string, QueryFragment>();
+            fragments["unit.test.fragment"] = new QueryFragment { SQL = "the fragment" };
+            fragments["unit.test.fragment"].Parameters["unit.test.parameter"] = DbType.String;
+
+            var sql = new StringBuilder();
+
+            // Assemble this fragment
             query.AppendFragment(QueryFragmentType.From, sql, fragments);
 
             // Check the results
             Assert.AreEqual(String.Empty, sql.ToString());
             Assert.AreEqual(0, query.Parameters.Count);
+        }
 
-            // Test with a non-existent fragment
-            query.Fragments.Add(QueryFragmentType.OrderBy, "non.existent.fragment");
+        /// <summary>
+        /// Test the AppendFragment() method with a non-existent fragment requested
+        /// </summary>
+        [TestMethod]
+        public void FragmentedQuery_AppendFragment_NonExistentFragment_Failure()
+        {
+            var query = new FragmentedQuery();
+            query.Name = "unit.test.query";
+
+            // Set up the fragment
+            query.SQL = "before";
+            query.Fragments[QueryFragmentType.Where] = "unit.test.fragment";
+            query.Fragments[QueryFragmentType.OrderBy] = "non.existent.fragment";
+
+            var fragments = new Dictionary<string, QueryFragment>();
+            fragments["unit.test.fragment"] = new QueryFragment { SQL = "the fragment" };
+            fragments["unit.test.fragment"].Parameters["unit.test.parameter"] = DbType.String;
 
             try
             {
-                query.AppendFragment(QueryFragmentType.OrderBy, sql, fragments);
+                query.AppendFragment(QueryFragmentType.OrderBy, new StringBuilder(), fragments);
                 Assert.Fail("AppendFragment should have thrown an exeception for a non-existent fragment");
             }
             catch (KeyNotFoundException exception)
@@ -94,11 +142,12 @@
             }
         }
 
+
         /// <summary>
         /// Test the Assemble() method
         /// </summary>
-        [Test]
-        public void Assemble()
+        [TestMethod]
+        public void FragmentedQuery_Assemble_Success()
         {
             // Set up a query with SQL and fragments/after-fragments on every type
             var query = AllFragmentsUsed();

@@ -1,23 +1,23 @@
 ﻿namespace DatabaseAbstraction.Tests.Models
 {
     using DatabaseAbstraction.Models;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
     /// Tests for the <see cref="DatabaseQuery"/> class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class DatabaseQueryTest
     {
         /// <summary>
         /// Test the getter for the parameter dictionary
         /// </summary>
-        [Test]
-        public void Getters()
+        [TestMethod]
+        public void DatabaseQuery_Parameters_Empty_Success()
         {
             var query = new DatabaseQuery();
 
-            Assert.NotNull(query.Parameters);
+            Assert.IsNotNull(query.Parameters);
             Assert.AreEqual(0, query.Parameters.Count);
         }
     }

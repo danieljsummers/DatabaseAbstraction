@@ -1,15 +1,15 @@
 ﻿namespace DatabaseAbstraction.Tests
 {
-    using System;
-    using System.Collections.Generic;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Unit Tests for the DatabaseService class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class DatabaseServiceTest
     {
         #region Tests
@@ -17,8 +17,8 @@
         /// <summary>
         /// Clear the static query library (removes database queries)
         /// </summary>
-        [SetUp]
-        [TearDown]
+        [TestInitialize]
+        [TestCleanup]
         public void ClearStaticQueryLibrary()
         {
             TestDatabaseService.StaticQueries.Clear();
@@ -27,8 +27,8 @@
         /// <summary>
         /// Test the FillStaticQueryLibrary() method
         /// </summary>
-        [Test]
-        public void FillStaticQueryLibrary()
+        [TestMethod]
+        public void DatabaseService_FillStaticQueryLibrary_Success()
         {
             // Query Library Only
             TestDatabaseService.FillStaticQueryLibrary(typeof(TestDatabaseQueryProvider));

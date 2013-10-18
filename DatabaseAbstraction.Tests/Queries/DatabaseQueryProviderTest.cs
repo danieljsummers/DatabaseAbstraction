@@ -3,19 +3,19 @@
     using System.Collections.Generic;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
     /// Unit Test for the <see cref="DatabaseQueryProvider"/> class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class DatabaseQueryProviderTest
     {
         /// <summary>
         /// Test the queries being provided
         /// </summary>
-        [Test]
-        public void Queries()
+        [TestMethod]
+        public void DatabaseQueryProvider_Queries_Success()
         {
             // Get the queries
             var queries = new Dictionary<string, DatabaseQuery>();
@@ -23,21 +23,21 @@
 
             // Ensure they all exist
             Assert.AreEqual(7, queries.Count);
-            Assert.True(queries.ContainsKey("database.sequence.postgres"));
-            Assert.True(queries.ContainsKey("database.sequence.sqlserver"));
-            Assert.True(queries.ContainsKey("database.sequence.mysql"));
-            Assert.True(queries.ContainsKey("database.sequence.generic"));
-            Assert.True(queries.ContainsKey("database.identity.sqlserver"));
-            Assert.True(queries.ContainsKey("database.identity.mysql"));
-            Assert.True(queries.ContainsKey("database.identity.sqlite"));
+            Assert.IsTrue(queries.ContainsKey("database.sequence.postgres"));
+            Assert.IsTrue(queries.ContainsKey("database.sequence.sqlserver"));
+            Assert.IsTrue(queries.ContainsKey("database.sequence.mysql"));
+            Assert.IsTrue(queries.ContainsKey("database.sequence.generic"));
+            Assert.IsTrue(queries.ContainsKey("database.identity.sqlserver"));
+            Assert.IsTrue(queries.ContainsKey("database.identity.mysql"));
+            Assert.IsTrue(queries.ContainsKey("database.identity.sqlite"));
 
-            Assert.NotNull(queries["database.sequence.postgres"]);
-            Assert.NotNull(queries["database.sequence.sqlserver"]);
-            Assert.NotNull(queries["database.sequence.mysql"]);
-            Assert.NotNull(queries["database.sequence.generic"]);
-            Assert.NotNull(queries["database.identity.sqlserver"]);
-            Assert.NotNull(queries["database.identity.mysql"]);
-            Assert.NotNull(queries["database.identity.sqlite"]);
+            Assert.IsNotNull(queries["database.sequence.postgres"]);
+            Assert.IsNotNull(queries["database.sequence.sqlserver"]);
+            Assert.IsNotNull(queries["database.sequence.mysql"]);
+            Assert.IsNotNull(queries["database.sequence.generic"]);
+            Assert.IsNotNull(queries["database.identity.sqlserver"]);
+            Assert.IsNotNull(queries["database.identity.mysql"]);
+            Assert.IsNotNull(queries["database.identity.sqlite"]);
         }
     }
 }

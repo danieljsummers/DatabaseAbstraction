@@ -1,20 +1,23 @@
 ﻿namespace DatabaseAbstraction.Tests.Models
 {
     using DatabaseAbstraction.Models;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestFixture]
+    /// <summary>
+    /// Unit Test for the QueryFragment class
+    /// </summary>
+    [TestClass]
     public class QueryFragmentTest
     {
         /// <summary>
         /// Test the getter for the parameter dictionary
         /// </summary>
-        [Test]
-        public void Getters()
+        [TestMethod]
+        public void QueryFragment_Parameters_Empty_Success()
         {
-            QueryFragment fragment = new QueryFragment();
+            var fragment = new QueryFragment();
 
-            Assert.NotNull(fragment.Parameters);
+            Assert.IsNotNull(fragment.Parameters);
             Assert.AreEqual(0, fragment.Parameters.Count);
         }
     }

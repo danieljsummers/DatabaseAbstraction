@@ -1,11 +1,14 @@
 ﻿namespace DatabaseAbstraction.Tests.Utils
 {
-    using System;
     using DatabaseAbstraction.Utils;
     using DatabaseAbstraction.Utils.UnitTest;
-    using NUnit.Framework;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
 
-    [TestFixture]
+    /// <summary>
+    /// Unit Tests for the NullUtils class
+    /// </summary>
+    [TestClass]
     public class NullUtilsTest
     {
         #region Data Reader Get Method Tests
@@ -13,8 +16,8 @@
         /// <summary>
         /// Test the GetBoolean() method
         /// </summary>
-        [Test]
-        public void GetBoolean()
+        [TestMethod]
+        public void NullUtils_GetBoolean_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -22,17 +25,17 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.False(NullUtils.GetBoolean(reader, "unit_test"), "GetBoolean(null) should have returned false");
+            Assert.IsFalse(NullUtils.GetBoolean(reader, "unit_test"), "GetBoolean(null) should have returned false");
 
             reader.Read();
-            Assert.True(NullUtils.GetBoolean(reader, "unit_test"), "GetBoolean(true) should have returned true");
+            Assert.IsTrue(NullUtils.GetBoolean(reader, "unit_test"), "GetBoolean(true) should have returned true");
         }
 
         /// <summary>
         /// Test the GetBooleanOrNull() method
         /// </summary>
-        [Test]
-        public void GetBooleanOrNull()
+        [TestMethod]
+        public void NullUtils_GetBooleanOrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -40,19 +43,19 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetBooleanOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetBooleanOrNull(reader, "unit_test"),
                 "GetBooleanOrNull(null) should have returned false");
 
             reader.Read();
-            Assert.True(NullUtils.GetBooleanOrNull(reader, "unit_test").Value,
+            Assert.IsTrue(NullUtils.GetBooleanOrNull(reader, "unit_test").Value,
                 "GetBooleanOrNull(true) should have returned true");
         }
 
         /// <summary>
         /// Test the GetDateTime() method
         /// </summary>
-        [Test]
-        public void GetDateTime()
+        [TestMethod]
+        public void NullUtils_GetDateTime_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -60,7 +63,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.NotNull(NullUtils.GetDateTime(reader, "unit_test"),
+            Assert.IsNotNull(NullUtils.GetDateTime(reader, "unit_test"),
                 "GetDateTime(null) should not have returned null");
 
             reader.Read();
@@ -71,8 +74,8 @@
         /// <summary>
         /// Test the GetDateTimeOrNull() method
         /// </summary>
-        [Test]
-        public void GetDateTimeOrNull()
+        [TestMethod]
+        public void NullUtils_GetDateTimeOrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -80,7 +83,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetDateTimeOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetDateTimeOrNull(reader, "unit_test"),
                 "GetDateTime(null) should have returned null");
 
             reader.Read();
@@ -91,8 +94,8 @@
         /// <summary>
         /// Test the GetDecimal() method
         /// </summary>
-        [Test]
-        public void GetDecimal()
+        [TestMethod]
+        public void NullUtils_GetDecimal_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -111,8 +114,8 @@
         /// <summary>
         /// Test the GetDecimalOrNull() method
         /// </summary>
-        [Test]
-        public void GetDecimalOrNull()
+        [TestMethod]
+        public void NullUtils_GetDecimalOrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -120,7 +123,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetDecimalOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetDecimalOrNull(reader, "unit_test"),
                 "GetDecimalOrNull(null) should have returned null");
 
             reader.Read();
@@ -131,8 +134,8 @@
         /// <summary>
         /// Test the GetDouble() method
         /// </summary>
-        [Test]
-        public void GetDouble()
+        [TestMethod]
+        public void NullUtils_GetDouble_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -151,8 +154,8 @@
         /// <summary>
         /// Test the GetDoubleOrNull() method
         /// </summary>
-        [Test]
-        public void GetDoubleOrNull()
+        [TestMethod]
+        public void NullUtils_GetDoubleOrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -160,7 +163,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetDoubleOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetDoubleOrNull(reader, "unit_test"),
                 "GetDoubleOrNull(null) should have returned null");
 
             reader.Read();
@@ -171,8 +174,8 @@
         /// <summary>
         /// Test the GetFloat() method
         /// </summary>
-        [Test]
-        public void GetFloat()
+        [TestMethod]
+        public void NullUtils_GetFloat_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -191,8 +194,8 @@
         /// <summary>
         /// Test the GetFloatOrNull() method
         /// </summary>
-        [Test]
-        public void GetFloatOrNull()
+        [TestMethod]
+        public void NullUtils_GetFloatOrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -200,7 +203,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetFloatOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetFloatOrNull(reader, "unit_test"),
                 "GetFloatOrNull(null) should have returned null");
 
             reader.Read();
@@ -211,8 +214,8 @@
         /// <summary>
         /// Test the GetGuid() method
         /// </summary>
-        [Test]
-        public void GetGuid()
+        [TestMethod]
+        public void NullUtils_GetGuid_Success()
         {
             var guid = Guid.NewGuid();
             var result = new StubResultSet("unit_test");
@@ -232,8 +235,8 @@
         /// <summary>
         /// Test the GetGuidOrNull() method
         /// </summary>
-        [Test]
-        public void GetGuidOrNull()
+        [TestMethod]
+        public void NullUtils_GetGuidOrNull_Success()
         {
             var guid = Guid.NewGuid();
             var result = new StubResultSet("unit_test");
@@ -242,7 +245,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetGuidOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetGuidOrNull(reader, "unit_test"),
                 "GetGuidOrNull(null) should have returned null");
 
             reader.Read();
@@ -253,8 +256,8 @@
         /// <summary>
         /// Test the GetInt16() method
         /// </summary>
-        [Test]
-        public void GetInt16()
+        [TestMethod]
+        public void NullUtils_GetInt16_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -273,8 +276,8 @@
         /// <summary>
         /// Test the GetInt16OrNull() method
         /// </summary>
-        [Test]
-        public void GetInt16OrNull()
+        [TestMethod]
+        public void NullUtils_GetInt16OrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -282,7 +285,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetInt16OrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetInt16OrNull(reader, "unit_test"),
                 "GetInt16OrNull(null) should have returned null");
 
             reader.Read();
@@ -293,8 +296,8 @@
         /// <summary>
         /// Test the GetInt32() method
         /// </summary>
-        [Test]
-        public void GetInt32()
+        [TestMethod]
+        public void NullUtils_GetInt32_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -313,8 +316,8 @@
         /// <summary>
         /// Test the GetInt32OrNull() method
         /// </summary>
-        [Test]
-        public void GetInt32OrNull()
+        [TestMethod]
+        public void NullUtils_GetInt32OrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -322,7 +325,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetInt32OrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetInt32OrNull(reader, "unit_test"),
                 "GetInt32OrNull(null) should have returned null");
 
             reader.Read();
@@ -333,8 +336,8 @@
         /// <summary>
         /// Test the GetInt64() method
         /// </summary>
-        [Test]
-        public void GetInt64()
+        [TestMethod]
+        public void NullUtils_GetInt64_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -353,8 +356,8 @@
         /// <summary>
         /// Test the GetInt64OrNull() method
         /// </summary>
-        [Test]
-        public void GetInt64OrNull()
+        [TestMethod]
+        public void NullUtils_GetInt64OrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -362,7 +365,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetInt64OrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetInt64OrNull(reader, "unit_test"),
                 "GetInt64OrNull(null) should have returned null");
 
             reader.Read();
@@ -373,8 +376,8 @@
         /// <summary>
         /// Test the GetString() method
         /// </summary>
-        [Test]
-        public void GetString()
+        [TestMethod]
+        public void NullUtils_GetString_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -393,8 +396,8 @@
         /// <summary>
         /// Test the GetStringOrNull() method
         /// </summary>
-        [Test]
-        public void GetStringOrNull()
+        [TestMethod]
+        public void NullUtils_GetStringOrNull_Success()
         {
             var result = new StubResultSet("unit_test");
             result.AddRow(DBNull.Value);
@@ -402,7 +405,7 @@
             var reader = new StubDataReader(result);
 
             reader.Read();
-            Assert.Null(NullUtils.GetStringOrNull(reader, "unit_test"),
+            Assert.IsNull(NullUtils.GetStringOrNull(reader, "unit_test"),
                 "GetStringOrNull(null) should have returned null");
 
             reader.Read();
@@ -417,24 +420,24 @@
         /// <summary>
         /// Test the GetNullOrBoolean() method.
         /// </summary>
-        [Test]
-        public void GetNullOrBoolean()
+        [TestMethod]
+        public void NullUtils_GetNullOrBoolean_Success()
         {
             bool? value = null;
-            Assert.Null(NullUtils.GetNullOrBoolean(value), "GetNullOrBoolean(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrBoolean(value), "GetNullOrBoolean(null) should have returned null");
 
             value = true;
-            Assert.True((bool)NullUtils.GetNullOrBoolean(value), "GetNullOrBoolean(value) should have returned true");
+            Assert.IsTrue((bool)NullUtils.GetNullOrBoolean(value), "GetNullOrBoolean(value) should have returned true");
         }
 
         /// <summary>
         /// Test the GetNullOrDateTime() method.
         /// </summary>
-        [Test]
-        public void GetNullOrDateTime()
+        [TestMethod]
+        public void NullUtils_GetNullOrDateTime_Success()
         {
             DateTime? value = null;
-            Assert.Null(NullUtils.GetNullOrDateTime(value), "GetNullOrDateTime(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrDateTime(value), "GetNullOrDateTime(null) should have returned null");
 
             value = new DateTime(1981, 1, 21);
             Assert.AreEqual(new DateTime(1981, 1, 21), NullUtils.GetNullOrDateTime(value),
@@ -444,11 +447,11 @@
         /// <summary>
         /// Test the GetNullOrDecimal() method.
         /// </summary>
-        [Test]
-        public void GetNullOrDecimal()
+        [TestMethod]
+        public void NullUtils_GetNullOrDecimal_Success()
         {
             decimal? value = null;
-            Assert.Null(NullUtils.GetNullOrDecimal(value), "GetNullOrDecimal(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrDecimal(value), "GetNullOrDecimal(null) should have returned null");
 
             value = 444M;
             Assert.AreEqual(444M, NullUtils.GetNullOrDecimal(value),
@@ -458,11 +461,11 @@
         /// <summary>
         /// Test the GetNullOrDouble() method.
         /// </summary>
-        [Test]
-        public void GetNullOrDouble()
+        [TestMethod]
+        public void NullUtils_GetNullOrDouble_Success()
         {
             double? value = null;
-            Assert.Null(NullUtils.GetNullOrDouble(value), "GetNullOrDouble(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrDouble(value), "GetNullOrDouble(null) should have returned null");
 
             value = 321D;
             Assert.AreEqual(321D, NullUtils.GetNullOrDouble(value),
@@ -472,11 +475,11 @@
         /// <summary>
         /// Test the GetNullOrFloat() method.
         /// </summary>
-        [Test]
-        public void GetNullOrFloat()
+        [TestMethod]
+        public void NullUtils_GetNullOrFloat_Success()
         {
             float? value = null;
-            Assert.Null(NullUtils.GetNullOrFloat(value), "GetNullOrFloat(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrFloat(value), "GetNullOrFloat(null) should have returned null");
 
             value = 291F;
             Assert.AreEqual(291F, NullUtils.GetNullOrFloat(value),
@@ -486,11 +489,11 @@
         /// <summary>
         /// Test the GetNullOrGuid() method.
         /// </summary>
-        [Test]
-        public void GetNullOrGuid()
+        [TestMethod]
+        public void NullUtils_GetNullOrGuid_Success()
         {
             Guid? value = null;
-            Assert.Null(NullUtils.GetNullOrGuid(value), "GetNullOrGuid(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrGuid(value), "GetNullOrGuid(null) should have returned null");
 
             var guid = Guid.NewGuid();
             value = guid;
@@ -501,11 +504,11 @@
         /// <summary>
         /// Test the GetNullOrInt16() method.
         /// </summary>
-        [Test]
-        public void GetNullOrInt16()
+        [TestMethod]
+        public void NullUtils_GetNullOrInt16_Success()
         {
             Int16? value = null;
-            Assert.Null(NullUtils.GetNullOrInt16(value), "GetNullOrInt16(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrInt16(value), "GetNullOrInt16(null) should have returned null");
 
             value = (short)12;
             Assert.AreEqual((short)12, NullUtils.GetNullOrInt16(value),
@@ -515,11 +518,11 @@
         /// <summary>
         /// Test the GetNullOrInt32() method.
         /// </summary>
-        [Test]
-        public void GetNullOrInt32()
+        [TestMethod]
+        public void NullUtils_GetNullOrInt32_Success()
         {
             Int32? value = null;
-            Assert.Null(NullUtils.GetNullOrInt32(value), "GetNullOrInt32(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrInt32(value), "GetNullOrInt32(null) should have returned null");
 
             value = 27;
             Assert.AreEqual(27, NullUtils.GetNullOrInt32(value),
@@ -529,11 +532,11 @@
         /// <summary>
         /// Test the GetNullOrInt64() method.
         /// </summary>
-        [Test]
-        public void GetNullOrInt64()
+        [TestMethod]
+        public void NullUtils_GetNullOrInt64_Success()
         {
             Int64? value = null;
-            Assert.Null(NullUtils.GetNullOrInt64(value), "GetNullOrInt64(null) should have returned null");
+            Assert.IsNull(NullUtils.GetNullOrInt64(value), "GetNullOrInt64(null) should have returned null");
 
             value = 5L;
             Assert.AreEqual(5L, NullUtils.GetNullOrInt64(value),

@@ -1,23 +1,20 @@
 ﻿namespace DatabaseAbstraction.Tests.Utils.Test
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using NUnit.Framework;
     using DatabaseAbstraction.Utils.UnitTest;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
 
     /// <summary>
     /// Unit Tests for the StubDataReader class
     /// </summary>
-    [TestFixture]
+    [TestClass]
     public class StubDataReaderTest
     {
         /// <summary>
         /// Test the CurrentResultSet property and the NextResult() method
         /// </summary>
-        [Test]
-        public void CurrentResultSetAndNextResult()
+        [TestMethod]
+        public void StubDataReader_CurrentResultSet_NextResult_Success()
         {
             var result1 = new StubResultSet("col1", "col2", "col3");
             var result2 = new StubResultSet("col4", "col5");
@@ -54,8 +51,8 @@
         /// <summary>
         /// Test the FieldCount property
         /// </summary>
-        [Test]
-        public void FieldCount()
+        [TestMethod]
+        public void StubDataReader_FieldCount_Success()
         {
             var result1 = new StubResultSet("col6", "col7", "col8");
             var result2 = new StubResultSet("col9", "col0");
@@ -73,8 +70,8 @@
         /// <summary>
         /// Test the index accessors and the Read() method
         /// </summary>
-        [Test]
-        public void IndexAccessorsAndRead()
+        [TestMethod]
+        public void StubDataReader_IndexAccessors_Read_Success()
         {
             var result = new StubResultSet("abc", "def");
             result.AddRow(3, "nice");
@@ -106,8 +103,8 @@
         /// <summary>
         /// Test the GetName() and GetDataTypeName() methods
         /// </summary>
-        [Test]
-        public void GetNameAndDataTypeName()
+        [TestMethod]
+        public void StubDataReader_GetName_GetDataTypeName_Success()
         {
             var result = new StubResultSet("unit", "test");
 
@@ -121,8 +118,8 @@
         /// <summary>
         /// Test the GetFieldType() method
         /// </summary>
-        [Test]
-        public void GetFieldType()
+        [TestMethod]
+        public void StubDataReader_GetFieldType_Success()
         {
             var result = new StubResultSet("more", "fun");
             result.AddRow(8, "yowza");
