@@ -144,10 +144,10 @@
 
 
         /// <summary>
-        /// Test the Assemble() method
+        /// Test the Assemble() method with SQL in the query
         /// </summary>
         [TestMethod]
-        public void FragmentedQuery_Assemble_Success()
+        public void FragmentedQuery_Assemble_WithSQL_Success()
         {
             // Set up a query with SQL and fragments/after-fragments on every type
             var query = AllFragmentsUsed();
@@ -164,9 +164,17 @@
                 query.SQL, "Fragmented query was not generated correctly");
             Assert.AreEqual(0, query.Fragments.Count, "Query fragments were not cleared");
             Assert.AreEqual(0, query.AfterFragment.Count, "Query after-fragments were not cleared");
+        }
 
-            // Same as above, but this time without SQL
-            query = AllFragmentsUsed();
+        /// <summary>
+        /// Test the Assemble() method without SQL in the query
+        /// </summary>
+        [TestMethod]
+        public void FragmentedQuery_Assemble_WithoutSQL_Success()
+        {
+            // Set up a query with SQL and fragments/after-fragments on every type
+            var query = AllFragmentsUsed();
+            var fragments = AllFragments();
 
             query.Assemble(fragments);
 
@@ -185,21 +193,21 @@
         {
             var query = new FragmentedQuery();
 
-            query.Fragments.Add(QueryFragmentType.Select, "unit.test.select");
-            query.Fragments.Add(QueryFragmentType.From, "unit.test.from");
-            query.Fragments.Add(QueryFragmentType.Where, "unit.test.where");
-            query.Fragments.Add(QueryFragmentType.OrderBy, "unit.test.orderby");
-            query.Fragments.Add(QueryFragmentType.Insert, "unit.test.insert");
-            query.Fragments.Add(QueryFragmentType.Update, "unit.test.update");
-            query.Fragments.Add(QueryFragmentType.Delete, "unit.test.delete");
+            query.Fragments[QueryFragmentType.Select] = "unit.test.select";
+            query.Fragments[QueryFragmentType.From] = "unit.test.from";
+            query.Fragments[QueryFragmentType.Where] = "unit.test.where";
+            query.Fragments[QueryFragmentType.OrderBy] = "unit.test.orderby";
+            query.Fragments[QueryFragmentType.Insert] = "unit.test.insert";
+            query.Fragments[QueryFragmentType.Update] = "unit.test.update";
+            query.Fragments[QueryFragmentType.Delete] = "unit.test.delete";
 
-            query.AfterFragment.Add(QueryFragmentType.Select, "after-select");
-            query.AfterFragment.Add(QueryFragmentType.Insert, "after-insert");
-            query.AfterFragment.Add(QueryFragmentType.Update, "after-update");
-            query.AfterFragment.Add(QueryFragmentType.Delete, "after-delete");
-            query.AfterFragment.Add(QueryFragmentType.From, "after-from");
-            query.AfterFragment.Add(QueryFragmentType.Where, "after-where");
-            query.AfterFragment.Add(QueryFragmentType.OrderBy, "after-orderby");
+            query.AfterFragment[QueryFragmentType.Select] = "after-select";
+            query.AfterFragment[QueryFragmentType.Insert] = "after-insert";
+            query.AfterFragment[QueryFragmentType.Update] = "after-update";
+            query.AfterFragment[QueryFragmentType.Delete] = "after-delete";
+            query.AfterFragment[QueryFragmentType.From] = "after-from";
+            query.AfterFragment[QueryFragmentType.Where] = "after-where";
+            query.AfterFragment[QueryFragmentType.OrderBy] = "after-orderby";
 
             return query;
         }
@@ -214,13 +222,13 @@
         {
             var fragments = new Dictionary<string, QueryFragment>();
 
-            fragments.Add("unit.test.select", new QueryFragment { SQL = "select" });
-            fragments.Add("unit.test.insert", new QueryFragment { SQL = "insert" });
-            fragments.Add("unit.test.update", new QueryFragment { SQL = "update" });
-            fragments.Add("unit.test.delete", new QueryFragment { SQL = "delete" });
-            fragments.Add("unit.test.from", new QueryFragment { SQL = "from" });
-            fragments.Add("unit.test.where", new QueryFragment { SQL = "where" });
-            fragments.Add("unit.test.orderby", new QueryFragment { SQL = "orderby" });
+            fragments["unit.test.select"] = new QueryFragment { SQL = "select" };
+            fragments["unit.test.insert"] = new QueryFragment { SQL = "insert" };
+            fragments["unit.test.update"] = new QueryFragment { SQL = "update" };
+            fragments["unit.test.delete"] = new QueryFragment { SQL = "delete" };
+            fragments["unit.test.from"] = new QueryFragment { SQL = "from" };
+            fragments["unit.test.where"] = new QueryFragment { SQL = "where" };
+            fragments["unit.test.orderby"] = new QueryFragment { SQL = "orderby" };
 
             return fragments;
         }

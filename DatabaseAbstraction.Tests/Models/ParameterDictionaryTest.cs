@@ -10,6 +10,20 @@
     public class ParameterDictionaryTest
     {
         /// <summary>
+        /// Test the string/object constructor
+        /// </summary>
+        [TestMethod]
+        public void ParameterDictionary_Constructor_Success()
+        {
+            var dictionary = new ParameterDictionary("test", 8);
+
+            Assert.IsNotNull(dictionary, "The dictionary should not be null");
+            Assert.AreEqual(1, dictionary.Count, "There should be 1 entry in the dictionary");
+            Assert.IsTrue(dictionary.ContainsKey("test"), "The key was not populated");
+            Assert.AreEqual(8, dictionary["test"], "The value was not populated");
+        }
+
+        /// <summary>
         /// Test the index accessor with a non-existent key
         /// </summary>
         [TestMethod]

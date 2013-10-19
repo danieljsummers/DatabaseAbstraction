@@ -3,6 +3,7 @@ namespace DatabaseAbstraction.Utils
     using System;
     using System.Collections.Generic;
     using DatabaseAbstraction.Interfaces;
+    using DatabaseAbstraction.Models;
 
     /// <summary>
     /// Utility methods for use by services and models that utilize Database Abstraction
@@ -23,9 +24,7 @@ namespace DatabaseAbstraction.Utils
         /// </returns>
         public static IDictionary<string, object> SingleParameter(string name, object parameter)
         {
-            var list = new Dictionary<string, object>();
-            list.Add(name, parameter);
-            return list;
+            return new ParameterDictionary(name, parameter);
         }
 
         /// <summary>

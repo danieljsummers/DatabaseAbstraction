@@ -11,7 +11,7 @@
     public class StubDataReaderTest
     {
         /// <summary>
-        /// Test the CurrentResultSet property and the NextResult() method
+        /// Test the CurrentResultSet property and the NextResult() method where data is returned
         /// </summary>
         [TestMethod]
         public void StubDataReader_CurrentResultSet_NextResult_Success()
@@ -32,12 +32,23 @@
                 currentSet = reader.CurrentResultSet;
                 Assert.IsNotNull(currentSet, "Second call to CurrentResultSet should not have returned null");
                 Assert.AreEqual(result2, currentSet, "Second call to CurrentResultSet did not return the second set");
+            }
+        }
 
-                Assert.IsFalse(reader.NextResult(), "Second call to NextResult() should not have had data");
+        /// <summary>
+        /// Test the CurrentResultSet property and the NextResult() method where data was not found
+        /// </summary>
+        [TestMethod]
+        public void StubDataReader_CurrentResultSet_NextResult_Failure()
+        {
+            using (var reader = new StubDataReader())
+            {
+                Assert.IsNotNull(reader, "The StubDataReader object should not have been null");
+                Assert.IsFalse(reader.NextResult(), "NextResult() should not have had data");
 
                 try
                 {
-                    currentSet = reader.CurrentResultSet;
+                    var results = reader.CurrentResultSet;
                     Assert.Fail("Call to CurrentResultSet should have thrown an exception");
                 }
                 catch (InvalidOperationException exception)
@@ -68,6 +79,23 @@
         }
 
         /// <summary>
+        /// Test the index accessors on a set that is pointing to Beginning of File (BOF)
+        /// </summary>
+        [TestMethod]
+        public void StubDataReader_IndexAccessors_BOF_Failure()
+        {
+            using (var reader = new StubDataReader(new StubResultSet()))
+            {
+                try
+                {
+                    var column = reader[0];
+                    Assert.Fail("Index accessor should have thrown an exception (BOF)");
+                }
+                catch (InvalidOperationException) { }
+            }
+        }
+
+        /// <summary>
         /// Test the index accessors and the Read() method
         /// </summary>
         [TestMethod]
@@ -78,18 +106,25 @@
 
             using (var reader = new StubDataReader(result))
             {
-                try
-                {
-                    var column = reader[0];
-                    Assert.Fail("Index accessor should have thrown an exception (BOF)");
-                }
-                catch (InvalidOperationException) { }
-
                 Assert.IsTrue(reader.Read(), "First call to Read() should have had data");
                 Assert.AreEqual(3, reader[0], "The first column (by index) was not correct");
                 Assert.AreEqual("nice", reader["def"], "The second column (by name) was not correct");
 
                 Assert.IsFalse(reader.Read(), "Second call to Read() should not have had data");
+            }
+        }
+
+        /// <summary>
+        /// Test the index accessors on a set that is pointing to End of File (EOF)
+        /// </summary>
+        [TestMethod]
+        public void StubDataReader_IndexAccessors_EOF_Failure()
+        {
+            var result = new StubResultSet();
+
+            using (var reader = new StubDataReader(result))
+            {
+                Assert.IsFalse(reader.Read(), "Read() should not have had data");
 
                 try
                 {

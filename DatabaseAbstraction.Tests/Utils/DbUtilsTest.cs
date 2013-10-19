@@ -1,5 +1,6 @@
 ﻿namespace DatabaseAbstraction.Tests.Utils
 {
+    using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Utils;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
@@ -21,6 +22,8 @@
             Assert.IsNotNull(parameter, "SingleParameter() should not have returned null");
             Assert.IsTrue(parameter.ContainsKey("unit_test"), "Parameter key not found");
             Assert.AreEqual("hooray", parameter["unit_test"], "Parameter value not correct");
+            Assert.IsInstanceOfType(parameter, typeof(ParameterDictionary),
+                "SingleParameter() should return an instance of ParameterDictionary");
         }
 
         /// <summary>

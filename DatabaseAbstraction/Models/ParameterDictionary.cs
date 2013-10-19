@@ -25,6 +25,25 @@
             _dictionary = new Dictionary<string, object>();
         }
 
+        /// <summary>
+        /// Constructor (single parameter)
+        /// </summary>
+        /// <param name="key">
+        /// The key for the parameter
+        /// </param>
+        /// <param name="value">
+        /// The value for the parameter
+        /// </param>
+        /// <remarks>
+        /// This constructor effectively replaces the need for DbUtils.SingleParameter() in earlier versions; it still
+        /// exists, and uses this constructor for its implementation
+        /// </remarks>
+        public ParameterDictionary(string key, object value)
+            : this()
+        {
+            _dictionary[key] = value;
+        }
+
         #region IDictionary Implementation (custom)
 
         /// <summary>

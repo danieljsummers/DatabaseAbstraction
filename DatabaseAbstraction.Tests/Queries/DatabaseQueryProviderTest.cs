@@ -1,9 +1,9 @@
 ﻿namespace DatabaseAbstraction.Tests.Queries
 {
-    using System.Collections.Generic;
     using DatabaseAbstraction.Models;
     using DatabaseAbstraction.Queries;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Unit Test for the <see cref="DatabaseQueryProvider"/> class
@@ -22,22 +22,29 @@
             new DatabaseQueryProvider().Queries(queries);
 
             // Ensure they all exist
-            Assert.AreEqual(7, queries.Count);
-            Assert.IsTrue(queries.ContainsKey("database.sequence.postgres"));
-            Assert.IsTrue(queries.ContainsKey("database.sequence.sqlserver"));
-            Assert.IsTrue(queries.ContainsKey("database.sequence.mysql"));
-            Assert.IsTrue(queries.ContainsKey("database.sequence.generic"));
-            Assert.IsTrue(queries.ContainsKey("database.identity.sqlserver"));
-            Assert.IsTrue(queries.ContainsKey("database.identity.mysql"));
-            Assert.IsTrue(queries.ContainsKey("database.identity.sqlite"));
+            Assert.AreEqual(7, queries.Count, "There should be 7 queries from the database query provider");
+            Assert.IsTrue(queries.ContainsKey("database.sequence.postgres"),
+                "The PostgreSQL sequence query was not found");
+            Assert.IsTrue(queries.ContainsKey("database.sequence.sqlserver"),
+                "The SQL Server sequence query was not found");
+            Assert.IsTrue(queries.ContainsKey("database.sequence.mysql"), "The MySQL sequence query was not found");
+            Assert.IsTrue(queries.ContainsKey("database.sequence.generic"),
+                "The generic (MAX + 1) sequence query was not found");
+            Assert.IsTrue(queries.ContainsKey("database.identity.sqlserver"),
+                "The SQL Server identity query was not found");
+            Assert.IsTrue(queries.ContainsKey("database.identity.mysql"), "The MySQL identity query was not found");
+            Assert.IsTrue(queries.ContainsKey("database.identity.sqlite"), "The SQLite identity query was not found");
 
-            Assert.IsNotNull(queries["database.sequence.postgres"]);
-            Assert.IsNotNull(queries["database.sequence.sqlserver"]);
-            Assert.IsNotNull(queries["database.sequence.mysql"]);
-            Assert.IsNotNull(queries["database.sequence.generic"]);
-            Assert.IsNotNull(queries["database.identity.sqlserver"]);
-            Assert.IsNotNull(queries["database.identity.mysql"]);
-            Assert.IsNotNull(queries["database.identity.sqlite"]);
+            Assert.IsNotNull(queries["database.sequence.postgres"], "The PostgreSQL sequence query should not be null");
+            Assert.IsNotNull(queries["database.sequence.sqlserver"],
+                "The SQL Server sequence query should not be null");
+            Assert.IsNotNull(queries["database.sequence.mysql"], "The MySQL sequence query should not be null");
+            Assert.IsNotNull(queries["database.sequence.generic"],
+                "The generic (MAX + 1) sequence query should not be null");
+            Assert.IsNotNull(queries["database.identity.sqlserver"],
+                "The SQL Server identity query should not be null");
+            Assert.IsNotNull(queries["database.identity.mysql"], "The MySQL identity query should not be null");
+            Assert.IsNotNull(queries["database.identity.sqlite"], "The SQLite identity query should not be null");
         }
     }
 }

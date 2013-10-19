@@ -11,37 +11,50 @@
     public class StubResultSetTest
     {
         /// <summary>
-        /// Test the CurrentRow property and the Read() method
+        /// Test the CurrentRow property on a set that is pointing to Beginning of File (BOF)
         /// </summary>
         [TestMethod]
-        public void StubResultSet_CurrentRow_Read_Success()
+        public void StubResultSet_CurrentRow_BOF_Failure()
         {
-            var result = new StubResultSet();
-
-            // Current Row before Read() = exception
             try
             {
-                var row = result.CurrentRow;
+                var row = new StubResultSet().CurrentRow;
                 Assert.Fail("Attempt to get current row should have thrown an exception (BOF)");
             }
             catch (InvalidOperationException exception)
             {
                 Assert.AreEqual("Current ResultSet is at BOF", exception.Message, "Unexpected BOF exception message");
             }
+        }
 
-            // Current Row after Read()
-            result = new StubResultSet("a", "b", "c");
+        /// <summary>
+        /// Test the CurrentRow property and the Read() method
+        /// </summary>
+        [TestMethod]
+        public void StubResultSet_CurrentRow_Read_Success()
+        {
+            var result = new StubResultSet("a", "b", "c");
             result.AddRow(1, 2, 3);
             result.AddRow(4, 5, 6);
 
-            result.Read();
+            Assert.IsTrue(result.Read(), "Read() should have returned true (row 1)");
             Assert.AreEqual(1, result.CurrentRow[0], "First row was not returned after first Read()");
             Assert.AreEqual(1, result.CurrentRow[0], "Subsequent call to CurrentRow did not return the same results");
 
-            result.Read();
+            Assert.IsTrue(result.Read(), "Read() should have returned true (row 2)");
             Assert.AreEqual(4, result.CurrentRow[0], "Second row was not returned after second Read()");
 
-            // Final Read() should return false
+            Assert.IsFalse(result.Read(), "Read() should have encountered the end of the set");
+        }
+
+        /// <summary>
+        /// Test the CurrentRow property on a set that is pointing to End of File (EOF)
+        /// </summary>
+        [TestMethod]
+        public void StubResultSet_CurrentRow_EOF_Failure()
+        {
+            var result = new StubResultSet();
+
             Assert.IsFalse(result.Read(), "Read() should have encountered the end of the set");
 
             try
@@ -72,18 +85,23 @@
         }
 
         /// <summary>
-        /// Tet the GetFieldName() method
+        /// Tet the GetFieldName() method on an index that exists
         /// </summary>
         [TestMethod]
         public void StubResultSet_GetFieldName_Success()
         {
-            var result = new StubResultSet("x", "y", "d");
+            Assert.AreEqual("x", new StubResultSet("x", "y", "d").GetFieldName(0), "Field 1 was incorrect");
+        }
 
-            Assert.AreEqual("x", result.GetFieldName(0), "Field 1 was incorrect");
-
+        /// <summary>
+        /// Tet the GetFieldName() method on an index that does not exist
+        /// </summary>
+        [TestMethod]
+        public void StubResultSet_GetFieldName_Failure()
+        {
             try
             {
-                var field = result.GetFieldName(7);
+                var field = new StubResultSet("x", "y", "d").GetFieldName(7);
                 Assert.Fail("Call to invalid index should have thrown an exception");
             }
             catch (ArgumentOutOfRangeException exception)
@@ -96,7 +114,7 @@
         }
 
         /// <summary>
-        /// Test the AddRow() method
+        /// Test the AddRow() method with data that fits
         /// </summary>
         [TestMethod]
         public void StubResultSet_AddRow_Success()
@@ -108,6 +126,15 @@
             Assert.AreEqual(3, result.CurrentRow[0], "The first value given to AddRow() was not preserved");
             Assert.AreEqual(4, result.CurrentRow[1], "The second value given to AddRow() was not preserved");
             Assert.AreEqual(5, result.CurrentRow[2], "The third value given to AddRow() was not preserved");
+        }
+
+        /// <summary>
+        /// Test the AddRow() method with the wrong number of values
+        /// </summary>
+        [TestMethod]
+        public void StubResultSet_AddRow_Failure()
+        {
+            var result = new StubResultSet("e", "f", "g");
 
             try
             {
@@ -124,17 +151,24 @@
         }
 
         /// <summary>
-        /// Test the GetIndexFieldFromName() method
+        /// Test the GetIndexFieldFromName() method on a field name that exists
         /// </summary>
         [TestMethod]
         public void StubResultSet_GetIndexFieldFromName_Success()
         {
-            var result = new StubResultSet("three", "six", "five");
-            Assert.AreEqual(1, result.GetIndexFromFieldName("six"), "Field 2 was not retrieved correctly");
+            Assert.AreEqual(1, new StubResultSet("three", "six", "five").GetIndexFromFieldName("six"),
+                "Field 2 was not retrieved correctly");
+        }
 
+        /// <summary>
+        /// Test the GetIndexFieldFromName() method on a field name that does not exist
+        /// </summary>
+        [TestMethod]
+        public void StubResultSet_GetIndexFieldFromName_Failure()
+        {
             try
             {
-                var index = result.GetIndexFromFieldName("seven");
+                var index = new StubResultSet("three", "six", "five").GetIndexFromFieldName("seven");
                 Assert.Fail("GetIndexFromFieldName() with non-existent name should have thrown an exception");
             }
             catch (IndexOutOfRangeException exception)
