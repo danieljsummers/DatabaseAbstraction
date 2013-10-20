@@ -40,20 +40,20 @@
         public void MockDatabaseService_SelectAndAssertPerformedSelect_Success()
         {
             // Set up some test data
-            var result1 = new StubResultSet("col1", "col2");
-            result1.AddRow(1, "Unit");
-            result1.AddRow(2, "Tests");
-            result1.AddRow(3, "Rock");
+            var result1 = new StubResultSet("col1", "col2")
+                .AddRow(1, "Unit")
+                .AddRow(2, "Tests")
+                .AddRow(3, "Rock");
 
-            var result2 = new StubResultSet("col1", "col2");
-            result2.AddRow(1, "Yes");
-            result2.AddRow(2, "They");
-            result2.AddRow(3, "Do");
+            var result2 = new StubResultSet("col1", "col2")
+                .AddRow(1, "Yes")
+                .AddRow(2, "They")
+                .AddRow(3, "Do");
             
-            var result3 = new StubResultSet("col1", "col2");
-            result3.AddRow(1, "Find Those Bugs");
-            result3.AddRow(2, "Before");
-            result3.AddRow(3, "They Find You");
+            var result3 = new StubResultSet("col1", "col2")
+                .AddRow(1, "Find Those Bugs")
+                .AddRow(2, "Before")
+                .AddRow(3, "They Find You");
 
             // Initialize the service
             var data = new MockDatabaseService(new StubDataReader(result1, result2, result3), typeof(TestQueryProvider));
@@ -93,11 +93,17 @@
             data.AssertPerformedSelect("test.select", 4);
             data.AssertPerformedSelect("test.select", model.Parameters());
             data.AssertPerformedSelect("test.select", 2, model.Parameters());
+        }
 
-            // Validate type checking
+        /// <summary>
+        /// Test the query type checking of the Select() method
+        /// </summary>
+        [TestMethod]
+        public void MockDatabaseService_Select_QueryTypeException()
+        {
             try
             {
-                data.Select("test.insert");
+                new MockDatabaseService(new StubDataReader(), typeof(TestQueryProvider)).Select("test.insert");
                 Assert.Fail("Calling Select() on an insert statement should have failed");
             }
             catch (NotSupportedException exception)
@@ -131,11 +137,18 @@
 
             model.Col2 = "UnitTest";
             data.AssertPerformedInsert("test.insert", 1, model.Parameters());
+        }
 
-            // Validate type checking
+        /// <summary>
+        /// Test the query type checking of the Insert() method
+        /// </summary>
+        [TestMethod]
+        public void MockDatabaseService_Insert_QueryTypeException()
+        {
             try
             {
-                data.Insert("test.update", new Dictionary<string, object>());
+                new MockDatabaseService(null, typeof(TestQueryProvider))
+                    .Insert("test.update", new ParameterDictionary());
                 Assert.Fail("Calling Insert() on an update statement should have failed");
             }
             catch (NotSupportedException exception)
@@ -171,11 +184,18 @@
             model.Col1 = 5;
             model.Col2 = "UnitTest";
             data.AssertPerformedUpdate("test.update", 1, model.Parameters());
+        }
 
-            // Validate type checking
+        /// <summary>
+        /// Test the query type checking of the Update() method
+        /// </summary>
+        [TestMethod]
+        public void MockDatabaseService_Update_QueryTypeException()
+        {
             try
             {
-                data.Update("test.delete", new Dictionary<string, object>());
+                new MockDatabaseService(null, typeof(TestQueryProvider))
+                    .Update("test.delete", new ParameterDictionary());
                 Assert.Fail("Calling Update() on a delete statement should have failed");
             }
             catch (NotSupportedException exception)
@@ -211,11 +231,18 @@
             model.Col1 = 24;
             model.Col2 = "UnitTest";
             data.AssertPerformedDelete("test.delete", 1, model.Parameters());
+        }
 
-            // Validate type checking
+        /// <summary>
+        /// Test the query type checking of the Delete() method
+        /// </summary>
+        [TestMethod]
+        public void MockDatabaseService_Delete_QueryTypeException()
+        {
             try
             {
-                data.Delete("test.select", new Dictionary<string, object>());
+                new MockDatabaseService(null, typeof(TestQueryProvider))
+                    .Delete("test.select", new ParameterDictionary());
                 Assert.Fail("Calling Delete() on a select statement should have failed");
             }
             catch (NotSupportedException exception)
@@ -260,11 +287,9 @@
         [TestMethod]
         public void MockDatabaseService_QueryNotFound_Failure()
         {
-            var data = new MockDatabaseService(null, typeof(TestQueryProvider));
-
             try
             {
-                data.Select("invalid.query");
+                new MockDatabaseService(null, typeof(TestQueryProvider)).Select("invalid.query");
                 Assert.Fail("Invalid Query should have thrown an exception");
             }
             catch (KeyNotFoundException exception)

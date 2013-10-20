@@ -146,12 +146,14 @@
         /// <param name="values">
         /// The values for the row
         /// </param>
-        public void AddRow(params object[] values)
+        public StubResultSet AddRow(params object[] values)
         {
             if (values.Length != _fieldNames.Count)
                 throw new ArgumentOutOfRangeException("values",
                     String.Format("The row must contain {0} items", _fieldNames.Count));
             _rows.Add(new StubDataRow(values));
+
+            return this;
         }
 
         /// <summary>

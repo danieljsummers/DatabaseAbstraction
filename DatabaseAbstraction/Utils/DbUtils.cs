@@ -1,9 +1,9 @@
 namespace DatabaseAbstraction.Utils
 {
-    using System;
-    using System.Collections.Generic;
     using DatabaseAbstraction.Interfaces;
     using DatabaseAbstraction.Models;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Utility methods for use by services and models that utilize Database Abstraction

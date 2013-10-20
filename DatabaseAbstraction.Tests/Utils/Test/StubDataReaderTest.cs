@@ -101,10 +101,7 @@
         [TestMethod]
         public void StubDataReader_IndexAccessors_Read_Success()
         {
-            var result = new StubResultSet("abc", "def");
-            result.AddRow(3, "nice");
-
-            using (var reader = new StubDataReader(result))
+            using (var reader = new StubDataReader(new StubResultSet("abc", "def").AddRow(3, "nice")))
             {
                 Assert.IsTrue(reader.Read(), "First call to Read() should have had data");
                 Assert.AreEqual(3, reader[0], "The first column (by index) was not correct");
@@ -120,9 +117,7 @@
         [TestMethod]
         public void StubDataReader_IndexAccessors_EOF_Failure()
         {
-            var result = new StubResultSet();
-
-            using (var reader = new StubDataReader(result))
+            using (var reader = new StubDataReader(new StubResultSet()))
             {
                 Assert.IsFalse(reader.Read(), "Read() should not have had data");
 
@@ -141,9 +136,7 @@
         [TestMethod]
         public void StubDataReader_GetName_GetDataTypeName_Success()
         {
-            var result = new StubResultSet("unit", "test");
-
-            using (var reader = new StubDataReader(result))
+            using (var reader = new StubDataReader(new StubResultSet("unit", "test")))
             {
                 Assert.AreEqual("test", reader.GetName(1));
                 Assert.AreEqual("unit", reader.GetDataTypeName(0));
@@ -156,10 +149,7 @@
         [TestMethod]
         public void StubDataReader_GetFieldType_Success()
         {
-            var result = new StubResultSet("more", "fun");
-            result.AddRow(8, "yowza");
-
-            using (var reader = new StubDataReader(result))
+            using (var reader = new StubDataReader(new StubResultSet("more", "fun").AddRow(8, "yowza")))
             {
                 reader.Read();
                 Assert.AreEqual(typeof(int), reader.GetFieldType(0));

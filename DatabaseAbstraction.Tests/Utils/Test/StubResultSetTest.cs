@@ -1,8 +1,8 @@
 ﻿namespace DatabaseAbstraction.Tests.Utils.Test
 {
-    using System;
     using DatabaseAbstraction.Utils.UnitTest;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
 
     /// <summary>
     /// Unit Tests for the StubResultSet class
@@ -33,9 +33,9 @@
         [TestMethod]
         public void StubResultSet_CurrentRow_Read_Success()
         {
-            var result = new StubResultSet("a", "b", "c");
-            result.AddRow(1, 2, 3);
-            result.AddRow(4, 5, 6);
+            var result = new StubResultSet("a", "b", "c")
+                .AddRow(1, 2, 3)
+                .AddRow(4, 5, 6);
 
             Assert.IsTrue(result.Read(), "Read() should have returned true (row 1)");
             Assert.AreEqual(1, result.CurrentRow[0], "First row was not returned after first Read()");
@@ -74,8 +74,7 @@
         [TestMethod]
         public void StubResultSet_GetFieldNames_Success()
         {
-            var result = new StubResultSet("Q", "G", "yea");
-            var fields = result.GetFieldNames();
+            var fields = new StubResultSet("Q", "G", "yea").GetFieldNames();
 
             Assert.IsNotNull(fields, "Field names should not have been null");
             Assert.AreEqual(3, fields.Length, "There should have been 3 field names");
@@ -120,7 +119,10 @@
         public void StubResultSet_AddRow_Success()
         {
             var result = new StubResultSet("e", "f", "g");
-            result.AddRow(3, 4, 5);
+            var addRowResult = result.AddRow(3, 4, 5);
+
+            Assert.AreSame(result, addRowResult, "AddRow() should have returned a reference to its owning result set");
+
             result.Read();
 
             Assert.AreEqual(3, result.CurrentRow[0], "The first value given to AddRow() was not preserved");
@@ -134,11 +136,9 @@
         [TestMethod]
         public void StubResultSet_AddRow_Failure()
         {
-            var result = new StubResultSet("e", "f", "g");
-
             try
             {
-                result.AddRow(3, 2);
+                new StubResultSet("e", "f", "g").AddRow(3, 2);
                 Assert.Fail("AddRow() with wrong number of parameters should have thrown an exception");
             }
             catch (ArgumentOutOfRangeException exception)

@@ -25,7 +25,7 @@
         public static bool GetBoolean(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return false;
+                return default(bool);
             return reader.GetBoolean(reader.GetOrdinal(columnName));
         }
 
@@ -63,7 +63,7 @@
         public static DateTime GetDateTime(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return new DateTime();
+                return default(DateTime);
             return reader.GetDateTime(reader.GetOrdinal(columnName));
         }
 
@@ -101,7 +101,7 @@
         public static decimal GetDecimal(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return 0M;
+                return default(decimal);
             return reader.GetDecimal(reader.GetOrdinal(columnName));
         }
 
@@ -139,7 +139,7 @@
         public static double GetDouble(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return 0D;
+                return default(double);
             return reader.GetDouble(reader.GetOrdinal(columnName));
         }
 
@@ -177,7 +177,7 @@
         public static float GetFloat(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return 0F;
+                return default(float);
             return reader.GetFloat(reader.GetOrdinal(columnName));
         }
 
@@ -215,7 +215,7 @@
         public static Guid GetGuid(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return Guid.Empty;
+                return default(Guid);
             return reader.GetGuid(reader.GetOrdinal(columnName));
         }
 
@@ -253,7 +253,7 @@
         public static Int16 GetInt16(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return (short)0;
+                return default(short);
             return reader.GetInt16(reader.GetOrdinal(columnName));
         }
 
@@ -291,7 +291,7 @@
         public static Int32 GetInt32(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return 0;
+                return default(int);
             return reader.GetInt32(reader.GetOrdinal(columnName));
         }
 
@@ -329,7 +329,7 @@
         public static Int64 GetInt64(IDataReader reader, string columnName)
         {
             if (DBNull.Value.Equals(reader.GetValue(reader.GetOrdinal(columnName))))
-                return 0L;
+                return default(long);
             return reader.GetInt64(reader.GetOrdinal(columnName));
         }
 
