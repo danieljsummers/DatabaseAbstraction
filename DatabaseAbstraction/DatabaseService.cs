@@ -6,6 +6,7 @@ namespace DatabaseAbstraction
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
 
     /// <summary>
     /// This abstract class contains the majority of the implementation of the database abstraction.  The specific
@@ -51,7 +52,7 @@ namespace DatabaseAbstraction
         /// <summary>
         /// The database connection for this service
         /// </summary>
-        protected IDbConnection Connection { get; set; }
+        protected DbConnection Connection { get; set; }
 
         /// <summary>
         /// The database query prefix (only change if the query library was changed also)
@@ -73,7 +74,8 @@ namespace DatabaseAbstraction
         /// <param name="providers">
         /// Query and fragment providers of type <see cref="IDatabaseQueryProvider"/> or <see cref="IQueryFragmentProvider"/>
         /// </param>
-        public DatabaseService(params Type[] providers) {
+        public DatabaseService(params Type[] providers)
+        {
 
             Queries = new Dictionary<string, DatabaseQuery>();
             FillQueryLibrary(Queries, providers);
@@ -81,7 +83,9 @@ namespace DatabaseAbstraction
             // Make sure we've loaded the database queries
             if ((!StaticQueries.ContainsKey(DatabaseQueryPrefix + "sequence.generic"))
                 && (!Queries.ContainsKey(DatabaseQueryPrefix + "sequence.generic")))
+            {
                 FillQueryLibrary(Queries, typeof(DatabaseQueryProvider));
+            }
         }
 
 
@@ -118,7 +122,9 @@ namespace DatabaseAbstraction
         public virtual IDataReader Select(string queryName, IDictionary<string, object> parameters)
         {
             using (var command = GetCommandForSelect(queryName, parameters))
+            {
                 return command.ExecuteReader();
+            }
         }
 
         /// <summary>
@@ -167,7 +173,9 @@ namespace DatabaseAbstraction
         public virtual IDataReader SelectOne(string queryName, IDictionary<string, object> parameters)
         {
             using (var command = GetCommandForSelect(queryName, parameters))
+            {
                 return command.ExecuteReader(CommandBehavior.SingleRow);
+            }
         }
 
         /// <summary>
@@ -202,12 +210,14 @@ namespace DatabaseAbstraction
         /// <exception cref="System.NotSupportedException">
         /// If the query is not a SELECT statement
         /// </exception>
-        protected IDbCommand GetCommandForSelect(string queryName, IDictionary<string, object> parameters)
+        public DbCommand GetCommandForSelect(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("SELECT"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not a select statement", queryName));
+            }
 
             return MakeCommand(query, parameters);
         }
@@ -229,10 +239,11 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("INSERT"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not an insert statement", queryName));
+            }
 
-            using (var command = MakeCommand(query, parameters))
-                command.ExecuteNonQuery();
+            using (var command = MakeCommand(query, parameters)) { command.ExecuteNonQuery(); }
         }
 
         /// <summary>
@@ -266,10 +277,11 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("UPDATE"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not an update statement", queryName));
+            }
 
-            using (var command = MakeCommand(query, parameters))
-                command.ExecuteNonQuery();
+            using (var command = MakeCommand(query, parameters)) { command.ExecuteNonQuery(); }
         }
 
         /// <summary>
@@ -303,10 +315,11 @@ namespace DatabaseAbstraction
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("DELETE"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not a delete statement", queryName));
+            }
 
-            using (var command = MakeCommand(query, parameters))
-                command.ExecuteNonQuery();
+            using (var command = MakeCommand(query, parameters)) { command.ExecuteNonQuery(); }
         }
 
         /// <summary>
@@ -341,16 +354,20 @@ namespace DatabaseAbstraction
             var inputParameters = sequenceName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
             if (2 != inputParameters.Length)
+            {
                 throw new ArgumentException(String.Format(
                     "Invalid generic sequence \"{0}\" received (must be of the format \"table_id|table_name\"",
                     sequenceName));
+            }
 
             var parameters = new Dictionary<string, object>();
             parameters.Add("[]primary_key_name", inputParameters[0]);
             parameters.Add("[]table_name", inputParameters[1]);
 
             using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
+            {
                 return IntValue(reader, reader.GetOrdinal("max_pk")) + 1;
+            }
         }
 
         /// <summary>
@@ -371,16 +388,20 @@ namespace DatabaseAbstraction
             var inputParameters = sequenceName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
             if (2 != inputParameters.Length)
+            {
                 throw new ArgumentException(String.Format(
                     "Invalid generic sequence \"{0}\" received (must be of the format \"table_id|table_name\"",
                     sequenceName));
+            }
 
             var parameters = new Dictionary<string, object>();
             parameters.Add("[]primary_key_name", inputParameters[0]);
             parameters.Add("[]table_name", inputParameters[1]);
 
             using (var reader = SelectOne(DatabaseQueryPrefix + "sequence.generic", parameters))
+            {
                 return LongValue(reader, reader.GetOrdinal("max_pk")) + 1;
+            }
         }
 
         /// <summary>
@@ -411,13 +432,10 @@ namespace DatabaseAbstraction
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">
         /// Thrown when the query name is not found in the query library
         /// </exception>
-        protected DatabaseQuery GetQuery(string queryName)
+        public DatabaseQuery GetQuery(string queryName)
         {
-            if (StaticQueries.ContainsKey(queryName))
-                return StaticQueries[queryName];
-
-            if (Queries.ContainsKey(queryName))
-                return Queries[queryName];
+            if (StaticQueries.ContainsKey(queryName)) { return StaticQueries[queryName]; }
+            if (Queries.ContainsKey(queryName)) { return Queries[queryName]; }
 
             throw new KeyNotFoundException(String.Format("Unable to find query {0}", queryName));
         }
@@ -434,14 +452,13 @@ namespace DatabaseAbstraction
         /// <returns>
         /// A command ready to execute
         /// </returns>
-        protected IDbCommand MakeCommand(DatabaseQuery query, IDictionary<string, object> parameters)
+        public DbCommand MakeCommand(DatabaseQuery query, IDictionary<string, object> parameters)
         {
             var command = Connection.CreateCommand();
             command.CommandText = String.Copy(query.SQL);
             command.CommandType = CommandType.Text;
 
-            if (null == parameters)
-                return command;
+            if (null == parameters) { return command; }
 
             foreach (var queryParameter in query.Parameters)
             {
@@ -482,8 +499,7 @@ namespace DatabaseAbstraction
         /// </returns>
         protected int IntValue(IDataReader reader, int columnIndex)
         {
-            if (!reader.Read())
-                return 0;
+            if (!reader.Read()) { return 0; }
 
             try
             {
@@ -509,8 +525,7 @@ namespace DatabaseAbstraction
         /// </returns>
         protected long LongValue(IDataReader reader, int columnIndex)
         {
-            if (!reader.Read())
-                return 0L;
+            if (!reader.Read()) { return 0L; }
 
             try
             {
@@ -555,31 +570,35 @@ namespace DatabaseAbstraction
 
             foreach (var type in providers)
             {
-                if (typeof(IQueryFragmentProvider).IsAssignableFrom(type))
-                    fragmentProviders.Add(type);
-
-                if (typeof(IDatabaseQueryProvider).IsAssignableFrom(type))
-                    queryProviders.Add(type);
+                if (typeof(IQueryFragmentProvider).IsAssignableFrom(type)) { fragmentProviders.Add(type); }
+                if (typeof(IDatabaseQueryProvider).IsAssignableFrom(type)) { queryProviders.Add(type); }
             }
 
             // Create the fragment library.
             var fragments = new Dictionary<string, QueryFragment>();
-            
+
             foreach (var fragmentProvider in fragmentProviders)
+            {
                 ((IQueryFragmentProvider)Activator.CreateInstance(fragmentProvider)).Fragments(fragments);
+            }
 
             // Get the queries
             foreach (var queryProvider in queryProviders)
+            {
                 ((IDatabaseQueryProvider)Activator.CreateInstance(queryProvider)).Queries(library);
+            }
 
             // Set the name property in every query
-            foreach (var query in library)
-                query.Value.Name = query.Key;
+            foreach (var query in library) { query.Value.Name = query.Key; }
 
             // Assemble fragmented queries
             foreach (string name in library.Keys)
+            {
                 if (typeof(FragmentedQuery) == library[name].GetType())
+                {
                     ((FragmentedQuery)library[name]).Assemble(fragments);
+                }
+            }
         }
 
         #endregion
@@ -589,15 +608,13 @@ namespace DatabaseAbstraction
         /// <summary>
         /// Clean up resources for this service
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
-            if (ConnectionState.Closed != Connection.State)
-                Connection.Close();
+            if (ConnectionState.Closed != Connection.State) { Connection.Close(); }
 
             Connection.Dispose();
         }
 
         #endregion
-
     }
 }

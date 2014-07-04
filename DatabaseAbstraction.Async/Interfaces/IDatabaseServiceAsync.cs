@@ -4,11 +4,13 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Methods required for an asynchronous database service implementation
     /// </summary>
+    [Obsolete("This interface's usage is no longer necessary.  Adding a reference to DatabaseAbstraction.Async.dll will provide the extensions for the IDatabaseService interface without changing the name.")]
     public interface IDatabaseServiceAsync : IDisposable
     {
         /// <summary>
@@ -25,7 +27,7 @@
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        Task<IDataReader> SelectAsync(string queryName);
+        Task<DbDataReader> SelectAsync(string queryName);
 
         /// <summary>
         /// Select a result set (async)
@@ -39,7 +41,7 @@
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        Task<IDataReader> SelectAsync(string queryName, IDictionary<string, object> parameters);
+        Task<DbDataReader> SelectAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
         /// Select a result set (async)
@@ -53,7 +55,7 @@
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        Task<IDataReader> SelectAsync(string queryName, IParameterProvider model);
+        Task<DbDataReader> SelectAsync(string queryName, IParameterProvider model);
 
         /// <summary>
         /// Select a single result (async)
@@ -64,7 +66,7 @@
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        Task<IDataReader> SelectOneAsync(string queryName);
+        Task<DbDataReader> SelectOneAsync(string queryName);
 
         /// <summary>
         /// Select a single result (async)
@@ -78,7 +80,7 @@
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        Task<IDataReader> SelectOneAsync(string queryName, IDictionary<string, object> parameters);
+        Task<DbDataReader> SelectOneAsync(string queryName, IDictionary<string, object> parameters);
 
         /// <summary>
         /// Select a single result (async)
@@ -92,7 +94,7 @@
         /// <returns>
         /// An <see cref="IDataReader"/> with the results
         /// </returns>
-        Task<IDataReader> SelectOneAsync(string queryName, IParameterProvider model);
+        Task<DbDataReader> SelectOneAsync(string queryName, IParameterProvider model);
 
         /// <summary>
         /// Insert data (async)

@@ -8,6 +8,7 @@ namespace DatabaseAbstraction
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
     using System.Linq;
 
     /// <summary>
@@ -36,14 +37,9 @@ namespace DatabaseAbstraction
     /// 
     /// See the Documentation wiki at http://dbabstraction.codeplex.com for full documentation on unit testing. (soon)
     /// </remarks>
-    public class MockDatabaseService : IDatabaseService
+    public class MockDatabaseService : DatabaseService, IDatabaseService
     {
         #region Properties
-
-        /// <summary>
-        /// Query library
-        /// </summary>
-        public IDictionary<string, DatabaseQuery> Queries { get; private set; }
 
         /// <summary>
         /// Executed queries and their parameters
@@ -77,117 +73,126 @@ namespace DatabaseAbstraction
             DatabaseService.FillQueryLibrary(Queries, providers);
 
             if (!Queries.ContainsKey("database.sequence.generic"))
+            {
                 DatabaseService.FillQueryLibrary(Queries, typeof(DatabaseQueryProvider));
+            }
         }
 
         #endregion
 
         #region Interface Implementation
 
-        public IDataReader Select(string queryName)
+        public override IDataReader Select(string queryName)
         {
             return Select(queryName, new Dictionary<string, object>());
         }
 
-        public IDataReader Select(string queryName, IDictionary<string, object> parameters)
+        public override IDataReader Select(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("SELECT"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not a select statement", queryName));
+            }
 
             RecordQuery(queryName, QueryType.Select, parameters);
 
-            if (Data.NextResult())
-                return Data;
+            if (Data.NextResult()) { return Data; }
 
             return new StubDataReader(new StubResultSet());
         }
 
-        public IDataReader Select(string queryName, IParameterProvider model)
+        public override IDataReader Select(string queryName, IParameterProvider model)
         {
             return Select(queryName, model.Parameters());
         }
 
-        public IDataReader SelectOne(string queryName)
+        public override IDataReader SelectOne(string queryName)
         {
             return Select(queryName, new Dictionary<string, object>());
         }
 
-        public IDataReader SelectOne(string queryName, IDictionary<string, object> parameters)
+        public override IDataReader SelectOne(string queryName, IDictionary<string, object> parameters)
         {
             return Select(queryName, parameters);
         }
 
-        public IDataReader SelectOne(string queryName, IParameterProvider model)
+        public override IDataReader SelectOne(string queryName, IParameterProvider model)
         {
             return Select(queryName, model.Parameters());
         }
 
-        public void Insert(string queryName, IDictionary<string, object> parameters)
+        public override void Insert(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("INSERT"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not an insert statement", queryName));
+            }
 
             RecordQuery(queryName, QueryType.Insert, parameters);
         }
 
-        public void Insert(string queryName, IParameterProvider model)
+        public override void Insert(string queryName, IParameterProvider model)
         {
             Insert(queryName, model.Parameters());
         }
 
-        public void Update(string queryName, IDictionary<string, object> parameters)
+        public override void Update(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("UPDATE"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not an update statement", queryName));
+            }
 
             RecordQuery(queryName, QueryType.Update, parameters);
         }
 
-        public void Update(string queryName, IParameterProvider model)
+        public override void Update(string queryName, IParameterProvider model)
         {
             Update(queryName, model.Parameters());
         }
 
-        public void Delete(string queryName, IDictionary<string, object> parameters)
+        public override void Delete(string queryName, IDictionary<string, object> parameters)
         {
             var query = GetQuery(queryName);
 
             if (!query.SQL.ToUpper().StartsWith("DELETE"))
+            {
                 throw new NotSupportedException(String.Format("Query {0} is not a delete statement", queryName));
+            }
 
             RecordQuery(queryName, QueryType.Delete, parameters);
         }
 
-        public void Delete(string queryName, IParameterProvider model)
+        public override void Delete(string queryName, IParameterProvider model)
         {
             Delete(queryName, model.Parameters());
         }
 
-        public int Sequence(string sequenceName)
+        public override int Sequence(string sequenceName)
         {
             RecordQuery(sequenceName, QueryType.Sequence, null);
             return -1;
         }
 
-        public long LongSequence(string sequenceName)
+        public override long LongSequence(string sequenceName)
         {
             RecordQuery(sequenceName, QueryType.Sequence, null);
             return -1L;
         }
 
-        public int LastIdentity()
+        public override int LastIdentity()
         {
             RecordQuery("", QueryType.Identity, null);
             return -1;
         }
-        
-        public long LongLastIdentity()
+
+        public override long LongLastIdentity()
         {
             RecordQuery("", QueryType.Identity, null);
             return -1L;
@@ -216,29 +221,23 @@ namespace DatabaseAbstraction
         }
 
         /// <summary>
-        /// Get a query from the library 
+        /// Get the currently-defined queries
         /// </summary>
-        /// <param name="queryName">
-        /// The name of the query to retrieve
-        /// </param>
         /// <returns>
-        /// The database query
+        /// The currently-defined queries
         /// </returns>
-        /// <exception cref="System.Collections.Generic.KeyNotFoundException">
-        /// Thrown when the query name is not found in the query library
-        /// </exception>
-        private DatabaseQuery GetQuery(string queryName)
+        public IDictionary<string, DatabaseQuery> GetQueries()
         {
-            if (Queries.ContainsKey(queryName))
-                return Queries[queryName];
-
-            throw new KeyNotFoundException(String.Format("Unable to find query {0}", queryName));
+            return Queries;
         }
 
         /// <summary>
         /// Implementation of the dispose method; nothing to dispose since there is no real connection
         /// </summary>
-        public void Dispose() { }
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
 
         #endregion
 

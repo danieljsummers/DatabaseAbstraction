@@ -30,7 +30,8 @@
             var databaseQueries = new Dictionary<string, DatabaseQuery>();
             new DatabaseQueryProvider().Queries(databaseQueries);
 
-            Assert.AreEqual(4, data.Queries.Count - databaseQueries.Count, "There should have been 4 queries loaded");
+            Assert.AreEqual(4, data.GetQueries().Count - databaseQueries.Count,
+                "There should have been 4 queries loaded");
         }
 
         /// <summary>

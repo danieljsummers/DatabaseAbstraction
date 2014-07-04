@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncExtensions.cs" />
     <Compile Include="DatabaseServiceAsync.cs" />
     <Compile Include="Interfaces\IDatabaseServiceAsync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

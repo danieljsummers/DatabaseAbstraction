@@ -5,6 +5,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -14,6 +15,7 @@
     /// <remarks>
     /// This also implements IDisposable, and disposes the database service instance when this instance is disposed.
     /// </remarks>
+    [Obsolete("This class's usage is no longer necessary.  Adding a reference to DatabaseAbstraction.Async.dll will provide the extensions for the IDatabaseService interface without changing the name.")]
     public class DatabaseServiceAsync : IDatabaseServiceAsync
     {
         /// <summary>
@@ -32,7 +34,9 @@
         public DatabaseServiceAsync(IDatabaseService service)
         {
             if (null == service)
+            {
                 throw new ArgumentNullException("service", "The database service cannot be null");
+            }
 
             Service = service;
         }
@@ -50,9 +54,9 @@
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public virtual Task<IDataReader> SelectAsync(string queryName)
+        public virtual Task<DbDataReader> SelectAsync(string queryName)
         {
-            return Task.FromResult<IDataReader>(Service.Select(queryName));
+            return Service.SelectAsync(queryName);
         }
 
         /// <summary>
@@ -67,9 +71,9 @@
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public virtual Task<IDataReader> SelectAsync(string queryName, IDictionary<string, object> parameters)
+        public virtual Task<DbDataReader> SelectAsync(string queryName, IDictionary<string, object> parameters)
         {
-            return Task.FromResult<IDataReader>(Service.Select(queryName, parameters));
+            return Service.SelectAsync(queryName, parameters);
         }
 
         /// <summary>
@@ -84,9 +88,9 @@
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public virtual Task<IDataReader> SelectAsync(string queryName, IParameterProvider model)
+        public virtual Task<DbDataReader> SelectAsync(string queryName, IParameterProvider model)
         {
-            return Task.FromResult<IDataReader>(Service.Select(queryName, model));
+            return Service.SelectAsync(queryName, model);
         }
 
         /// <summary>
@@ -98,9 +102,9 @@
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public virtual Task<IDataReader> SelectOneAsync(string queryName)
+        public virtual Task<DbDataReader> SelectOneAsync(string queryName)
         {
-            return Task.FromResult<IDataReader>(Service.SelectOne(queryName));
+            return Service.SelectOneAsync(queryName);
         }
 
         /// <summary>
@@ -115,9 +119,9 @@
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public virtual Task<IDataReader> SelectOneAsync(string queryName, IDictionary<string, object> parameters)
+        public virtual Task<DbDataReader> SelectOneAsync(string queryName, IDictionary<string, object> parameters)
         {
-            return Task.FromResult<IDataReader>(Service.SelectOne(queryName, parameters));
+            return Service.SelectOneAsync(queryName, parameters);
         }
 
         /// <summary>
@@ -132,9 +136,9 @@
         /// <returns>
         /// A data reader with the data
         /// </returns>
-        public virtual Task<IDataReader> SelectOneAsync(string queryName, IParameterProvider model)
+        public virtual Task<DbDataReader> SelectOneAsync(string queryName, IParameterProvider model)
         {
-            return Task.FromResult<IDataReader>(Service.SelectOne(queryName, model));
+            return Service.SelectOneAsync(queryName, model);
         }
 
         /// <summary>
@@ -151,9 +155,7 @@
         /// </exception>
         public virtual Task InsertAsync(string queryName, IDictionary<string, object> parameters)
         {
-            Service.Insert(queryName, parameters);
-            
-            return TaskOK();
+            return Service.InsertAsync(queryName, parameters);
         }
 
         /// <summary>
@@ -167,9 +169,7 @@
         /// </param>
         public virtual Task InsertAsync(string queryName, IParameterProvider model)
         {
-            Service.Insert(queryName, model);
-
-            return TaskOK();
+            return Service.InsertAsync(queryName, model);
         }
 
         /// <summary>
@@ -186,9 +186,7 @@
         /// </exception>
         public virtual Task UpdateAsync(string queryName, IDictionary<string, object> parameters)
         {
-            Service.Update(queryName, parameters);
-
-            return TaskOK();
+            return Service.UpdateAsync(queryName, parameters);
         }
 
         /// <summary>
@@ -202,9 +200,7 @@
         /// </param>
         public virtual Task UpdateAsync(string queryName, IParameterProvider model)
         {
-            Service.Update(queryName, model);
-
-            return TaskOK();
+            return Service.UpdateAsync(queryName, model);
         }
 
         /// <summary>
@@ -221,9 +217,7 @@
         /// </exception>
         public virtual Task DeleteAsync(string queryName, IDictionary<string, object> parameters)
         {
-            Service.Delete(queryName, parameters);
-
-            return TaskOK();
+            return Service.DeleteAsync(queryName, parameters);
         }
 
         /// <summary>
@@ -237,9 +231,7 @@
         /// </param>
         public virtual Task DeleteAsync(string queryName, IParameterProvider model)
         {
-            Service.Delete(queryName, model);
-
-            return TaskOK();
+            return Service.DeleteAsync(queryName, model);
         }
 
         /// <summary>
@@ -253,7 +245,7 @@
         /// </returns>
         public virtual Task<int> SequenceAsync(string sequenceName)
         {
-            return Task.FromResult<int>(Service.Sequence(sequenceName));
+            return Service.SequenceAsync(sequenceName);
         }
 
         /// <summary>
@@ -267,7 +259,7 @@
         /// </returns>
         public virtual Task<long> LongSequenceAsync(string sequenceName)
         {
-            return Task.FromResult<long>(Service.LongSequence(sequenceName));
+            return Service.LongSequenceAsync(sequenceName);
         }
 
         /// <summary>
@@ -278,7 +270,7 @@
         /// </returns>
         public virtual Task<int> LastIdentityAsync()
         {
-            return Task.FromResult<int>(Service.LastIdentity());
+            return Service.LastIdentityAsync();
         }
 
         /// <summary>
@@ -289,7 +281,7 @@
         /// </returns>
         public virtual Task<long> LongLastIdentityAsync()
         {
-            return Task.FromResult<long>(Service.LongLastIdentity());
+            return Service.LongLastIdentityAsync();
         }
 
         #endregion
@@ -302,21 +294,6 @@
         public void Dispose()
         {
             Service.Dispose();
-        }
-
-        #endregion
-
-        #region Helpers
-
-        /// <summary>
-        /// A "void" return value
-        /// </summary>
-        /// <returns>
-        /// A task indicating that the database method was successful
-        /// </returns>
-        private Task TaskOK()
-        {
-            return Task.FromResult<bool>(true);
         }
 
         #endregion
